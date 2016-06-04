@@ -12,7 +12,7 @@ Can I Create Messages Dynamically?
 
 Yes.
 
-Usually, messages are created implicitly when sending messages but can also be created explicitly using ``make_message``. In both cases, types and number of elements are known at compile time. To allow for fully dynamic message generation, CAFalso offers ``message_builder``:
+Usually, messages are created implicitly when sending messages but can also be created explicitly using ``make_message``. In both cases, types and number of elements are known at compile time. To allow for fully dynamic message generation, CAF also offers ``message_builder``:
 
 ::
 

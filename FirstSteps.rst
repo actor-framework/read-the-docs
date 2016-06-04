@@ -3,7 +3,7 @@
 Overview
 ========
 
-Compiling CAFrequires CMake and a C++11-compatible compiler. To get and compile the sources on UNIX-like systems, type the following in a terminal:
+Compiling CAF requires CMake and a C++11-compatible compiler. To get and compile the sources on UNIX-like systems, type the following in a terminal:
 
 ::
 

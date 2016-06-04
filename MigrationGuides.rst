@@ -121,7 +121,7 @@ The policy classes ``broadcast``, ``random``, and ``round_robin`` in ``actor_poo
 0.14 to 0.15
 ------------
 
-Version 0.15 replaces the singleton-based architecture with ``actor_system``. Most of the free functions in namespace ``caf`` are now member functions of ``actor_system`` (see :ref:`actor-system`). Likewise, most functions in namespace ``caf::io`` are now member functions of ``middleman`` (see :ref:`middleman`). The structure of CAFapplications has changed fundamentally with a focus on configurability. Setting and fine-tuning the scheduler, changing parameters of the middleman, etc. is now bundled in the class ``actor_system_config``. The new configuration mechanism is also easily extensible.
+Version 0.15 replaces the singleton-based architecture with ``actor_system``. Most of the free functions in namespace ``caf`` are now member functions of ``actor_system`` (see :ref:`actor-system`). Likewise, most functions in namespace ``caf::io`` are now member functions of ``middleman`` (see :ref:`middleman`). The structure of CAF applications has changed fundamentally with a focus on configurability. Setting and fine-tuning the scheduler, changing parameters of the middleman, etc. is now bundled in the class ``actor_system_config``. The new configuration mechanism is also easily extensible.
 
 Patterns are now limited to the simple notation, because the advanced features (1) are not implementable for statically typed actors, (2) are not portable to Windows/MSVC, and (3) drastically impact compile times. Dropping this functionality also simplifies the implementation and improves performance.
 

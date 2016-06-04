@@ -5,7 +5,7 @@ Actors
 
 Actors in CAFare a lightweight abstraction for units of computations. They are active objects in the sense that they own their state and do not allow others to access it. The only way to modify the state of an actor is sending messages to it.
 
-CAFprovides several actor implementations, each covering a particular use case. The available implementations differ in three characteristics: (1) dynamically or statically typed, (2) class-based or function-based, and (3) using asynchronous event handlers or blocking receives. These three characteristics can be combined freely, with one exception: statically typed actors are always event-based. For example, an actor can have dynamically typed messaging, implement a class, and use blocking receives. The common base class for all user-defined actors is called ``local_actor``.
+CAF provides several actor implementations, each covering a particular use case. The available implementations differ in three characteristics: (1) dynamically or statically typed, (2) class-based or function-based, and (3) using asynchronous event handlers or blocking receives. These three characteristics can be combined freely, with one exception: statically typed actors are always event-based. For example, an actor can have dynamically typed messaging, implement a class, and use blocking receives. The common base class for all user-defined actors is called ``local_actor``.
 
 Dynamically typed actors are more familiar to developers coming from Erlang or Akka. They (usually) enable faster prototyping but require extensive unit testing. Statically typed actors require more source code but enable the compiler to verify communication between actors. Since CAF supports both, developers can freely mix both kinds of actors to get the best of both worlds. A good rule of thumb is to make use of static type checking for actors that are visible across multiple translation units.
 
@@ -206,7 +206,7 @@ Implementing an actor using a class requires the following:
 
 -  Override ``make_behavior`` for event-based actors and ``act`` for blocking actors.
 
-Implementing actors with classes works for all kinds of actors and allows simple management of state via member variables. However, composing states via inheritance can get quite tedious. For dynamically typed actors, composing states is particularly hard, because the compiler cannot provide much help. For statically typed actors, CAFalso provides an API for composable behaviors (see :ref:`composable-behavior`) that works well with inheritance. The following three examples implement the forward declarations shown in :ref:`spawn`.
+Implementing actors with classes works for all kinds of actors and allows simple management of state via member variables. However, composing states via inheritance can get quite tedious. For dynamically typed actors, composing states is particularly hard, because the compiler cannot provide much help. For statically typed actors, CAF also provides an API for composable behaviors (see :ref:`composable-behavior`) that works well with inheritance. The following three examples implement the forward declarations shown in :ref:`spawn`.
 
 ::
 
@@ -295,9 +295,9 @@ Stateful actors are spawned in the same way as any other function-based actor (s
 Actors from Composable Behaviors  :sup:`experimental` 
 -----------------------------------------------------
 
-When building larger systems, it is often useful to implement the behavior of an actor in terms of other, existing behaviors. The composable behaviors in CAFallow developers to generate a behavior class from a messaging interface (see :ref:`interface`).
+When building larger systems, it is often useful to implement the behavior of an actor in terms of other, existing behaviors. The composable behaviors in CAF allow developers to generate a behavior class from a messaging interface (see :ref:`interface`).
 
-The base type for composable behaviors is ``composable_behavior<T>``, where ``T`` is a ``typed_actor<...>``. CAFmaps each ``replies_to<A, B, C>::with<D, E, F>`` in ``T`` to a pure virtual member function with signature ``result<D, E, F> operator()(param<A>, param<B>, param<C>)``.
+The base type for composable behaviors is ``composable_behavior<T>``, where ``T`` is a ``typed_actor<...>``. CAF maps each ``replies_to<A, B, C>::with<D, E, F>`` in ``T`` to a pure virtual member function with signature ``result<D, E, F> operator()(param<A>, param<B>, param<C>)``.
 
 Note that ``operator()`` will take integral types as well as atom constants by value instead of by reference. A ``result<T>`` accepts either a value of type ``T``, a ``skip_t`` (see :ref:`default-handler`), an ``error`` (see :ref:`error`), a ``delegated<T>`` (see :ref:`delegate`), or a ``response_promise<T>`` (see :ref:`promise`). A ``result<void>`` is constructed by returning ``unit``.
 
@@ -407,7 +407,7 @@ The function ``receive`` sequentially iterates over all elements in the mailbox 
       [](int x) { /* ... */ }
     );
 
-The code snippet above illustrates the use of ``receive``. Note that the message handler passed to ``receive`` is a temporary object at runtime. Hence, calling ``receive`` inside a loop creates an unnecessary amount of short-lived objects. CAFprovides three predefined receive loops to provide a more efficient way of defining loops.
+The code snippet above illustrates the use of ``receive``. Note that the message handler passed to ``receive`` is a temporary object at runtime. Hence, calling ``receive`` inside a loop creates an unnecessary amount of short-lived objects. CAF provides three predefined receive loops to provide a more efficient way of defining loops.
 
 ::
 

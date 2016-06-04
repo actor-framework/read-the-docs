@@ -54,7 +54,7 @@ Atoms in CAFare mapped to integer values at compile time. This mapping is guaran
 
 **Warning**: The compiler cannot enforce the restrictions at compile time, except for a length check. The assertion ``atom("!?") != atom("?!")`` is not true, because each invalid character translates to a whitespace character.
 
-While the ``atom_value`` is computed at compile time, it is not uniquely typed and thus cannot be used in the signature of a callback. To accomplish this, CAFoffers compile-time *atom constants*.
+While the ``atom_value`` is computed at compile time, it is not uniquely typed and thus cannot be used in the signature of a callback. To accomplish this, CAF offers compile-time *atom constants*.
 
 ::
 

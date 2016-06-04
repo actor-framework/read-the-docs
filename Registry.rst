@@ -3,7 +3,7 @@
 Registry
 ========
 
-The actor registry in CAFkeeps track of the number of running actors and allows to map actors to their ID or a custom atom (see :ref:`atom`) representing a name. The registry does *not* contain all actors. Actors have to be stored in the registry explicitly. Users can access the registry through an actor system by calling ``system.registry()``. The registry stores actors using ``strong_actor_ptr`` (see :ref:`actor-pointer`).
+The actor registry in CAF keeps track of the number of running actors and allows to map actors to their ID or a custom atom (see :ref:`atom`) representing a name. The registry does *not* contain all actors. Actors have to be stored in the registry explicitly. Users can access the registry through an actor system by calling ``system.registry()``. The registry stores actors using ``strong_actor_ptr`` (see :ref:`actor-pointer`).
 
 Users can use the registry to make actors system-wide available by name. The middleman (see :ref:`middleman`) uses the registry to keep track of all actors known to remote nodes in order to serialize and deserialize them. Actors are removed automatically when they terminate.
 

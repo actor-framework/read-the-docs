@@ -10,7 +10,7 @@ Messages in CAFare type-erased, copy-on-write tuples. The actual message type it
 RTTI and Type Numbers
 ---------------------
 
-All builtin types in CAFhave a non-zero 16-bit *type number*. All user-defined types are mapped to 0. When querying the run-time type information (RTTI) for individual message or tuple elements, CAFreturns a ``std::pair<uint16_t, const std::type_info*>``. The first value is the 16-bit type number. If the type number is non-zero, the second value is a pointer to the C++ type info, otherwise the second value is null.
+All builtin types in CAF have a non-zero 16-bit *type number*. All user-defined types are mapped to 0. When querying the run-time type information (RTTI) for individual message or tuple elements, CAF returns a ``std::pair<uint16_t, const std::type_info*>``. The first value is the 16-bit type number. If the type number is non-zero, the second value is a pointer to the C++ type info, otherwise the second value is null.
 
 .. _class-type_erased_tuple:
 

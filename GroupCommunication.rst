@@ -3,7 +3,7 @@
 Group Communication
 ===================
 
-CAFsupports publish/subscribe-based group communication. Actors can join and leave groups and send messages to groups.
+CAF supports publish/subscribe-based group communication. Actors can join and leave groups and send messages to groups.
 
 ::
 

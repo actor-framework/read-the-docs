@@ -3,14 +3,14 @@
 Reference Counting
 ==================
 
-Actors systems can span complex communication graphs that make it hard to decide when actors are no longer needed. As a result, manually managing lifetime of actors is merely impossible. For this reason, CAFimplements a garbage collection strategy for actors based on weak and strong reference counts.
+Actors systems can span complex communication graphs that make it hard to decide when actors are no longer needed. As a result, manually managing lifetime of actors is merely impossible. For this reason, CAF implements a garbage collection strategy for actors based on weak and strong reference counts.
 
 .. _shared-ownership-in-c:
 
 Shared Ownership in C++
 -----------------------
 
-The C++ standard library already offers ``shared_ptr`` and ``weak_ptr`` to manage objects with complex shared ownership. The standard implementation is a solid general purpose design that covers most use cases. Weak and strong references to an object are stored in a *control block*. However, CAFuses a slightly different design. The reason for this is twofold. First, we need the control block to store the identity of an actor. Second, we wanted a design that requires less indirections, because actor handles are used extensively copied for messaging, and this overhead adds up.
+The C++ standard library already offers ``shared_ptr`` and ``weak_ptr`` to manage objects with complex shared ownership. The standard implementation is a solid general purpose design that covers most use cases. Weak and strong references to an object are stored in a *control block*. However, CAF uses a slightly different design. The reason for this is twofold. First, we need the control block to store the identity of an actor. Second, we wanted a design that requires less indirections, because actor handles are used extensively copied for messaging, and this overhead adds up.
 
 Before discussing the approach to shared ownership in CAF, we look at the design of shared pointers in the C++ standard library.
 
@@ -47,11 +47,11 @@ In CAF, we use a different approach than the standard library because (1) we alw
 
    Shared pointer design in CAF
 
-CAFuses ``strong_actor_ptr`` instead of ``std::shared_ptr<...>`` and ``weak_actor_ptr`` instead of ``std::weak_ptr<...>``. Unlike the counterparts from the standard library, both smart pointer types only store a single pointer.
+CAF uses ``strong_actor_ptr`` instead of ``std::shared_ptr<...>`` and ``weak_actor_ptr`` instead of ``std::weak_ptr<...>``. Unlike the counterparts from the standard library, both smart pointer types only store a single pointer.
 
 Also, the control block in CAFis not a template and stores the identity of an actor (``actor_id`` plus ``node_id``). This allows CAFto access this information even after an actor died. The control block fits exactly into a single cache line (64 Bytes). This makes sure no *false sharing* occurs between an actor and other actors that have references to it. Since the size of the control block is fixed and CAF\ *guarantees* the memory layout enforced by ``actor_storage``, CAFcan compute the address of an actor from the pointer to its control block by offsetting it by 64 Bytes. Likewise, an actor can compute the address of its control block.
 
-The smart pointer design in CAFrelies on a few assumptions about actor types. Most notably, the actor object is placed 64 Bytes after the control block. This starting address is cast to ``abstract_actor*``. Hence, ``T*`` must be convertible to ``abstract_actor*`` via ``reinterpret_cast``. In practice, this means actor subclasses must not use virtual inheritance, which is enforced by using a ``static_assert``.
+The smart pointer design in CAF relies on a few assumptions about actor types. Most notably, the actor object is placed 64 Bytes after the control block. This starting address is cast to ``abstract_actor*``. Hence, ``T*`` must be convertible to ``abstract_actor*`` via ``reinterpret_cast``. In practice, this means actor subclasses must not use virtual inheritance, which is enforced by using a ``static_assert``.
 
 .. _strong-and-weak-references:
 

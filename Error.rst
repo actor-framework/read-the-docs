@@ -3,7 +3,7 @@
 Errors
 ======
 
-Errors in CAFhave a code and a category, similar to ``std::error_code`` and ``std::error_condition``. Unlike its counterparts from the C++ standard library, ``error`` is plattform-neutral and serializable. Instead of using category singletons, CAFstores categories as atoms (see :ref:`atom`). Errors can also include a message to provide additional context information.
+Errors in CAF have a code and a category, similar to ``std::error_code`` and ``std::error_condition``. Unlike its counterparts from the C++ standard library, ``error`` is plattform-neutral and serializable. Instead of using category singletons, CAF stores categories as atoms (see :ref:`atom`). Errors can also include a message to provide additional context information.
 
 .. _class-interface:
 
@@ -126,7 +126,7 @@ System Error Codes (SECs) use the error category ``"system"``. They represent er
 Default Exit Reasons
 --------------------
 
-CAFuses the error category ``"exit"`` for default exit reasons. These errors are usually fail states set by the actor system itself. The two exceptions are ``exit_reason::user_shutdown`` and ``exit_reason::kill``. The former is used in CAFto signalize orderly, user-requested shutdown and can be used by programmers in the same way. The latter terminates an actor unconditionally when used in ``send_exit``, even if the default handler for exit messages (see :ref:`exit-message`) is overridden.
+CAF uses the error category ``"exit"`` for default exit reasons. These errors are usually fail states set by the actor system itself. The two exceptions are ``exit_reason::user_shutdown`` and ``exit_reason::kill``. The former is used in CAFto signalize orderly, user-requested shutdown and can be used by programmers in the same way. The latter terminates an actor unconditionally when used in ``send_exit``, even if the default handler for exit messages (see :ref:`exit-message`) is overridden.
 
 ::
 

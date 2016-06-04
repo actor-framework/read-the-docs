@@ -12,7 +12,7 @@ The messaging layer of CAF has three primitives for sending messages: ``send``, 
 Structure of Mailbox Elements
 -----------------------------
 
-When enqueuing a message to the mailbox of an actor, CAFwraps the content of the message into a ``mailbox_element`` (shown below) to add meta data and processing paths.
+When enqueuing a message to the mailbox of an actor, CAF wraps the content of the message into a ``mailbox_element`` (shown below) to add meta data and processing paths.
 
 ::
 
@@ -27,9 +27,9 @@ When enqueuing a message to the mailbox of an actor, CAFwraps the content of the
 
 The sender is stored as a ``strong_actor_ptr`` (see :ref:`actor-pointer`) and denotes the origin of the message. The message ID is either 0—invalid—or a positive integer value that allows the sender to match a response to its request. The ``stages`` vector stores the path of the message. Response messages, i.e., the returned values of a message handler, are sent to ``stages.back()`` after calling ``stages.pop_back()``. This allows CAFto build pipelines of arbitrary size. If no more stage is left, the response reaches the sender. Finally, ``content`` is a ``message`` object (see :ref:`message`) storing a type-erased tuple.
 
-Mailbox elements are created by CAFautomatically and are usually invisible to the programmer. However, understanding how messages are processed internally helps understanding the behavior of the message passing layer.
+Mailbox elements are created by CAF automatically and are usually invisible to the programmer. However, understanding how messages are processed internally helps understanding the behavior of the message passing layer.
 
-It is worth mentioning that CAFusually wraps the mailbox element and its content into a single object in order to reduce the number of memory allocations.
+It is worth mentioning that CAF usually wraps the mailbox element and its content into a single object in order to reduce the number of memory allocations.
 
 .. _default-and-system-message-handlers:
 
@@ -71,7 +71,7 @@ The default handler is called whenever the behavior of an actor did not match th
 Requests
 --------
 
-A main feature of CAFis its ability to couple input and output types via the type system. For example, a ``typed_actor<replies_to<int>::with<int>>`` essentially behaves like a function. It receives a single ``int`` as input and responds with another ``int``. CAFembraces this functional take on actors by simply creating response messages from the result of message handlers. This allows CAFto match *request* to *response* messages and to provide a convenient API for this style of communication.
+A main feature of CAFis its ability to couple input and output types via the type system. For example, a ``typed_actor<replies_to<int>::with<int>>`` essentially behaves like a function. It receives a single ``int`` as input and responds with another ``int``. CAF embraces this functional take on actors by simply creating response messages from the result of message handlers. This allows CAFto match *request* to *response* messages and to provide a convenient API for this style of communication.
 
 .. _handling-response:
 
@@ -171,7 +171,7 @@ Both event-based approaches send all requests, install a series of one-shot hand
 Error Handling in Requests
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Requests allow CAFto unambiguously correlate request and response messages. This is also true if the response is an error message. Hence, CAFallows to add an error handler as optional second parameter to ``then``, ``await``, or ``receive``. If no such handler is defined, the default error handler (see :ref:`error-message`) is used as a fallback.
+Requests allow CAFto unambiguously correlate request and response messages. This is also true if the response is an error message. Hence, CAF allows to add an error handler as optional second parameter to ``then``, ``await``, or ``receive``. If no such handler is defined, the default error handler (see :ref:`error-message`) is used as a fallback.
 
 As an example, we consider a simple divider that returns an error on a division by zero. This examples uses a custom error category (see :ref:`error`).
 

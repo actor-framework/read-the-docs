@@ -3,7 +3,7 @@
 Configuring Actor Applications
 ==============================
 
-CAFconfigures applications at startup using an ``actor_system_config`` or a user-defined subclass of that type. The config objects allow users to add custom types, to load modules, and to fine-tune the behavior of loaded modules with command line options or configuration files (see :ref:`system-config-options`).
+CAF configures applications at startup using an ``actor_system_config`` or a user-defined subclass of that type. The config objects allow users to add custom types, to load modules, and to fine-tune the behavior of loaded modules with command line options or configuration files (see :ref:`system-config-options`).
 
 The following code example is a minimal CAF application without any custom configuration options.
 
@@ -43,7 +43,7 @@ The function ``exec_main`` creates a config object, loads all modules requested 
       caf_main(cfg);
     }
 
-However, setting up config objects by hand is usually not necessary. CAFautomatically selects user-defined subclasses of ``actor_system_config`` if ``caf_main`` takes a second parameter by reference, as shown in the minimal example below.
+However, setting up config objects by hand is usually not necessary. CAF automatically selects user-defined subclasses of ``actor_system_config`` if ``caf_main`` takes a second parameter by reference, as shown in the minimal example below.
 
 ::
 
@@ -96,7 +96,7 @@ The third option is to simply call ``x.load<mod1>()`` on a config object *before
 Command Line Options and INI Configuration Files
 ------------------------------------------------
 
-CAForganizes program options in categories and parses CLI arguments and INI files. CLI arguments override values in the INI file which override hard-coded defaults. Users can add any number of custom program options by implementing a subtype of ``actor_system_config`` and registering new options in ``init``. The example below adds three options to the “global” category.
+CAF organizes program options in categories and parses CLI arguments and INI files. CLI arguments override values in the INI file which override hard-coded defaults. Users can add any number of custom program options by implementing a subtype of ``actor_system_config`` and registering new options in ``init``. The example below adds three options to the “global” category.
 
 ::
 
@@ -120,7 +120,7 @@ The custom ``config`` class allows end users to set the port for the application
 
 Boolean options do not require arguments. The member variable ``server_mode`` is set to ``true`` if the command line contains either ``--server-mode`` or ``-s``.
 
-CAFprefixes all of its default CLI options with ``caf#``, except for “help” (``--help``, ``-h``, or ``-?``). The default name for the INI file is ``caf-application.ini``. Users can change the file name and path by passing ``--caf#config-file=<path>`` on the command line.
+CAF prefixes all of its default CLI options with ``caf#``, except for “help” (``--help``, ``-h``, or ``-?``). The default name for the INI file is ``caf-application.ini``. Users can change the file name and path by passing ``--caf#config-file=<path>`` on the command line.
 
 INI files are organized in categories. No value is allowed outside of a category (no implicit “global” category). CAF reads ``true`` and ``false`` as boolean, numbers as (signed) integers or ``double``, ``"``-enclosed characters as strings, and ``'``-enclosed characters as atoms (see :ref:`atom`). The following example INI file lists all standard options in CAFand their default value. Note that some options such as ``scheduler.max-threads`` are usually detected at runtime and thus have no hard-coded default.
 
@@ -177,7 +177,7 @@ CAFis designed with distributed systems in mind. Hence, all message types must b
       struct allowed_unsafe_message_type<type_name> : std::true_type {};           \
       }
 
-CAFserializes objects by calling ``serialize(proc, x, 0)``, where the data processor ``proc`` is either a serializer or a deserializer. The third parameter is a ``const unsigned int``, which is never evaluated by CAF. The parameter exists for source compatibility with ``Boost.Serialize``. As an introductory example, we use the following POD type ``foo``.
+CAF serializes objects by calling ``serialize(proc, x, 0)``, where the data processor ``proc`` is either a serializer or a deserializer. The third parameter is a ``const unsigned int``, which is never evaluated by CAF. The parameter exists for source compatibility with ``Boost.Serialize``. As an introductory example, we use the following POD type ``foo``.
 
 ::
 
