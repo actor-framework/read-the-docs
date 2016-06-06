@@ -5,7 +5,7 @@ Configuring Actor Applications
 
 CAF configures applications at startup using an ``actor_system_config`` or a user-defined subclass of that type. The config objects allow users to add custom types, to load modules, and to fine-tune the behavior of loaded modules with command line options or configuration files (see :ref:`system-config-options`).
 
-The following code example is a minimal CAF application without any custom configuration options.
+The following code example is a minimal CAF application with a middleman (see :ref:`middleman`) but without any custom configuration options.
 
 ::
 
@@ -40,7 +40,7 @@ The function ``exec_main`` creates a config object, loads all modules requested 
       cfg.load<io::middleman>();
       // create actor system and call caf_main
       actor_system system{cfg};
-      caf_main(cfg);
+      caf_main(system);
     }
 
 However, setting up config objects by hand is usually not necessary. CAF automatically selects user-defined subclasses of ``actor_system_config`` if ``caf_main`` takes a second parameter by reference, as shown in the minimal example below.
@@ -49,7 +49,7 @@ However, setting up config objects by hand is usually not necessary. CAF automat
 
     class my_config : public actor_system_config {
     public:
-      void init() override {
+      my_config() {
         // ...
       }
     };
@@ -60,14 +60,14 @@ However, setting up config objects by hand is usually not necessary. CAF automat
 
     CAF_MAIN()
 
-Users can perform additional initialization, add custom program options, etc. by overriding ``init``.
+Users can perform additional initialization, add custom program options, etc. simply by implementing a default constructor.
 
 .. _system-config-module:
 
 Loading Modules
 ---------------
 
-The simplest way to load modules is to use the macro ``CAF_MAIN`` and pass a list of all requested modules, as sown below.
+The simplest way to load modules is to use the macro ``CAF_MAIN`` and to pass a list of all requested modules, as shown below.
 
 ::
 
@@ -76,13 +76,13 @@ The simplest way to load modules is to use the macro ``CAF_MAIN`` and pass a lis
     }
     CAF_MAIN(mod1, mod2, ...)
 
-Alternatively, users can load modules in the ``init`` member function when implementing a custom config type.
+Alternatively, users can load modules in user-defined config classes.
 
 ::
 
     class my_config : public actor_system_config {
     public:
-      void init() override {
+      my_config() {
         load<mod1>();
         load<mod2>();
         // ...
@@ -96,7 +96,7 @@ The third option is to simply call ``x.load<mod1>()`` on a config object *before
 Command Line Options and INI Configuration Files
 ------------------------------------------------
 
-CAF organizes program options in categories and parses CLI arguments and INI files. CLI arguments override values in the INI file which override hard-coded defaults. Users can add any number of custom program options by implementing a subtype of ``actor_system_config`` and registering new options in ``init``. The example below adds three options to the “global” category.
+CAF organizes program options in categories and parses CLI arguments as well as INI files. CLI arguments override values in the INI file which override hard-coded defaults. Users can add any number of custom program options by implementing a subtype of ``actor_system_config``. The example below adds three options to the “global” category.
 
 ::
 
@@ -106,7 +106,7 @@ CAF organizes program options in categories and parses CLI arguments and INI fil
       std::string host = "localhost";
       bool server_mode = false;
 
-      void init() override {
+      config() {
         opt_group{custom_options_, "global"}
         .add(port, "port,p", "set port")
         .add(host, "host,H", "set host (ignored in server mode)")
@@ -114,7 +114,7 @@ CAF organizes program options in categories and parses CLI arguments and INI fil
       }
     };
 
-The line ``opt_group{custom_options_, "global"}`` adds the “global” group to the list of custom options. The following calls to ``add`` then add individual options. The first argument to ``add`` is the associated variable. The second argument is the option name, optionally suffixed with a ``,`` and a single-character short name. The short name is only considered for CLI parsing and allows users to abbreviate commonly used option names. The third and final argument to ``add`` is a help text.
+The line ``opt_group{custom_options_, "global"}`` adds the “global” category to the config parser. The following calls to ``add`` then append individual options to the category. The first argument to ``add`` is the associated variable. The second argument is the name for the parameter, optionally suffixed with a comma-separated single-character short name. The short name is only considered for CLI parsing and allows users to abbreviate commonly used option names. The third and final argument to ``add`` is a help text.
 
 The custom ``config`` class allows end users to set the port for the application to 42 with either ``--port=42`` (long name) or ``-p 42`` (short name). The long option name is prefixed by the category when using a different category than “global”. For example, adding the port option to the category “foo” means end users have to type ``--foo.port=42`` when using the long name. Short names are unaffected by the category, but have to be unique.
 
@@ -202,7 +202,7 @@ Finally, we give ``foo`` a platform-neutral name and add it to the list of seria
 
     class config : public actor_system_config {
     public:
-      void init() override {
+      config() {
         add_message_type<foo>("foo");
       }
     };

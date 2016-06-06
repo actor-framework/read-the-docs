@@ -65,7 +65,7 @@ The following code adds a rendering function to the actor system to provide a mo
 ::
 
     public:
-      void init() override {
+      config() {
         auto renderer = [](uint8_t x, atom_value, const message&) {
           return "math_error" + deep_to_string_as_tuple(static_cast<math_error>(x));
         };

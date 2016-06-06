@@ -78,4 +78,4 @@ Breaking Cycles Manually
 
 Cycles can occur only when using class-based actors when storing references to other actors via member variable. Stateful actors (see :ref:`stateful-actor`) break cycles by destroying the state when an actor terminates, *before* the destructor of the actor itself runs. This means an actor releases all references to others automatically after calling ``quit``. However, class-based actors have to break cycles manually, because references to others are not released until the destructor of an actor runs. Two actors storing references to each other via member variable produce a cycle and neither destructor can ever be called.
 
-Class-based actors can break cycles by overriding ``on_exit()`` and calling ``invalidate(x)`` on each handle (see :ref:`actor-handle`). Using a handle after invalidating it is undefined behavior.
+Class-based actors can break cycles manually by overriding ``on_exit()`` and calling ``destroy(x)`` on each handle (see :ref:`actor-handle`). Using a handle after destroying it is undefined behavior, but it is safe to assign a new value to the handle.
