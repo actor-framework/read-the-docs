@@ -26,14 +26,14 @@ The figure above depicts the default memory layout when using shared pointers. T
 
    Memory layout when using ``std::make_shared``\ 
 
-When using ``make_shared`` or ``allocate_shared``, the standard library can store reference count and data in a single memory block as shown in Figure [make-shared]. However, ``shared_ptr`` still has to store two pointers, because it is unaware where the data is allocated.
+When using ``make_shared`` or ``allocate_shared``, the standard library can store reference count and data in a single memory block as shown above. However, ``shared_ptr`` still has to store two pointers, because it is unaware where the data is allocated.
 
 .. figure:: enable_shared_from_this.png
    :alt: Memory layout with ``std::enable_shared_from_this``\ 
 
    Memory layout with ``std::enable_shared_from_this``\ 
 
-Finally, the design of the standard library becomes convoluted when an object should be able to hand out a ``shared_ptr`` to itself. As shown in Figure [enable-shared-from-this], classes must inherit from ``std::enable_shared_from_this`` to navigate from an object to its control block. This additional navigation path is required, because ``std::shared_ptr`` needs two pointers. One to the data and one to the control block. Programmers can still use ``make_shared`` for such objects, in which case the object is again stored along with the control block.
+Finally, the design of the standard library becomes convoluted when an object should be able to hand out a ``shared_ptr`` to itself. Classes must inherit from ``std::enable_shared_from_this`` to navigate from an object to its control block. This additional navigation path is required, because ``std::shared_ptr`` needs two pointers. One to the data and one to the control block. Programmers can still use ``make_shared`` for such objects, in which case the object is again stored along with the control block.
 
 .. _smart-pointers-to-actors:
 
@@ -58,9 +58,9 @@ The smart pointer design in CAF relies on a few assumptions about actor types. M
 Strong and Weak References
 --------------------------
 
-A *strong* reference manipulates the ``strong refs`` counter shown in Figure [actor-pointer]. An actor is destroyed if there are *zero* strong references to it. If two actors keep strong references to each other via member variable, neither actor can ever be destroyed because they produce a cycle (see :ref:`breaking-cycles`). Strong references are formed by ``strong_actor_ptr``, ``actor``, and ``typed_actor<...>`` (see :ref:`actor-reference`).
+A *strong* reference manipulates the ``strong refs`` counter shown agove. An actor is destroyed if there are *zero* strong references to it. If two actors keep strong references to each other via member variable, neither actor can ever be destroyed because they produce a cycle (see :ref:`breaking-cycles`). Strong references are formed by ``strong_actor_ptr``, ``actor``, and ``typed_actor<...>`` (see :ref:`actor-reference`).
 
-A *weak* reference manipulates the ``weak refs`` counter shown in Figure [actor-pointer]. This counter keeps track of how many references to the control block exist. The control block is destroyed if there are *zero* weak references to an actor (which cannot occur before ``strong refs`` reached *zero* as well). No cycle occurs if two actors keep weak references to each other, because the actor objects themselves can get destroyed independently from their control block. A weak reference is only formed by ``actor_addr`` (see :ref:`actor-address`).
+A *weak* reference manipulates the ``weak refs`` counter. This counter keeps track of how many references to the control block exist. The control block is destroyed if there are *zero* weak references to an actor (which cannot occur before ``strong refs`` reached *zero* as well). No cycle occurs if two actors keep weak references to each other, because the actor objects themselves can get destroyed independently from their control block. A weak reference is only formed by ``actor_addr`` (see :ref:`actor-address`).
 
 .. _converting-actor-references-with-actor_cast:
 
