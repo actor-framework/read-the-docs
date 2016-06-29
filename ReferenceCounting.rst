@@ -51,7 +51,7 @@ CAF uses ``strong_actor_ptr`` instead of ``std::shared_ptr<...>`` and ``weak_act
 
 Also, the control block in CAFis not a template and stores the identity of an actor (``actor_id`` plus ``node_id``). This allows CAFto access this information even after an actor died. The control block fits exactly into a single cache line (64 Bytes). This makes sure no *false sharing* occurs between an actor and other actors that have references to it. Since the size of the control block is fixed and CAF\ *guarantees* the memory layout enforced by ``actor_storage``, CAFcan compute the address of an actor from the pointer to its control block by offsetting it by 64 Bytes. Likewise, an actor can compute the address of its control block.
 
-The smart pointer design in CAF relies on a few assumptions about actor types. Most notably, the actor object is placed 64 Bytes after the control block. This starting address is cast to ``abstract_actor*``. Hence, ``T*`` must be convertible to ``abstract_actor*`` via ``reinterpret_cast``. In practice, this means actor subclasses must not use virtual inheritance, which is enforced by using a ``static_assert``.
+The smart pointer design in CAF relies on a few assumptions about actor types. Most notably, the actor object is placed 64 Bytes after the control block. This starting address is cast to ``abstract_actor*``. Hence, ``T*`` must be convertible to ``abstract_actor*`` via ``reinterpret_cast``. In practice, this means actor subclasses must not use virtual inheritance, which is enforced in CAF with a ``static_assert``.
 
 .. _strong-and-weak-references:
 

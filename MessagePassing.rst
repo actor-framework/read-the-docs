@@ -31,40 +31,40 @@ Mailbox elements are created by CAF automatically and are usually invisible to t
 
 It is worth mentioning that CAF usually wraps the mailbox element and its content into a single object in order to reduce the number of memory allocations.
 
-.. _default-and-system-message-handlers:
+.. _special-handler:
 
 Default and System Message Handlers
 -----------------------------------
 
-CAFhas three system-level message types that all actor must handle regardless of there current state. Consequently, system messages are not handled by regular message handlers. The fourth special-purpose message handler is used as fallback for unmatched messages.
+CAFhas three system-level message types (``down_msg``, ``exit_msg``, and ``error``) that all actor should handle regardless of there current state. Consequently, event-based actors handle such messages in special-purpose message handlers. Additionally, event-based actors have a fallback handler for unmatched messages. Note that blocking actors have neither of those special-purpose handlers (see :ref:`blocking-actor`).
 
 .. _down-message:
 
 Down Handler
 ~~~~~~~~~~~~
 
-Actors can monitor the lifetime of other actors by calling ``self->monitor(other)``. This will cause the runtime system of CAFto send a ``down_msg`` for ``other`` if it dies. Actors drop down messages unless they provide a custom handler via ``set_down_handler(f)``, where ``f`` is a function object with signature ``void (down_message&)`` or ``void (local_actor*, down_message&)``. The latter signature allows users to implement down message handlers as free function.
+Actors can monitor the lifetime of other actors by calling ``self->monitor(other)``. This will cause the runtime system of CAFto send a ``down_msg`` for ``other`` if it dies. Actors drop down messages unless they provide a custom handler via ``set_down_handler(f)``, where ``f`` is a function object with signature ``void (down_message&)`` or ``void (scheduled_actor*, down_message&)``. The latter signature allows users to implement down message handlers as free function.
 
 .. _exit-message:
 
 Exit Handler
 ~~~~~~~~~~~~
 
-Bidirectional monitoring with a strong lifetime coupling is established by calling ``self->link_to(other)``. This will cause the runtime to send an ``exit_msg`` if either ``this`` or ``other`` dies. Per default, actors terminate after receiving an ``exit_msg`` unless the exit reason is ``exit_reason::normal``. This mechanism propagates failure states in an actor system. Linked actors form a sub system in which an error causes all actors to fail collectively. Actors can override the default handler via ``set_exit_handler(f)``, where ``f`` is a function object with signature ``void (exit_message&)`` or ``void (local_actor*, exit_message&)``.
+Bidirectional monitoring with a strong lifetime coupling is established by calling ``self->link_to(other)``. This will cause the runtime to send an ``exit_msg`` if either ``this`` or ``other`` dies. Per default, actors terminate after receiving an ``exit_msg`` unless the exit reason is ``exit_reason::normal``. This mechanism propagates failure states in an actor system. Linked actors form a sub system in which an error causes all actors to fail collectively. Actors can override the default handler via ``set_exit_handler(f)``, where ``f`` is a function object with signature ``void (exit_message&)`` or ``void (scheduled_actor*, exit_message&)``.
 
 .. _error-message:
 
 Error Handler
 ~~~~~~~~~~~~~
 
-Actors send error messages to others by returning an ``error`` (see :ref:`error`) from a message handler. Similar to exit messages, error messages usually cause the receiving actor to terminate, unless a custom handler was installed via ``set_error_handler(f)``, where ``f`` is a function object with signature ``void (error&)`` or ``void (local_actor*, error&)``. Additionally, ``request`` accepts an error handler as second argument to handle errors for a particular request (see :ref:`error-response`). The default handler is used as fallback if ``request`` is used without error handler.
+Actors send error messages to others by returning an ``error`` (see :ref:`error`) from a message handler. Similar to exit messages, error messages usually cause the receiving actor to terminate, unless a custom handler was installed via ``set_error_handler(f)``, where ``f`` is a function object with signature ``void (error&)`` or ``void (scheduled_actor*, error&)``. Additionally, ``request`` accepts an error handler as second argument to handle errors for a particular request (see :ref:`error-response`). The default handler is used as fallback if ``request`` is used without error handler.
 
 .. _default-handler:
 
 Default Handler
 ~~~~~~~~~~~~~~~
 
-The default handler is called whenever the behavior of an actor did not match the input. Actors can change the default handler by calling ``set_default_handler``. The expected signature of the function object is ``result<message> (local_actor*, const type_erased_tuple*)``, whereas the ``self`` pointer can again be omitted. The default handler can return a response message or cause the runtime to *skip* the input message to allow an actor to handle it in a later state. The default implementations for this handler are: ``reflect``, ``reflect_and_quit``, ``print_and_drop``, ``drop``, and ``skip``. The former two are meant for debugging and testing purposes and allow an actor to simply return an input. The next two functions drop unexpected messages with or without printing a warning beforehand. Finally, ``skip`` leaves the input message in the mailbox. Event-based actors use ``print_and_drop`` as default, while blocking actors use ``skip``.
+The default handler is called whenever the behavior of an actor did not match the input. Actors can change the default handler by calling ``set_default_handler``. The expected signature of the function object is ``result<message> (scheduled_actor*, const type_erased_tuple*)``, whereas the ``self`` pointer can again be omitted. The default handler can return a response message or cause the runtime to *skip* the input message to allow an actor to handle it in a later state. CAF provides the following built-in implementations: ``reflect``, ``reflect_and_quit``, ``print_and_drop``, ``drop``, and ``skip``. The former two are meant for debugging and testing purposes and allow an actor to simply return an input. The next two functions drop unexpected messages with or without printing a warning beforehand. Finally, ``skip`` leaves the input message in the mailbox. The default is ``print_and_drop``.
 
 .. _request:
 
@@ -121,7 +121,7 @@ The first part of the example illustrates how event-based actors can use either 
         });
     }
 
-The second half of the example shows a blocking actor making use of ``receive``.
+The second half of the example shows a blocking actor making use of ``receive``. Note that blocking actors have no special-purpose handler for error messages and therefore are required to pass a callback for error messages when handling response messages.
 
 ::
 
@@ -132,13 +132,19 @@ The second half of the example shows a blocking actor making use of ``receive``.
         });
     }
 
+    void caf_main(actor_system& system) {
+      vector<cell> cells;
+      for (auto i = 0; i < 5; ++i)
+        cells.emplace_back(system.spawn(cell_impl, i * i));
+      scoped_actor self{system};
+
 We spawn five cells and assign the values 0, 1, 4, 9, and 16.
 
 ::
 
-      for (auto i = 0; i < 5; ++i)
-        cells.emplace_back(system.spawn(cell_impl, i * i));
-      scoped_actor self{system};
+      aout(self) << "multiplexed_testee" << endl;
+      auto x2 = self->spawn(multiplexed_testee, cells);
+      self->wait_for(x2);
 
 When passing the ``cells`` vector to our three different implementations, we observe three outputs. Our ``waiting_testee`` actor will always print:
 
@@ -171,7 +177,7 @@ Both event-based approaches send all requests, install a series of one-shot hand
 Error Handling in Requests
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Requests allow CAFto unambiguously correlate request and response messages. This is also true if the response is an error message. Hence, CAF allows to add an error handler as optional second parameter to ``then``, ``await``, or ``receive``. If no such handler is defined, the default error handler (see :ref:`error-message`) is used as a fallback.
+Requests allow CAFto unambiguously correlate request and response messages. This is also true if the response is an error message. Hence, CAF allows to add an error handler as optional second parameter to ``then`` and ``await`` (this parameter is mandatory for ``receive``). If no such handler is defined, the default error handler (see :ref:`error-message`) is used as a fallback in scheduled actors.
 
 As an example, we consider a simple divider that returns an error on a division by zero. This examples uses a custom error category (see :ref:`error`).
 
@@ -199,19 +205,20 @@ As an example, we consider a simple divider that returns an error on a division 
       };
     }
 
-When sending requests to the divider, we can now use custom error handlers to report errors to the user.
+When sending requests to the divider, we use a custom error handlers to report errors to the user.
 
 ::
 
-      cout << "y: " << flush;
-      std::cin >> y;
-      auto div = system.spawn(divider_impl);
       scoped_actor self{system};
       self->request(div, std::chrono::seconds(10), div_atom::value, x, y).receive(
         [&](double z) {
           aout(self) << x << " / " << y << " = " << z << endl;
         },
         [&](const error& err) {
+          aout(self) << "*** cannot compute " << x << " / " << y << " => "
+                     << system.render(err) << endl;
+        }
+      );
 
 .. _delay-message:
 
@@ -248,7 +255,7 @@ Messages can be delayed by using the function ``delayed_send``, as illustrated i
 Delegating Messages
 -------------------
 
-Actors can transfer responsibility for a request by using ``delegate``. This enables the receiver of the delegated message to reply as usual—by simply returning a value from its message handler—and the original sender of the message will receive the response. The following diagram illustrates forwarding of a synchronous message from actor B to actor C.
+Actors can transfer responsibility for a request by using ``delegate``. This enables the receiver of the delegated message to reply as usual—simply by returning a value from its message handler—and the original sender of the message will receive the response. The following diagram illustrates request delegation from actor B to actor C.
 
 ::
 
@@ -306,7 +313,7 @@ Returning the result of ``delegate(...)`` from a message handler, as shown in th
 Response Promises
 -----------------
 
-Response promises allow an actor to send and receive other messages prior to replying to a particular request. Actors create a response promise using ``self->make_response_promise<Ts>()``, where ``Ts`` is a template parameter pack describing the promised return type. Dynamically typed actors simply call ``self->make_response_promise()``. After retrieving a promise, an actor can fulfill it by calling the member function ``deliver(...)``, as shown in the following example.
+Response promises allow an actor to send and receive other messages prior to replying to a particular request. Actors create a response promise using ``self->make_response_promise<Ts...>()``, where ``Ts`` is a template parameter pack describing the promised return type. Dynamically typed actors simply call ``self->make_response_promise()``. After retrieving a promise, an actor can fulfill it by calling the member function ``deliver(...)``, as shown in the following example.
 
 ::
 

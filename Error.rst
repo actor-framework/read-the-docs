@@ -64,12 +64,15 @@ The following code adds a rendering function to the actor system to provide a mo
 
 ::
 
+    class config : public actor_system_config {
     public:
       config() {
         auto renderer = [](uint8_t x, atom_value, const message&) {
           return "math_error" + deep_to_string_as_tuple(static_cast<math_error>(x));
         };
         add_error_category(atom("math"), renderer);
+      }
+    };
 
 With the custom rendering function, ``system.render(make_error(math_error::division_by_zero))`` returns ``"math_error(division_by_zero)"``.
 
@@ -120,6 +123,19 @@ System Error Codes (SECs) use the error category ``"system"``. They represent er
       /// Requested RIAC information about a node that does not exist.
       no_such_riac_node
     };
+
+    /// @relates sec
+    const char* to_string(sec);
+
+    /// @relates sec
+    error make_error(sec);
+
+    /// @relates sec
+    error make_error(sec, message context);
+
+    } // namespace caf
+
+    #endif // CAF_SEC_HPP
 
 .. _exit-reason:
 

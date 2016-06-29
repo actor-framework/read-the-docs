@@ -3,17 +3,19 @@
 Group Communication
 ===================
 
-CAF supports publish/subscribe-based group communication. Actors can join and leave groups and send messages to groups.
+CAF supports publish/subscribe-based group communication. Dynamically typed actors can join and leave groups and send messages to groups.
 
 ::
 
-    actor_system system;
-    std::string group_module = ...;
-    std::string group_id = ...;
     auto grp = system.groups().get("local", "foo");
     scoped_actor self{system};
     self->join(grp);
     self->send(grp, "test");
+    self->receive(
+      [](const std::string& str) {
+        assert(str == "test");
+      }
+    );
     self->leave(grp);
 
 .. _anonymous-group:

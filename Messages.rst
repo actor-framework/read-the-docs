@@ -1,104 +1,112 @@
 .. _message:
 
-Type-Erased Tuples and Messages
-===============================
+Type-Erased Tuples, Messages and Message Views
+==============================================
 
-Messages in CAFare type-erased, copy-on-write tuples. The actual message type itself is usually hidden, as actors use pattern matching to decompose messages automatically. However, the classes ``message`` and ``message_builder`` allow more advanced usage scenarios than only sending data from one actor to another.
+Messages in CAFare stored in type-erased tuples. The actual message type itself is usually hidden, as actors use pattern matching to decompose messages automatically. However, the classes ``message`` and ``message_builder`` allow more advanced use cases than only sending data from one actor to another.
+
+The interface ``type_erased_tuple`` encapsulates access to arbitrary data. This data can be stored on the heap or on the stack. A ``message`` is a type-erased tuple that is always heap-allocated and uses copy-on-write semantics. When dealing with “plain” type-erased tuples, users are required to check if a tuple is referenced by others via ``type_erased_tuple::shared`` before modifying its content.
+
+The convenience class ``message_view`` holds a reference to either a stack-located ``type_erased_tuple`` or a ``message``. The content of the data can be access via ``message_view::content`` in both cases, which returns a ``type_erased_tuple&``. The content of the view can be forced into a message object by calling ``message_view::move_content_to_message``. This member function either returns the stored message object or moves the content of a stack-allocated tuple into a new message.
 
 .. _rtti-and-type-numbers:
 
 RTTI and Type Numbers
 ---------------------
 
-All builtin types in CAF have a non-zero 16-bit *type number*. All user-defined types are mapped to 0. When querying the run-time type information (RTTI) for individual message or tuple elements, CAF returns a ``std::pair<uint16_t, const std::type_info*>``. The first value is the 16-bit type number. If the type number is non-zero, the second value is a pointer to the C++ type info, otherwise the second value is null.
+All builtin types in CAF have a non-zero 6-bit *type number*. All user-defined types are mapped to 0. When querying the run-time type information (RTTI) for individual message or tuple elements, CAF returns a ``std::pair<uint16_t, const std::type_info*>``. The first value is the 6-bit type number. If the type number is non-zero, the second value is a pointer to the C++ type info, otherwise the second value is null. Additionally, CAF generates 32 bit *type tokens*. These tokens are *type hints* that summarizes all types in a type-erased tuple. Two type-erased tuples are of different type if they have different type tokens (the reverse is not true).
 
 .. _class-type_erased_tuple:
 
 Class ``type_erased_tuple``
 ---------------------------
 
-+------------------------------------------+----------------------------------------------------------+
-| **Types**                                |                                                          |
-+==========================================+==========================================================+
-| ``rtti_pair``                            | ``std::pair<uint16_t, const std::type_info*>``           |
-+------------------------------------------+----------------------------------------------------------+
-|                                          |                                                          |
-+------------------------------------------+----------------------------------------------------------+
-| **Observers**                            |                                                          |
-+------------------------------------------+----------------------------------------------------------+
-| ``bool empty()``                         | Returns whether this message is empty.                   |
-+------------------------------------------+----------------------------------------------------------+
-| ``size_t size()``                        | Returns the size of this message.                        |
-+------------------------------------------+----------------------------------------------------------+
-| ``rtti_pair type(size_t pos)``           | Returns run-time type information for the nth element.   |
-+------------------------------------------+----------------------------------------------------------+
-| ``void save(serializer& x)``             | Writes the tuple to ``x``.                               |
-+------------------------------------------+----------------------------------------------------------+
-| ``void save(size_t n, serializer& x)``   | Writes the nth element to ``x``.                         |
-+------------------------------------------+----------------------------------------------------------+
-| ``const void* get(size_t n)``            | Returns a const pointer to the nth element.              |
-+------------------------------------------+----------------------------------------------------------+
-| ``std::string stringify()``              | Returns a string representation of the tuple.            |
-+------------------------------------------+----------------------------------------------------------+
-| ``std::string stringify(size_t n)``      | Returns a string representation of the nth element.      |
-+------------------------------------------+----------------------------------------------------------+
-| ``bool matches(size_t n, rtti_pair)``    | Checks whether the nth element has given type.           |
-+------------------------------------------+----------------------------------------------------------+
-|                                          |                                                          |
-+------------------------------------------+----------------------------------------------------------+
-| **Modifiers**                            |                                                          |
-+------------------------------------------+----------------------------------------------------------+
-| ``void* get_mutable(size_t n)``          | Returns a mutable pointer to the nth element.            |
-+------------------------------------------+----------------------------------------------------------+
-| ``void load(deserializer& x)``           | Reads the tuple from ``x``.                              |
-+------------------------------------------+----------------------------------------------------------+
+**Note**: Calling modifiers on a shared type-erased tuple is undefined behavior.
+
++-------------------------------------------+--------------------------------------------------------------+
+| **Types**                                 |                                                              |
++===========================================+==============================================================+
+| ``rtti_pair``                             | ``std::pair<uint16_t, const std::type_info*>``               |
++-------------------------------------------+--------------------------------------------------------------+
+|                                           |                                                              |
++-------------------------------------------+--------------------------------------------------------------+
+| **Observers**                             |                                                              |
++-------------------------------------------+--------------------------------------------------------------+
+| ``bool empty()``                          | Returns whether this message is empty.                       |
++-------------------------------------------+--------------------------------------------------------------+
+| ``size_t size()``                         | Returns the size of this message.                            |
++-------------------------------------------+--------------------------------------------------------------+
+| ``rtti_pair type(size_t pos)``            | Returns run-time type information for the nth element.       |
++-------------------------------------------+--------------------------------------------------------------+
+| ``error save(serializer& x)``             | Writes the tuple to ``x``.                                   |
++-------------------------------------------+--------------------------------------------------------------+
+| ``error save(size_t n, serializer& x)``   | Writes the nth element to ``x``.                             |
++-------------------------------------------+--------------------------------------------------------------+
+| ``const void* get(size_t n)``             | Returns a const pointer to the nth element.                  |
++-------------------------------------------+--------------------------------------------------------------+
+| ``std::string stringify()``               | Returns a string representation of the tuple.                |
++-------------------------------------------+--------------------------------------------------------------+
+| ``std::string stringify(size_t n)``       | Returns a string representation of the nth element.          |
++-------------------------------------------+--------------------------------------------------------------+
+| ``bool matches(size_t n, rtti_pair)``     | Checks whether the nth element has given type.               |
++-------------------------------------------+--------------------------------------------------------------+
+| ``bool shared()``                         | Checks whether more than one reference to the data exists.   |
++-------------------------------------------+--------------------------------------------------------------+
+| ``bool match_element<T>(size_t n)``       | Checks whether element ``n`` has type ``T``.                 |
++-------------------------------------------+--------------------------------------------------------------+
+| ``bool match_elements<Ts...>()``          | Checks whether this message has the types ``Ts...``.         |
++-------------------------------------------+--------------------------------------------------------------+
+| ``const T& get_as<T>(size_t n)``          | Returns a const reference to the nth element.                |
++-------------------------------------------+--------------------------------------------------------------+
+|                                           |                                                              |
++-------------------------------------------+--------------------------------------------------------------+
+| **Modifiers**                             |                                                              |
++-------------------------------------------+--------------------------------------------------------------+
+| ``void* get_mutable(size_t n)``           | Returns a mutable pointer to the nth element.                |
++-------------------------------------------+--------------------------------------------------------------+
+| ``T& get_mutable_as<T>(size_t n)``        | Returns a mutable reference to the nth element.              |
++-------------------------------------------+--------------------------------------------------------------+
+| ``void load(deserializer& x)``            | Reads the tuple from ``x``.                                  |
++-------------------------------------------+--------------------------------------------------------------+
 
 .. _class-message:
 
 Class ``message``
 -----------------
 
-+--------------------------------------------------+-----------------------------------------------------------------+
-| **Observers**                                    |                                                                 |
-+==================================================+=================================================================+
-| ``bool empty()``                                 | Returns whether this message is empty.                          |
-+--------------------------------------------------+-----------------------------------------------------------------+
-| ``size_t size()``                                | Returns the size of this message.                               |
-+--------------------------------------------------+-----------------------------------------------------------------+
-| ``const void* at(size_t p)``                     | Returns a const pointer to the element at position ``p``.       |
-+--------------------------------------------------+-----------------------------------------------------------------+
-| ``const T& get_as<T>(size_t p)``                 | Returns a const ref. to the element at position ``p``.          |
-+--------------------------------------------------+-----------------------------------------------------------------+
-| ``bool match_element<T>(size_t p)``              | Returns whether the element at position ``p`` has type ``T``.   |
-+--------------------------------------------------+-----------------------------------------------------------------+
-| ``bool match_elements<Ts...>()``                 | Returns whether this message has the types ``Ts...``.           |
-+--------------------------------------------------+-----------------------------------------------------------------+
-| ``message drop(size_t n)``                       | Creates a new message with all but the first ``n`` values.      |
-+--------------------------------------------------+-----------------------------------------------------------------+
-| ``message drop_right(size_t n)``                 | Creates a new message with all but the last ``n`` values.       |
-+--------------------------------------------------+-----------------------------------------------------------------+
-| ``message take(size_t n)``                       | Creates a new message from the first ``n`` values.              |
-+--------------------------------------------------+-----------------------------------------------------------------+
-| ``message take_right(size_t n)``                 | Creates a new message from the last ``n`` values.               |
-+--------------------------------------------------+-----------------------------------------------------------------+
-| ``message slice(size_t p, size_t n)``            | Creates a new message from ``[p, p + n)``.                      |
-+--------------------------------------------------+-----------------------------------------------------------------+
-| ``message slice(size_t p, size_t n)``            | Creates a new message from ``[p, p + n)``.                      |
-+--------------------------------------------------+-----------------------------------------------------------------+
-| ``message extract(message_handler)``             | See :ref:`extract`.                                             |
-+--------------------------------------------------+-----------------------------------------------------------------+
-| ``message extract_opts(...)``                    | See :ref:`extract-opts`.                                        |
-+--------------------------------------------------+-----------------------------------------------------------------+
-|                                                  |                                                                 |
-+--------------------------------------------------+-----------------------------------------------------------------+
-| **Modifiers**                                    |                                                                 |
-+--------------------------------------------------+-----------------------------------------------------------------+
-| ``optional<message> apply(message_handler f)``   | Returns ``f(*this)``.                                           |
-+--------------------------------------------------+-----------------------------------------------------------------+
-| ``void* mutable_at(size_t p)``                   | Returns a pointer to the element at position p.                 |
-+--------------------------------------------------+-----------------------------------------------------------------+
-| ``T& get_as_mutable<T>(size_t p)``               | Returns a reference to the element at position p.               |
-+--------------------------------------------------+-----------------------------------------------------------------+
+The class ``message`` includes all member functions of ``type_erased_tuple``. However, calling modifiers is always guaranteed to be safe. A ``message`` automatically detaches its content by copying it from the shared data on mutable access. The class further adds the following member functions over ``type_erased_tuple``. Note that ``apply`` only detaches the content if a callback takes mutable references as arguments.
+
++--------------------------------------------------+--------------------------------------------------------------+
+| **Observers**                                    |                                                              |
++==================================================+==============================================================+
+| ``message drop(size_t n)``                       | Creates a new message with all but the first ``n`` values.   |
++--------------------------------------------------+--------------------------------------------------------------+
+| ``message drop_right(size_t n)``                 | Creates a new message with all but the last ``n`` values.    |
++--------------------------------------------------+--------------------------------------------------------------+
+| ``message take(size_t n)``                       | Creates a new message from the first ``n`` values.           |
++--------------------------------------------------+--------------------------------------------------------------+
+| ``message take_right(size_t n)``                 | Creates a new message from the last ``n`` values.            |
++--------------------------------------------------+--------------------------------------------------------------+
+| ``message slice(size_t p, size_t n)``            | Creates a new message from ``[p, p + n)``.                   |
++--------------------------------------------------+--------------------------------------------------------------+
+| ``message extract(message_handler)``             | See :ref:`extract`.                                          |
++--------------------------------------------------+--------------------------------------------------------------+
+| ``message extract_opts(...)``                    | See :ref:`extract-opts`.                                     |
++--------------------------------------------------+--------------------------------------------------------------+
+|                                                  |                                                              |
++--------------------------------------------------+--------------------------------------------------------------+
+| **Modifiers**                                    |                                                              |
++--------------------------------------------------+--------------------------------------------------------------+
+| ``optional<message> apply(message_handler f)``   | Returns ``f(*this)``.                                        |
++--------------------------------------------------+--------------------------------------------------------------+
+|                                                  |                                                              |
++--------------------------------------------------+--------------------------------------------------------------+
+| **Operators**                                    |                                                              |
++--------------------------------------------------+--------------------------------------------------------------+
+| ``message operator+(message x, message y)``      | Concatenates ``x`` and ``y``.                                |
++--------------------------------------------------+--------------------------------------------------------------+
+| ``message& operator+=(message& x, message y)``   | Concatenates ``x`` and ``y``.                                |
++--------------------------------------------------+--------------------------------------------------------------+
 
 .. _class-message_builder:
 

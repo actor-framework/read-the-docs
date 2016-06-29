@@ -21,15 +21,15 @@ Brokers are implemented as functions and are spawned by calling on of the three 
 
     template <spawn_options Os = no_spawn_options,
               class F = std::function<void(broker*)>, class... Ts>
-    typename infer_handle_from_fun<F>::type
+    expected<typename infer_handle_from_fun<F>::type>
     spawn_client(F fun, const std::string& host, uint16_t port, Ts&&... xs);
 
     template <spawn_options Os = no_spawn_options,
               class F = std::function<void(broker*)>, class... Ts>
-    typename infer_handle_from_fun<F>::type
+    expected<typename infer_handle_from_fun<F>::type>
     spawn_server(F fun, uint16_t port, Ts&&... xs);
 
-The function ``spawn_broker`` simply spawns a broker. The convenience function ``spawn_client`` spawns a broker and immediately connects it to given host and port. Finally, ``spawn_server`` immediately adds an acceptor for the given port to the new broker.
+The function ``spawn_broker`` simply spawns a broker. The convenience function ``spawn_client`` tries to connect to given host and port and returns a broker managing this connection on success. Finally, ``spawn_server`` opens a local port and spawns a broker managing it on success.
 
 .. _broker-class:
 
@@ -72,7 +72,7 @@ Returns the number of open connections.
     void close(connection_handle hdl)
     void close(accept_handle hdl)
 
-Closes a connection or acceptor.
+Closes a connection or port.
 
 .. _broker-related-message-types:
 
@@ -80,6 +80,8 @@ Broker-related Message Types
 ----------------------------
 
 Brokers receive system messages directly from the middleman whenever an event on one of it handles occurs.
+
+**Note:** brokers are *required* to handle these messages immediately regardless of their current state. Not handling the system messages from the broker results in loss of data, because system messages are *not* delivered through the mailbox and thus cannot be skipped.
 
 ::
 
