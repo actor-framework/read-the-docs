@@ -36,6 +36,7 @@ Welcome to CAF's documentation!
    :caption: Appendix
 
    FAQ
+   Utility
    CommonPitfalls
    UsingAout
    MigrationGuides
