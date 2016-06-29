@@ -258,12 +258,12 @@ Spawning an actor for each implementation is illustrated below.
 
 ::
 
-      auto a1 = system.spawn(blocking_calculator_fun);
-      auto a2 = system.spawn(calculator_fun);
-      auto a3 = system.spawn(typed_calculator_fun);
-      auto a4 = system.spawn<blocking_calculator>();
-      auto a5 = system.spawn<calculator>();
-      auto a6 = system.spawn<typed_calculator>();
+            handle_err
+          );
+        },
+        handle_err
+      );
+      tester(self, std::forward<Ts>(xs)...);
 
 Additional arguments to ``spawn`` are passed to the constructor of a class or used as additional function arguments, respectively. In the example above, none of the three functions takes any argument other than the implicit but optional ``self`` pointer.
 
@@ -296,12 +296,19 @@ The following three functions implement the prototypes shown in :ref:`spawn` an
 
     // function-based, dynamically typed, blocking API
     void blocking_calculator_fun(blocking_actor* self) {
-      self->receive_loop (
+      bool running = true;
+      self->receive_while(running) (
         [](add_atom, int a, int b) {
           return a + b;
         },
         [](sub_atom, int a, int b) {
           return a - b;
+        },
+        [&](exit_msg& em) {
+          if (em.reason) {
+            self->fail_state(std::move(em.reason));
+            running = false;
+          }
         }
       );
     }
@@ -310,13 +317,6 @@ The following three functions implement the prototypes shown in :ref:`spawn` an
     calculator_actor::behavior_type typed_calculator_fun() {
       return {
         [](add_atom, int a, int b) {
-          return a + b;
-        },
-        [](sub_atom, int a, int b) {
-          return a - b;
-        }
-      };
-    }
 
 .. _class-based:
 
@@ -549,7 +549,7 @@ The following example showcases a simple receive statement that expects a ``floa
       [&](const exit_msg& x) {
         // ...
       },
-      others >> [](const type_erased_tuple* x) -> result<message> {
+      others >> [](message_view& x) -> result<message> {
         // report unexpected message back to client
         return sec::unexpected_message;
       }

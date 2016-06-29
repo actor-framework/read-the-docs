@@ -127,24 +127,24 @@ The second half of the example shows a blocking actor making use of ``receive``.
 
     void blocking_testee(blocking_actor* self, vector<cell> cells) {
       for (auto& x : cells)
-        self->request(x, seconds(1), get_atom::value).receive([&](int y) {
-          aout(self) << "cell #" << x.id() << " -> " << y << endl;
-        });
+        self->request(x, seconds(1), get_atom::value).receive(
+          [&](int y) {
+            aout(self) << "cell #" << x.id() << " -> " << y << endl;
+          },
+          [&](error& err) {
+            aout(self) << "cell #" << x.id()
+                       << " -> " << self->system().render(err) << endl;
+          }
+        );
     }
-
-    void caf_main(actor_system& system) {
-      vector<cell> cells;
-      for (auto i = 0; i < 5; ++i)
-        cells.emplace_back(system.spawn(cell_impl, i * i));
-      scoped_actor self{system};
 
 We spawn five cells and assign the values 0, 1, 4, 9, and 16.
 
 ::
 
-      aout(self) << "multiplexed_testee" << endl;
-      auto x2 = self->spawn(multiplexed_testee, cells);
-      self->wait_for(x2);
+      for (auto i = 0; i < 5; ++i)
+        cells.emplace_back(system.spawn(cell_impl, i * i));
+      scoped_actor self{system};
 
 When passing the ``cells`` vector to our three different implementations, we observe three outputs. Our ``waiting_testee`` actor will always print:
 
@@ -191,7 +191,7 @@ As an example, we consider a simple divider that returns an error on a division 
       return {static_cast<uint8_t>(x), atom("math")};
     }
 
-    using div_atom = atom_constant<atom("add")>;
+    using div_atom = atom_constant<atom("div")>;
 
     using divider = typed_actor<replies_to<div_atom, double, double>::with<double>>;
 

@@ -85,6 +85,7 @@ System Error Codes (SECs) use the error category ``"system"``. They represent er
 
 ::
 
+
     /// SEC stands for "System Error Code". This enum contains
     /// error codes used internally by CAF.
     enum class sec : uint8_t {
@@ -96,8 +97,13 @@ System Error Codes (SECs) use the error category ``"system"``. They represent er
       request_receiver_down,
       /// Indicates that a request message timed out.
       request_timeout,
-      /// Unpublishing failed because the actor is not bound to given port.
+      /// Indicates that requested group module does not exist.
+      no_such_group_module,
+      /// Unpublishing or connecting failed because
+      /// requested actor is not bound to given port.
       no_actor_published_at_port,
+      /// Connecting failed because a remote actor had an unexpected interface.
+      unexpected_actor_messaging_interface,
       /// Migration failed because the state of an actor is not serializable.
       state_not_serializable,
       /// An actor received an unsupported key for `('sys', 'get', key)` messages.
@@ -110,32 +116,26 @@ System Error Codes (SECs) use the error category ``"system"``. They represent er
       cannot_forward_to_invalid_actor,
       /// Tried to forward a message via BASP to an unknown node ID.
       no_route_to_receiving_node,
-      /// Middleman could not assign a connected handle to a broker.
+      /// Middleman could not assign a connection handle to a broker.
       failed_to_assign_scribe_from_handle,
+      /// Middleman could not assign an acceptor handle to a broker.
+      failed_to_assign_doorman_from_handle,
       /// User requested to close port 0 or to close a port not managed by CAF.
       cannot_close_invalid_port,
       /// Middleman could not connect to a remote node.
       cannot_connect_to_node,
       /// Middleman could not open requested port.
       cannot_open_port,
+      /// A C system call in the middleman failed.
+      network_syscall_failed,
+      /// A function received one or more invalid arguments.
+      invalid_argument,
+      /// A network socket reported an invalid network protocol family.
+      invalid_protocol_family,
+      /// Middleman could not publish an actor because it was invalid.
+      cannot_publish_invalid_actor,
       /// A remote spawn failed because the provided types did not match.
       cannot_spawn_actor_from_arguments,
-      /// Requested RIAC information about a node that does not exist.
-      no_such_riac_node
-    };
-
-    /// @relates sec
-    const char* to_string(sec);
-
-    /// @relates sec
-    error make_error(sec);
-
-    /// @relates sec
-    error make_error(sec, message context);
-
-    } // namespace caf
-
-    #endif // CAF_SEC_HPP
 
 .. _exit-reason:
 

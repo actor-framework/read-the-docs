@@ -174,13 +174,6 @@ INI files are organized in categories. No value is allowed outside of a category
     ; heartbeat message interval in ms (0 disables heartbeating)
     heartbeat-interval=0
 
-    ; when loading riac::probe
-    [probe]
-    ; denotes the hostname or IP address to reach the Nexus
-    nexus-host=""
-    ; denotes the port where the Nexus actor is published
-    nexus-port=0
-
 .. _adding-custom-message-types:
 
 Adding Custom Message Types
