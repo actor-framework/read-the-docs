@@ -3,11 +3,19 @@
 Group Communication
 ===================
 
-CAF supports publish/subscribe-based group communication. Dynamically typed actors can join and leave groups and send messages to groups.
+CAF supports publish/subscribe-based group communication. Dynamically typed actors can join and leave groups and send messages to groups. The following example showcases the basic API for retrieving a group from a module by its name, joining, and leaving.
 
 ::
 
-    auto grp = system.groups().get("local", "foo");
+    std::string module = "local";
+    std::string id = "foo";
+    auto expected_grp = system.groups().get(module, id);
+    if (! expected_grp) {
+      std::cerr << "*** cannot load group: "
+                << system.render(expected_grp()) << std::endl;
+      return;
+    }
+    auto grp = std::move(*expected_grp);
     scoped_actor self{system};
     self->join(grp);
     self->send(grp, "test");
@@ -17,6 +25,8 @@ CAF supports publish/subscribe-based group communication. Dynamically typed acto
       }
     );
     self->leave(grp);
+
+It is worth mentioning that the module ``"local"`` is guaranteed to never return an error. The example above uses the general API for retrieving the group. However, local modules can be easier accessed by calling ``system.groups().get_local(id)``, which returns ``group`` instead of ``expected<group>``.
 
 .. _anonymous-group:
 
@@ -30,15 +40,13 @@ Groups created on-the-fly with ``system.groups().anonymous()`` can be used to co
 Local Groups
 ------------
 
-The ``"local"`` group module creates groups for in-process communication. For example, a group for GUI related events could be identified by ``system.groups().get("local", "GUI events")``. The group ID ``"GUI events"`` uniquely identifies a singleton group instance of the module ``"local"``.
+The ``"local"`` group module creates groups for in-process communication. For example, a group for GUI related events could be identified by ``system.groups().get_local("GUI events")``. The group ID ``"GUI events"`` uniquely identifies a singleton group instance of the module ``"local"``.
 
 .. _remote-group:
 
 Remote Groups
 -------------
 
-Remote groups are available only if a middleman (see :ref:`middleman`) is loaded.
+Calling\ ``system.middleman().publish_local_groups(port, addr)`` makes all local groups available to other nodes in the network. The first argument denotes the port, while the second (optional) parameter can be used to whitelist IP addresses.
 
-Calling ``system.middleman().publish_local_groups(port, addr)`` makes a group available to other nodes in the network. The first argument denotes the port, while the second (optional) parameter can be used to whitelist IP addresses.
-
-After publishing the group at one node, other nodes can get a handle for that group by using the “remote” module: ``system.middleman().get("remote", "<group>@<host>:<port>")``. This implementation uses N-times unicast underneath and the group is only available as long as the hosting server is alive.
+After publishing the group at one node (the server), other nodes (the clients) can get a handle for that group by using the “remote” module: ``system.groups().get("remote", "<group>@<host>:<port>")``. This implementation uses N-times unicast underneath and the group is only available as long as the hosting server is alive.
