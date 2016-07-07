@@ -157,18 +157,22 @@ Since there is no access to the data fields ``a_`` and ``b_`` (and assuming no c
     typename std::enable_if<Inspector::is_loading::value,
                             typename Inspector::result_type>::type
     inspect(Inspector& f, foo& x) {
-      struct tmp_t {
-        tmp_t(foo& ref) : x_(ref) {
-          // nop
-        }
-        ~tmp_t() {
-          // write back to x at scope exit
-          x_.set_a(a);
-          x_.set_b(b);
-        }
-        foo& x_;
-        int a;
-        int b;
-      } tmp{x};
-      return f(meta::type_name("foo"), tmp.a, tmp.b);
+      int a;
+      int b;
+      // write back to x at scope exit
+      auto g = make_scope_guard([&] {
+        x.set_a(a);
+        x.set_b(b);
+      });
+      return f(meta::type_name("foo"), a, b);
     }
+
+    behavior testee(event_based_actor* self) {
+      return {
+        [=](const foo& x) {
+          aout(self) << to_string(x) << endl;
+        }
+      };
+    }
+
+The purpose of the scope guard in the example above is to write the content of the temporaries back to ``foo`` at scope exit automatically. Storing the result of ``f(...)`` in a temporary first and then writing the changes to ``foo`` is not possible, because ``f(...)`` can return ``void``.
