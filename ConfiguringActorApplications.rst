@@ -174,22 +174,14 @@ INI files are organized in categories. No value is allowed outside of a category
     ; heartbeat message interval in ms (0 disables heartbeating)
     heartbeat-interval=0
 
-.. _adding-custom-message-types:
+.. _add-custom-message-type:
 
 Adding Custom Message Types
 ---------------------------
 
-CAFis designed with distributed systems in mind. Hence, all message types must be serializable and need a platform-neutral, unique name. Using a message type that is not serializable via a free function ``serialize`` causes a compiler error. Developers that use CAFfor concurrency only can suppress this error by whitelisting non-serializable message types using the macro ``CAF_ALLOW_UNSAFE_MESSAGE_TYPE``:
+CAF requires serialization support for all of its message types (see :ref:`type-inspection`). However, CAF also needs a mapping of unique type names to user-defined types at runtime. This is required to deserialize arbitrary messages from the network.
 
-::
-
-    #define CAF_ALLOW_UNSAFE_MESSAGE_TYPE(type_name)                               \
-      namespace caf {                                                              \
-      template <>                                                                  \
-      struct allowed_unsafe_message_type<type_name> : std::true_type {};           \
-      }
-
-CAF serializes objects by calling ``serialize(proc, x, 0)``, where the data processor ``proc`` is either a serializer or a deserializer. The third parameter is a ``const unsigned int``, which is never evaluated by CAF. The parameter exists for source compatibility with ``Boost.Serialize``. As an introductory example, we use the following POD type ``foo``.
+As an introductory example, we (again) use the following POD type ``foo``.
 
 ::
 
@@ -198,17 +190,16 @@ CAF serializes objects by calling ``serialize(proc, x, 0)``, where the data proc
       int b;
     };
 
-To make ``foo`` serializable, we implement a free function ``serialize``. Serializers provide ``operator<<``, while deserializers provide ``operator>>``. Both types also allow ``operator&`` to allow users to write a single function covering loading and storing, as shown below.
+To make ``foo`` serializable, we make it inspectable (see :ref:`type-inspection`):
 
 ::
 
-    template <class Processor>
-    void serialize(Processor& proc, foo& x, const unsigned int) {
-      proc & x.a;
-      proc & x.b;
+    template <class Inspector>
+    typename Inspector::result_type inspect(Inspector& f, foo& x) {
+      return f(meta::type_name("foo"), x.a, x.b);
     }
 
-Finally, we give ``foo`` a platform-neutral name and add it to the list of serializable types.
+Finally, we give ``foo`` a platform-neutral name and add it to the list of serializable types by using a custom config class.
 
 ::
 
@@ -220,17 +211,6 @@ Finally, we give ``foo`` a platform-neutral name and add it to the list of seria
     };
 
     void caf_main(actor_system& system, const config&) {
-
-If loading and storing cannot be implemented in a single function, users can query whether the processor is loading or storing as shown below.
-
-::
-
-    template <class T>
-    typename std::enable_if<T::is_saving::value>::type
-    serialize(T& out, const foo& x, const unsigned int) {
-    template <class T>
-    typename std::enable_if<T::is_loading::value>::type
-    serialize(T& in, foo& x, const unsigned int) {
 
 .. _adding-custom-error-types:
 
