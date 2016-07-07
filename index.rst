@@ -12,6 +12,7 @@ Welcome to CAF's documentation!
 
    Introduction
    FirstSteps
+   TypeInspection
    MessageHandlers
    Actors
    MessagePassing
