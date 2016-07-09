@@ -9,7 +9,7 @@ CAF provides several actor implementations, each covering a particular use case.
 
 Dynamically typed actors are more familiar to developers coming from Erlang or Akka. They (usually) enable faster prototyping but require extensive unit testing. Statically typed actors require more source code but enable the compiler to verify communication between actors. Since CAF supports both, developers can freely mix both kinds of actors to get the best of both worlds. A good rule of thumb is to make use of static type checking for actors that are visible across multiple translation units.
 
-Actors that utilize the blocking receive API always require an exclusive thread of execution. Event-based actors, on the other hand, are usually scheduled cooperatively and are very lightweight with a memory footprint of only few hundred bytes. Developers can exclude—detach—event-based actors that potentially starve others from the cooperative scheduling while spawning it. A detached actor lives in its own thread of execution (see :ref:`spawn-options`).
+Actors that utilize the blocking receive API always require an exclusive thread of execution. Event-based actors, on the other hand, are usually scheduled cooperatively and are very lightweight with a memory footprint of only few hundred bytes. Developers can exclude—detach—event-based actors that potentially starve others from the cooperative scheduling while spawning it. A detached actor lives in its own thread of execution.
 
 .. _actor-system:
 
@@ -258,12 +258,12 @@ Spawning an actor for each implementation is illustrated below.
 
 ::
 
-            handle_err
-          );
-        },
-        handle_err
-      );
-      tester(self, std::forward<Ts>(xs)...);
+      auto a1 = system.spawn(blocking_calculator_fun);
+      auto a2 = system.spawn(calculator_fun);
+      auto a3 = system.spawn(typed_calculator_fun);
+      auto a4 = system.spawn<blocking_calculator>();
+      auto a5 = system.spawn<calculator>();
+      auto a6 = system.spawn<typed_calculator>();
 
 Additional arguments to ``spawn`` are passed to the constructor of a class or used as additional function arguments, respectively. In the example above, none of the three functions takes any argument other than the implicit but optional ``self`` pointer.
 
@@ -317,6 +317,13 @@ The following three functions implement the prototypes shown in :ref:`spawn` an
     calculator_actor::behavior_type typed_calculator_fun() {
       return {
         [](add_atom, int a, int b) {
+          return a + b;
+        },
+        [](sub_atom, int a, int b) {
+          return a - b;
+        }
+      };
+    }
 
 .. _class-based:
 
@@ -410,8 +417,8 @@ Stateful actors are spawned in the same way as any other function-based actor (s
 
 ::
 
+      auto cell1 = system.spawn(type_checked_cell);
       auto cell2 = system.spawn(unchecked_cell);
-      auto f = make_function_view(cell1);
 
 .. _composable-behavior:
 

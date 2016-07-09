@@ -30,6 +30,7 @@ Welcome to CAF's documentation!
 
    NetworkTransparency
    Brokers
+   RemoteSpawn
 
 .. toctree::
    :maxdepth: 2

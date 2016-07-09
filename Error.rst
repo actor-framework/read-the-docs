@@ -85,7 +85,6 @@ System Error Codes (SECs) use the error category ``"system"``. They represent er
 
 ::
 
-
     /// SEC stands for "System Error Code". This enum contains
     /// error codes used internally by CAF.
     enum class sec : uint8_t {
@@ -99,8 +98,7 @@ System Error Codes (SECs) use the error category ``"system"``. They represent er
       request_timeout,
       /// Indicates that requested group module does not exist.
       no_such_group_module,
-      /// Unpublishing or connecting failed because
-      /// requested actor is not bound to given port.
+      /// Unpublishing or connecting failed: no actor bound to given port.
       no_actor_published_at_port,
       /// Connecting failed because a remote actor had an unexpected interface.
       unexpected_actor_messaging_interface,
@@ -136,6 +134,17 @@ System Error Codes (SECs) use the error category ``"system"``. They represent er
       cannot_publish_invalid_actor,
       /// A remote spawn failed because the provided types did not match.
       cannot_spawn_actor_from_arguments,
+      /// Serialization failed because there was not enough data to read.
+      end_of_stream,
+      /// Serialization failed because no CAF context is available.
+      no_context,
+      /// Serialization failed because CAF misses run-time type information.
+      unknown_type,
+      /// Serialization of actors failed because no proxy registry is available.
+      no_proxy_registry,
+      /// A function view was called without assigning an actor first.
+      bad_function_call
+    };
 
 .. _exit-reason:
 

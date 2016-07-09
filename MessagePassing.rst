@@ -142,9 +142,9 @@ We spawn five cells and assign the values 0, 1, 4, 9, and 16.
 
 ::
 
+      vector<cell> cells;
       for (auto i = 0; i < 5; ++i)
         cells.emplace_back(system.spawn(cell_impl, i * i));
-      scoped_actor self{system};
 
 When passing the ``cells`` vector to our three different implementations, we observe three outputs. Our ``waiting_testee`` actor will always print:
 

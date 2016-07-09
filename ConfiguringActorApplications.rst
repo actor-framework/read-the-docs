@@ -174,22 +174,14 @@ INI files are organized in categories. No value is allowed outside of a category
     ; heartbeat message interval in ms (0 disables heartbeating)
     heartbeat-interval=0
 
-.. _adding-custom-message-types:
+.. _add-custom-message-type:
 
 Adding Custom Message Types
 ---------------------------
 
-CAFis designed with distributed systems in mind. Hence, all message types must be serializable and need a platform-neutral, unique name. Using a message type that is not serializable via a free function ``serialize`` causes a compiler error. Developers that use CAFfor concurrency only can suppress this error by whitelisting non-serializable message types using the macro ``CAF_ALLOW_UNSAFE_MESSAGE_TYPE``:
+CAF requires serialization support for all of its message types (see :ref:`type-inspection`). However, CAF also needs a mapping of unique type names to user-defined types at runtime. This is required to deserialize arbitrary messages from the network.
 
-::
-
-    #define CAF_ALLOW_UNSAFE_MESSAGE_TYPE(type_name)                               \
-      namespace caf {                                                              \
-      template <>                                                                  \
-      struct allowed_unsafe_message_type<type_name> : std::true_type {};           \
-      }
-
-CAF serializes objects by calling ``serialize(proc, x, 0)``, where the data processor ``proc`` is either a serializer or a deserializer. The third parameter is a ``const unsigned int``, which is never evaluated by CAF. The parameter exists for source compatibility with ``Boost.Serialize``. As an introductory example, we use the following POD type ``foo``.
+As an introductory example, we (again) use the following POD type ``foo``.
 
 ::
 
@@ -198,17 +190,16 @@ CAF serializes objects by calling ``serialize(proc, x, 0)``, where the data proc
       int b;
     };
 
-To make ``foo`` serializable, we implement a free function ``serialize``. Serializers provide ``operator<<``, while deserializers provide ``operator>>``. Both types also allow ``operator&`` to allow users to write a single function covering loading and storing, as shown below.
+To make ``foo`` serializable, we make it inspectable (see :ref:`type-inspection`):
 
 ::
 
-    template <class Processor>
-    void serialize(Processor& proc, foo& x, const unsigned int) {
-      proc & x.a;
-      proc & x.b;
+    template <class Inspector>
+    typename Inspector::result_type inspect(Inspector& f, foo& x) {
+      return f(meta::type_name("foo"), x.a, x.b);
     }
 
-Finally, we give ``foo`` a platform-neutral name and add it to the list of serializable types.
+Finally, we give ``foo`` a platform-neutral name and add it to the list of serializable types by using a custom config class.
 
 ::
 
@@ -221,20 +212,53 @@ Finally, we give ``foo`` a platform-neutral name and add it to the list of seria
 
     void caf_main(actor_system& system, const config&) {
 
-If loading and storing cannot be implemented in a single function, users can query whether the processor is loading or storing as shown below.
-
-::
-
-    template <class T>
-    typename std::enable_if<T::is_saving::value>::type
-    serialize(T& out, const foo& x, const unsigned int) {
-    template <class T>
-    typename std::enable_if<T::is_loading::value>::type
-    serialize(T& in, foo& x, const unsigned int) {
-
 .. _adding-custom-error-types:
 
 Adding Custom Error Types
 -------------------------
 
 Adding a custom error type to the system is a convenience feature to allow improve the string representation. Error types can be added by implementing a render function and passing it to ``add_error_category``, as shown in :ref:`custom-error`.
+
+.. _add-custom-actor-type:
+
+Adding Custom Actor Types  :sup:`experimental` 
+----------------------------------------------
+
+Adding actor types to the configuration allows users to spawn actors by their name. In particular, this enables spawning of actors on a different node (see :ref:`remote-spawn`). For our example configuration, we consider the following simple ``calculator`` actor.
+
+::
+
+    using add_atom = atom_constant<atom("add")>;
+    using sub_atom = atom_constant<atom("sub")>;
+
+    using calculator = typed_actor<replies_to<add_atom, int, int>::with<int>,
+                                   replies_to<sub_atom, int, int>::with<int>>;
+
+
+    calculator::behavior_type calculator_fun(calculator::pointer self) {
+
+Adding the calculator actor type to our config is achieved by calling ``add_actor_type<T>``. Note that adding an actor type in this way implicitly calls ``add_message_type<T>`` for typed actors (see :ref:`add-custom-message-type`). This makes our ``calculator`` actor type serializable and also enables remote nodes to spawn calculators anywhere in the distributed actor system (assuming all nodes use the same config).
+
+::
+
+    struct config : actor_system_config {
+      config() {
+        add_actor_type("calculator", calculator_fun);
+      }
+    };
+
+Our final example illustrates how to spawn a ``calculator`` locally by using its type name. Because the dynamic type name lookup can fail and the construction arguments passed as message can mismatch, this version of ``spawn`` returns ``expected<T>``.
+
+::
+
+    auto x = system.spawn<calculator>("calculator", make_message());
+    if (! x) {
+      std::cerr << "*** unable to spawn calculator: "
+                << system.render(x.error()) << std::endl;
+      return;
+    }
+    calculator c = std::move(*x);
+
+Adding dynamically typed actors to the config is achieved in the same way. When spawning a dynamically typed actor in this way, the template parameter is simply ``actor``. For example, spawning an actor “foo” which requires one string is created with ``system.spawn<actor>("foo", make_message("bar"))``.
+
+Because constructor (or function) arguments for spawning the actor are stored in a ``message``, only actors with appropriate input types are allowed. For example, ``const char*`` arguments—or any other pointer type—are not allowed and must be replaced by ``std::string``.
