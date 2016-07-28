@@ -17,9 +17,7 @@ Class ``middleman``
 +--------------------------------------------------------------+------------------------+
 | ``expected<void> unpublish(T x, uint16)``                    | See :ref:`remoting`.   |
 +--------------------------------------------------------------+------------------------+
-| ``expected<actor> remote_actor(string, uint16)``             | See :ref:`remoting`.   |
-+--------------------------------------------------------------+------------------------+
-| ``expected<T> typed_remote_actor(string, uint16)``           | See :ref:`remoting`.   |
+| ``expected<T> remote_actor<T = actor>(string, uint16)``      | See :ref:`remoting`.   |
 +--------------------------------------------------------------+------------------------+
 | ``expected<T> spawn_broker(F fun, ...)``                     | See :ref:`broker`.     |
 +--------------------------------------------------------------+------------------------+
@@ -57,12 +55,10 @@ The function returns an ``error`` (see :ref:`error`) if the actor was not bound
 
 ::
 
-    expected<actor> middleman::remote_actor(std::string host, uint16_t port);
+    template<class T = actor>
+    expected<T> middleman::remote_actor(std::string host, uint16_t port);
 
-    template <class ActorHandle>
-    expected<ActorHandle> middleman::typed_remote_actor(std::string host, uint16_t port);
-
-After a server has published an actor with ``publish``, clients can connect to the published actor by calling ``remote_actor`` or ``typed_remote_actor``:
+After a server has published an actor with ``publish``, clients can connect to the published actor by calling ``remote_actor``:
 
 ::
 

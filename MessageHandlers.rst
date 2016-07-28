@@ -45,7 +45,7 @@ Atoms
 
 Defining message handlers in terms of callbacks is convenient, but requires a simple way to annotate messages with meta data. Imagine an actor that provides a mathematical service for integers. It receives two integers, performs a user-defined operation and returns the result. Without additional context, the actor cannot decide whether it should multiply or add the integers. Thus, the operation must be encoded into the message. The Erlang programming language introduced an approach to use non-numerical constants, so-called *atoms*, which have an unambiguous, special-purpose type and do not have the runtime overhead of string constants.
 
-Atoms in CAFare mapped to integer values at compile time. This mapping is guaranteed to be collision-free and invertible, but limits atom literals to ten characters and prohibits special characters. Legal characters are ``_0-9A-Za-z`` and the whitespace character. Atoms are created using the ``constexpr`` function ``atom``, as the following example illustrates.
+Atoms in CAF are mapped to integer values at compile time. This mapping is guaranteed to be collision-free and invertible, but limits atom literals to ten characters and prohibits special characters. Legal characters are ``_0-9A-Za-z`` and the whitespace character. Atoms are created using the ``constexpr`` function ``atom``, as the following example illustrates.
 
 ::
 

@@ -79,7 +79,7 @@ Closes a connection or port.
 Broker-related Message Types
 ----------------------------
 
-Brokers receive system messages directly from the middleman whenever an event on one of it handles occurs.
+Brokers receive system messages directly from the middleman for connection and acceptor events.
 
 **Note:** brokers are *required* to handle these messages immediately regardless of their current state. Not handling the system messages from the broker results in loss of data, because system messages are *not* delivered through the mailbox and thus cannot be skipped.
 
@@ -90,7 +90,7 @@ Brokers receive system messages directly from the middleman whenever an event on
       connection_handle handle;
     };
 
-Whenever a new incoming connection (identified by the ``handle`` field) has been accepted for one of the broker’s accept handles, it will receive a ``new_connection_msg``.
+Indicates that ``source`` accepted a new (TCP) connection identified by ``handle``.
 
 ::
 
@@ -99,7 +99,7 @@ Whenever a new incoming connection (identified by the ``handle`` field) has been
       std::vector<char> buf;
     };
 
-New incoming data is transmitted to the broker using messages of type ``new_data_msg``. The raw bytes can be accessed as buffer object of type ``std::vector<char>``. The amount of data, i.e., how often this message is received, can be controlled using ``configure_read`` (see :ref:`broker-class])` It is worth mentioning that the buffer is re-used whenever possible. This means, as long as the broker does not create any new references to the message by copying it, the middleman will always use only a single buffer per connection.
+Contains raw bytes received from ``handle``. The amount of data received per event is controlled with ``configure_read`` (see :ref:`broker-class])` It is worth mentioning that the buffer is re-used whenever possible.
 
 ::
 
@@ -107,10 +107,31 @@ New incoming data is transmitted to the broker using messages of type ``new_data
       connection_handle handle;
     };
 
-::
-
     struct acceptor_closed_msg {
       accept_handle handle;
     };
 
-A ``connection_closed_msg`` or `` acceptor_closed_msg`` informs the broker that one of it handles is no longer valid.
+A ``connection_closed_msg`` or ``acceptor_closed_msg`` informs the broker that one of it handles is no longer valid.
+
+::
+
+    struct connection_passivated_msg {
+      connection_handle handle;
+    };
+
+    struct acceptor_passivated_msg {
+      accept_handle handle;
+    };
+
+A ``connection_passivated_msg`` or ``acceptor_passivated_msg`` informs the broker that one of it handles entered passive mode and no longer accepts new data or connections (see :ref:`trigger`).
+
+.. _trigger:
+
+Manually Triggering Events  :sup:`experimental` 
+-----------------------------------------------
+
+Brokers receive new events as ``new_connection_msg`` and ``new_data_msg`` as soon and as often as they occur, per default. This means a fast peer can overwhelm a broker by sending it data faster than the broker can process it. In particular if the broker outsources work items to other actors, because work items can accumulate in the mailboxes of the workers.
+
+Calling ``self->trigger(x, y)``, where ``x`` is a connection or acceptor handle and ``y`` is a positive integer, allows brokers to halt activities after ``y`` additional events. Once a connection or acceptor stops accepting new data or connections, the broker receives a ``connection_passivated_msg`` or ``acceptor_passivated_msg``.
+
+Brokers can stop activities unconditionally with ``self->halt(x)`` and resume activities unconditionally with ``self->trigger(x)``.

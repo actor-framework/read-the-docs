@@ -3,7 +3,7 @@
 Type-Erased Tuples, Messages and Message Views
 ==============================================
 
-Messages in CAFare stored in type-erased tuples. The actual message type itself is usually hidden, as actors use pattern matching to decompose messages automatically. However, the classes ``message`` and ``message_builder`` allow more advanced use cases than only sending data from one actor to another.
+Messages in CAF are stored in type-erased tuples. The actual message type itself is usually hidden, as actors use pattern matching to decompose messages automatically. However, the classes ``message`` and ``message_builder`` allow more advanced use cases than only sending data from one actor to another.
 
 The interface ``type_erased_tuple`` encapsulates access to arbitrary data. This data can be stored on the heap or on the stack. A ``message`` is a type-erased tuple that is always heap-allocated and uses copy-on-write semantics. When dealing with “plain” type-erased tuples, users are required to check if a tuple is referenced by others via ``type_erased_tuple::shared`` before modifying its content.
 

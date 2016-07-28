@@ -3,7 +3,7 @@
 Type Inspection (Serialization and String Conversion)
 =====================================================
 
-CAFis designed with distributed systems in mind. Hence, all message types must be serializable and need a platform-neutral, unique name that is configured at startup (see :ref:`add-custom-message-type`). Using a message type that is not serializable causes a compiler error (see :ref:`unsafe-message-type`). CAF serializes individual elements of a message by using the inspection API. This API allows users to provide code for serialization as well as string conversion with a single free function. The signature for a class ``my_class`` is always as follows:
+CAF is designed with distributed systems in mind. Hence, all message types must be serializable and need a platform-neutral, unique name that is configured at startup (see :ref:`add-custom-message-type`). Using a message type that is not serializable causes a compiler error (see :ref:`unsafe-message-type`). CAF serializes individual elements of a message by using the inspection API. This API allows users to provide code for serialization as well as string conversion with a single free function. The signature for a class ``my_class`` is always as follows:
 
 ::
 
@@ -44,16 +44,16 @@ The following concept class shows the requirements for inspectors. The placehold
     Inspector {
       using result_type = T;
       
-      if (performing a save operation)
-        using is_saving = std::true_type;
+      if (inspector only requires read access to the state of T)
+        static constexpr bool reads_state = true;
       else
-        using is_loading = std::true_type;
+        static constexpr bool writes_state = true;
       
       template <class... Ts>
       result_type operator()(Ts&&...);
     }
 
-A saving ``Inspector`` is required to handle constant lvalue reference and rvalue references. A loading ``Inspector`` must only accept mutable lvalue references to data fields, but still allow for constant lvalue references and rvalue references to annotations.
+A saving ``Inspector`` is required to handle constant lvalue and rvalue references. A loading ``Inspector`` must only accept mutable lvalue references to data fields, but still allow for constant lvalue references and rvalue references to annotations.
 
 .. _annotations:
 
@@ -92,7 +92,7 @@ When converting a user-defined type to a string, CAF calls user-defined ``to_str
 Whitelisting Unsafe Message Types
 ---------------------------------
 
-Message types that are not serializable cause compile time errors when used in actor communication. When using CAFfor concurrency only, this errors can be suppressed by whitelisting types with ``CAF_ALLOW_UNSAFE_MESSAGE_TYPE``. The macro is defined as follows.
+Message types that are not serializable cause compile time errors when used in actor communication. When using CAF for concurrency only, this errors can be suppressed by whitelisting types with ``CAF_ALLOW_UNSAFE_MESSAGE_TYPE``. The macro is defined as follows.
 
 ::
 
@@ -147,14 +147,14 @@ Since there is no access to the data fields ``a_`` and ``b_`` (and assuming no c
 ::
 
     template <class Inspector>
-    typename std::enable_if<Inspector::is_saving::value,
+    typename std::enable_if<Inspector::reads_state,
                             typename Inspector::result_type>::type
     inspect(Inspector& f, foo& x) {
       return f(meta::type_name("foo"), x.a(), x.b());
     }
 
     template <class Inspector>
-    typename std::enable_if<Inspector::is_loading::value,
+    typename std::enable_if<Inspector::writes_state,
                             typename Inspector::result_type>::type
     inspect(Inspector& f, foo& x) {
       int a;

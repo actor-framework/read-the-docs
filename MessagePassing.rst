@@ -25,7 +25,7 @@ When enqueuing a message to the mailbox of an actor, CAF wraps the content of th
          | content         |
          +-----------------+
 
-The sender is stored as a ``strong_actor_ptr`` (see :ref:`actor-pointer`) and denotes the origin of the message. The message ID is either 0—invalid—or a positive integer value that allows the sender to match a response to its request. The ``stages`` vector stores the path of the message. Response messages, i.e., the returned values of a message handler, are sent to ``stages.back()`` after calling ``stages.pop_back()``. This allows CAFto build pipelines of arbitrary size. If no more stage is left, the response reaches the sender. Finally, ``content`` is a ``message`` object (see :ref:`message`) storing a type-erased tuple.
+The sender is stored as a ``strong_actor_ptr`` (see :ref:`actor-pointer`) and denotes the origin of the message. The message ID is either 0—invalid—or a positive integer value that allows the sender to match a response to its request. The ``stages`` vector stores the path of the message. Response messages, i.e., the returned values of a message handler, are sent to ``stages.back()`` after calling ``stages.pop_back()``. This allows CAF to build pipelines of arbitrary size. If no more stage is left, the response reaches the sender. Finally, ``content`` is a ``message`` object (see :ref:`message`) storing a type-erased tuple.
 
 Mailbox elements are created by CAF automatically and are usually invisible to the programmer. However, understanding how messages are processed internally helps understanding the behavior of the message passing layer.
 
@@ -36,14 +36,14 @@ It is worth mentioning that CAF usually wraps the mailbox element and its conten
 Default and System Message Handlers
 -----------------------------------
 
-CAFhas three system-level message types (``down_msg``, ``exit_msg``, and ``error``) that all actor should handle regardless of there current state. Consequently, event-based actors handle such messages in special-purpose message handlers. Additionally, event-based actors have a fallback handler for unmatched messages. Note that blocking actors have neither of those special-purpose handlers (see :ref:`blocking-actor`).
+CAF has three system-level message types (``down_msg``, ``exit_msg``, and ``error``) that all actor should handle regardless of there current state. Consequently, event-based actors handle such messages in special-purpose message handlers. Additionally, event-based actors have a fallback handler for unmatched messages. Note that blocking actors have neither of those special-purpose handlers (see :ref:`blocking-actor`).
 
 .. _down-message:
 
 Down Handler
 ~~~~~~~~~~~~
 
-Actors can monitor the lifetime of other actors by calling ``self->monitor(other)``. This will cause the runtime system of CAFto send a ``down_msg`` for ``other`` if it dies. Actors drop down messages unless they provide a custom handler via ``set_down_handler(f)``, where ``f`` is a function object with signature ``void (down_message&)`` or ``void (scheduled_actor*, down_message&)``. The latter signature allows users to implement down message handlers as free function.
+Actors can monitor the lifetime of other actors by calling ``self->monitor(other)``. This will cause the runtime system of CAF to send a ``down_msg`` for ``other`` if it dies. Actors drop down messages unless they provide a custom handler via ``set_down_handler(f)``, where ``f`` is a function object with signature ``void (down_message&)`` or ``void (scheduled_actor*, down_message&)``. The latter signature allows users to implement down message handlers as free function.
 
 .. _exit-message:
 
@@ -71,7 +71,7 @@ The default handler is called whenever the behavior of an actor did not match th
 Requests
 --------
 
-A main feature of CAFis its ability to couple input and output types via the type system. For example, a ``typed_actor<replies_to<int>::with<int>>`` essentially behaves like a function. It receives a single ``int`` as input and responds with another ``int``. CAF embraces this functional take on actors by simply creating response messages from the result of message handlers. This allows CAFto match *request* to *response* messages and to provide a convenient API for this style of communication.
+A main feature of CAF is its ability to couple input and output types via the type system. For example, a ``typed_actor<replies_to<int>::with<int>>`` essentially behaves like a function. It receives a single ``int`` as input and responds with another ``int``. CAF embraces this functional take on actors by simply creating response messages from the result of message handlers. This allows CAF to match *request* to *response* messages and to provide a convenient API for this style of communication.
 
 .. _handling-response:
 
@@ -177,7 +177,7 @@ Both event-based approaches send all requests, install a series of one-shot hand
 Error Handling in Requests
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Requests allow CAFto unambiguously correlate request and response messages. This is also true if the response is an error message. Hence, CAF allows to add an error handler as optional second parameter to ``then`` and ``await`` (this parameter is mandatory for ``receive``). If no such handler is defined, the default error handler (see :ref:`error-message`) is used as a fallback in scheduled actors.
+Requests allow CAF to unambiguously correlate request and response messages. This is also true if the response is an error message. Hence, CAF allows to add an error handler as optional second parameter to ``then`` and ``await`` (this parameter is mandatory for ``receive``). If no such handler is defined, the default error handler (see :ref:`error-message`) is used as a fallback in scheduled actors.
 
 As an example, we consider a simple divider that returns an error on a division by zero. This examples uses a custom error category (see :ref:`error`).
 

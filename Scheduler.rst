@@ -18,7 +18,7 @@ Policies
 
 The scheduler consists of a single coordinator and a set of workers. The coordinator is needed by the public API to bridge actor and non-actor contexts, but is not necessarily an active software entity.
 
-The scheduler of CAFis fully customizable by using a policy-based design. The following class shows a *concept* class that lists all required member types and member functions. A policy provides the two data structures ``coordinator_data`` and ``worker_data`` that add additional data members to the coordinator and its workers respectively, e.g., work queues. This grants developers full control over the state of the scheduler.
+The scheduler of CAF is fully customizable by using a policy-based design. The following class shows a *concept* class that lists all required member types and member functions. A policy provides the two data structures ``coordinator_data`` and ``worker_data`` that add additional data members to the coordinator and its workers respectively, e.g., work queues. This grants developers full control over the state of the scheduler.
 
 ::
 
@@ -44,7 +44,7 @@ Actors reaching the maximum number of messages per run are re-scheduled with ``r
 Work Stealing
 -------------
 
-The default policy in CAFis work stealing. The key idea of this algorithm is to remove the bottleneck of a single, global work queue. The original algorithm was developed for fully strict computations by Blumofe et al in 1994. It schedules any number of tasks to ``P`` workers, where ``P`` is the number of processors available.
+The default policy in CAF is work stealing. The key idea of this algorithm is to remove the bottleneck of a single, global work queue. The original algorithm was developed for fully strict computations by Blumofe et al in 1994. It schedules any number of tasks to ``P`` workers, where ``P`` is the number of processors available.
 
 .. figure:: stealing.png
    :alt: Stealing of work items

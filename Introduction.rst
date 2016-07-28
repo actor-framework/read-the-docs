@@ -21,7 +21,7 @@ The actor model has gained momentum over the last decade due to its high level o
 Terminology
 -----------
 
-CAFis inspired by other implementations based on the actor model such as Erlang or Akka. It aims to provide a modern C++ API allowing for type-safe as well as dynamically typed messaging. While there are similarities to other implementations, we made many different design decisions that lead to slight differences when comparing CAFto other actor frameworks.
+CAF is inspired by other implementations based on the actor model such as Erlang or Akka. It aims to provide a modern C++ API allowing for type-safe as well as dynamically typed messaging. While there are similarities to other implementations, we made many different design decisions that lead to slight differences when comparing CAF to other actor frameworks.
 
 .. _dynamically-typed-actor:
 
@@ -91,4 +91,4 @@ A link is a bidirectional connection between two actors. Each actor sends an exi
 Experimental Features
 ---------------------
 
-Sections that discuss experimental features are highlighted with :sup:`experimental` . The API of such features is not stable. This means even minor updates to CAFcan come with breaking changes to the API or even remove a feature completely. However, we encourage developers to extensively test such features and to start discussions to uncover flaws, report bugs, or tweaking the API in order to improve a feature or streamline it to cover certain use cases.
+Sections that discuss experimental features are highlighted with :sup:`experimental` . The API of such features is not stable. This means even minor updates to CAF can come with breaking changes to the API or even remove a feature completely. However, we encourage developers to extensively test such features and to start discussions to uncover flaws, report bugs, or tweaking the API in order to improve a feature or streamline it to cover certain use cases.

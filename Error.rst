@@ -142,16 +142,16 @@ System Error Codes (SECs) use the error category ``"system"``. They represent er
       unknown_type,
       /// Serialization of actors failed because no proxy registry is available.
       no_proxy_registry,
+      /// An exception was thrown during message handling.
+      runtime_error,
       /// A function view was called without assigning an actor first.
-      bad_function_call
-    };
 
 .. _exit-reason:
 
 Default Exit Reasons
 --------------------
 
-CAF uses the error category ``"exit"`` for default exit reasons. These errors are usually fail states set by the actor system itself. The two exceptions are ``exit_reason::user_shutdown`` and ``exit_reason::kill``. The former is used in CAFto signalize orderly, user-requested shutdown and can be used by programmers in the same way. The latter terminates an actor unconditionally when used in ``send_exit``, even if the default handler for exit messages (see :ref:`exit-message`) is overridden.
+CAF uses the error category ``"exit"`` for default exit reasons. These errors are usually fail states set by the actor system itself. The two exceptions are ``exit_reason::user_shutdown`` and ``exit_reason::kill``. The former is used in CAF to signalize orderly, user-requested shutdown and can be used by programmers in the same way. The latter terminates an actor unconditionally when used in ``send_exit``, even if the default handler for exit messages (see :ref:`exit-message`) is overridden.
 
 ::
 

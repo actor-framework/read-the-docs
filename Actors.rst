@@ -3,7 +3,7 @@
 Actors
 ======
 
-Actors in CAFare a lightweight abstraction for units of computations. They are active objects in the sense that they own their state and do not allow others to access it. The only way to modify the state of an actor is sending messages to it.
+Actors in CAF are a lightweight abstraction for units of computations. They are active objects in the sense that they own their state and do not allow others to access it. The only way to modify the state of an actor is sending messages to it.
 
 CAF provides several actor implementations, each covering a particular use case. The available implementations differ in three characteristics: (1) dynamically or statically typed, (2) class-based or function-based, and (3) using asynchronous event handlers or blocking receives. These three characteristics can be combined freely, with one exception: statically typed actors are always event-based. For example, an actor can have dynamically typed messaging, implement a class, and use blocking receives. The common base class for all user-defined actors is called ``local_actor``.
 
@@ -149,12 +149,8 @@ Class ``blocking_actor``
 A blocking actor always lives in its own thread of execution. They are not as lightweight as event-based actors and thus do not scale up to large numbers. The primary use case for blocking actors is to use a ``scoped_actor`` for ad-hoc communication to selected actors. Unlike scheduled actors, CAF does **not** dispatch system messages to special-purpose handlers. A blocking actors receives *all* messages regularly through its mailbox. A blocking actor is considered *done* only after it returned from ``act`` (or from the implementation in function-based actors). A ``scoped_actor`` sends its exit messages as part of its destruction.
 
 +-------------------------------------+------------------------------------------------------------------------+
-| **Types**                           |                                                                        |
-+-------------------------------------+------------------------------------------------------------------------+
-|                                     |                                                                        |
-+-------------------------------------+------------------------------------------------------------------------+
 | **Constructors**                    |                                                                        |
-+-------------------------------------+------------------------------------------------------------------------+
++=====================================+========================================================================+
 | ``(actor_config&)``                 | Constructs the actor using a config.                                   |
 +-------------------------------------+------------------------------------------------------------------------+
 |                                     |                                                                        |
@@ -429,9 +425,11 @@ When building larger systems, it is often useful to implement the behavior of an
 
 The base type for composable behaviors is ``composable_behavior<T>``, where ``T`` is a ``typed_actor<...>``. CAF maps each ``replies_to<A, B, C>::with<D, E, F>`` in ``T`` to a pure virtual member function with signature ``result<D, E, F> operator()(param<A>, param<B>, param<C>)``.
 
-Note that ``operator()`` will take integral types as well as atom constants by value instead of by reference. A ``result<T>`` accepts either a value of type ``T``, a ``skip_t`` (see :ref:`default-handler`), an ``error`` (see :ref:`error`), a ``delegated<T>`` (see :ref:`delegate`), or a ``response_promise<T>`` (see :ref:`promise`). A ``result<void>`` is constructed by returning ``unit``.
+Note that ``operator()`` will take integral types as well as atom constants simply by value. A ``result<T>`` accepts either a value of type ``T``, a ``skip_t`` (see :ref:`default-handler`), an ``error`` (see :ref:`error`), a ``delegated<T>`` (see :ref:`delegate`), or a ``response_promise<T>`` (see :ref:`promise`). A ``result<void>`` is constructed by returning ``unit``.
 
-A behavior that combines the behaviors ``X``, ``Y``, and ``Z`` must inherit from ``composed_behavior<X, Y, Z>`` instead of inheriting from the three classes directly. In this step, CAF will set any ``operator()`` to pure virtual again that occurs in more than one base class. This ensures that all conflicts are properly resolved by the combining class. Any composable (or composed) state with no pure virtual member functions can be spawned directly through an actor system by calling ``system.spawn<...>()``, as shown below.
+A behavior that combines the behaviors ``X``, ``Y``, and ``Z`` must inherit from ``composed_behavior<X, Y, Z>`` instead of inheriting from the three classes directly. The class ``composed_behavior`` ensures that the behaviors are concatenated correctly. In case one message handler is defined in multiple base types, the *first* type in declaration order “wins”. For example, if ``X`` and ``Y`` both implement the interface ``replies_to<int, int>::with<int>``, only the handler implemented in ``X`` is active.
+
+Any composable (or composed) behavior with no pure virtual member functions can be spawned directly through an actor system by calling ``system.spawn<...>()``, as shown below.
 
 ::
 
@@ -470,7 +468,7 @@ A behavior that combines the behaviors ``X``, ``Y``, and ``Z`` must inherit from
 
 The second example illustrates how to use non-primitive values that are wrapped in a ``param<T>`` when working with composable behaviors. The purpose of ``param<T>`` is to provide a single interface for both constant and non-constant access. Constant access is modeled with the implicit conversion operator to ``const T&``, the member function ``get()`` and ``operator->``.
 
-When acquiring mutable access to the represented value, CAF copies the value before allowing mutable access to it if more than one reference exists. This copy-on-write optimization avoids race conditions by design, while keeping copy operations to a minimum. A mutable reference is returned from the member functions ``get_mutable()`` and ``move()``. The latter is a convenience function for ``std::move(x.get_mutable())``. The following example illustrates how to use ``param<std::string>`` when implementing a simple dictionary.
+When acquiring mutable access to the represented value, CAF copies the value before allowing mutable access to it if more than one reference to the value exists. This copy-on-write optimization avoids race conditions by design, while minimizing copy operations. A mutable reference is returned from the member functions ``get_mutable()`` and ``move()``. The latter is a convenience function for ``std::move(x.get_mutable())``. The following example illustrates how to use ``param<std::string>`` when implementing a simple dictionary.
 
 ::
 
