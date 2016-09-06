@@ -234,7 +234,6 @@ Adding actor types to the configuration allows users to spawn actors by their na
     using calculator = typed_actor<replies_to<add_atom, int, int>::with<int>,
                                    replies_to<sub_atom, int, int>::with<int>>;
 
-
     calculator::behavior_type calculator_fun(calculator::pointer self) {
 
 Adding the calculator actor type to our config is achieved by calling ``add_actor_type<T>``. Note that adding an actor type in this way implicitly calls ``add_message_type<T>`` for typed actors (see :ref:`add-custom-message-type`). This makes our ``calculator`` actor type serializable and also enables remote nodes to spawn calculators anywhere in the distributed actor system (assuming all nodes use the same config).
@@ -245,7 +244,6 @@ Adding the calculator actor type to our config is achieved by calling ``add_acto
       config() {
         add_actor_type("calculator", calculator_fun);
       }
-    };
 
 Our final example illustrates how to spawn a ``calculator`` locally by using its type name. Because the dynamic type name lookup can fail and the construction arguments passed as message can mismatch, this version of ``spawn`` returns ``expected<T>``.
 

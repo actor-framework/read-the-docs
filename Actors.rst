@@ -377,7 +377,7 @@ Implementing actors with classes works for all kinds of actors and allows simple
 Stateful Actors
 ---------------
 
-The stateful actor API makes it easy to maintain state in function-based actors. It is also safer than putting state in member variables, because the state ceases to exit after an actor is done and is not delayed until the destructor runs. For example, if two actors hold a reference to each other via member variables, they produce a cycle and neither will get destroyed. Using stateful actors instead breaks the cycle, because references are destroyed when an actor calls ``self->quit()`` (or is killed externally). The following example illustrates how to implement stateful actors with static typing as well as with dynamic typing.
+The stateful actor API makes it easy to maintain state in function-based actors. It is also safer than putting state in member variables, because the state ceases to exist after an actor is done and is not delayed until the destructor runs. For example, if two actors hold a reference to each other via member variables, they produce a cycle and neither will get destroyed. Using stateful actors instead breaks the cycle, because references are destroyed when an actor calls ``self->quit()`` (or is killed externally). The following example illustrates how to implement stateful actors with static typing as well as with dynamic typing.
 
 ::
 

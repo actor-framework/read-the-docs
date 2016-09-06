@@ -58,11 +58,11 @@ The smart pointer design in CAF relies on a few assumptions about actor types. M
 Strong and Weak References
 --------------------------
 
-A *strong* reference manipulates the ``strong refs`` counter shown agove. An actor is destroyed if there are *zero* strong references to it. If two actors keep strong references to each other via member variable, neither actor can ever be destroyed because they produce a cycle (see :ref:`breaking-cycles`). Strong references are formed by ``strong_actor_ptr``, ``actor``, and ``typed_actor<...>`` (see :ref:`actor-reference`).
+A *strong* reference manipulates the ``strong refs`` counter as shown above. An actor is destroyed if there are *zero* strong references to it. If two actors keep strong references to each other via member variable, neither actor can ever be destroyed because they produce a cycle (see :ref:`breaking-cycles`). Strong references are formed by ``strong_actor_ptr``, ``actor``, and ``typed_actor<...>`` (see :ref:`actor-reference`).
 
 A *weak* reference manipulates the ``weak refs`` counter. This counter keeps track of how many references to the control block exist. The control block is destroyed if there are *zero* weak references to an actor (which cannot occur before ``strong refs`` reached *zero* as well). No cycle occurs if two actors keep weak references to each other, because the actor objects themselves can get destroyed independently from their control block. A weak reference is only formed by ``actor_addr`` (see :ref:`actor-address`).
 
-.. _converting-actor-references-with-actor_cast:
+.. _actor-cast:
 
 Converting Actor References with ``actor_cast``
 -----------------------------------------------

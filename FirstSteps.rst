@@ -47,7 +47,7 @@ Minimal Compiler Versions
 
 -  Clang 3.4
 
--  Visual Studio 2015, Update 2
+-  Visual Studio 2015, Update 3
 
 .. _supported-operating-systems:
 

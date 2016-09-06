@@ -7,8 +7,8 @@ Remote spawning is an extension of the dynamic spawn using run-time type names (
 
 ::
 
-    void client(actor_system& system, const std::string& host, uint16_t port) {
-      auto node = system.middleman().connect(host, port);
+    void client(actor_system& system, const config& cfg) {
+      auto node = system.middleman().connect(cfg.host, cfg.port);
       if (!node) {
         std::cerr << "*** connect failed: "
                   << system.render(node.error()) << std::endl;

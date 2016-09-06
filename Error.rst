@@ -144,6 +144,8 @@ System Error Codes (SECs) use the error category ``"system"``. They represent er
       no_proxy_registry,
       /// An exception was thrown during message handling.
       runtime_error,
+      /// Linking to a remote actor failed because actor no longer exists.
+      remote_linking_failed,
       /// A function view was called without assigning an actor first.
 
 .. _exit-reason:

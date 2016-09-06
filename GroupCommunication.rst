@@ -12,9 +12,9 @@ CAF supports publish/subscribe-based group communication. Dynamically typed acto
     auto expected_grp = system.groups().get(module, id);
     if (! expected_grp) {
       std::cerr << "*** cannot load group: "
-                << system.render(expected_grp()) << std::endl;
+                << system.render(expected_grp.error()) << std::endl;
       return;
-    }
+    }                    
     auto grp = std::move(*expected_grp);
     scoped_actor self{system};
     self->join(grp);
