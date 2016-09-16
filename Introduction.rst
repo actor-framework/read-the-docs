@@ -42,7 +42,7 @@ CAF achieves static type-checking for actors by defining abstract messaging inte
 Actor References
 ~~~~~~~~~~~~~~~~
 
-CAF uses reference counting for actors. The three ways to store a reference to an actor are addresses, handles, and pointers. Note that *address* does not refer to a *memory region* in this context. CAF assumes addresses and handles to be *non-null*.
+CAF uses reference counting for actors. The three ways to store a reference to an actor are addresses, handles, and pointers. Note that *address* does not refer to a *memory region* in this context.
 
 .. _actor-address:
 

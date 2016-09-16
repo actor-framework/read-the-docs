@@ -67,9 +67,7 @@ A *weak* reference manipulates the ``weak refs`` counter. This counter keeps tra
 Converting Actor References with ``actor_cast``
 -----------------------------------------------
 
-The function ``actor_cast`` converts between actor pointers and handles. The first common use case is to convert a ``strong_actor_ptr`` to either ``actor`` or ``typed_actor<...>`` before being able to send messages to an actor. The second common use case is to convert ``actor_addr`` to ``strong_actor_ptr`` to upgrade a weak reference to a strong reference. Note that ``actor_addr`` can *not* be converted to an actor handle directly, because handles are guaranteed to be non-null and the upgrade fails (returns null) if the actor already reached zero strong references and was destroyed.
-
-The syntax for ``actor_cast`` resembles builtin C++ casts. For example, ``actor_cast<actor>(x)`` converts ``x`` to an handle of type ``actor``. Users should never cast a ``strong_actor_ptr`` to a handle if it is null. Creating a “null handle” in this way causes undefined behavior (dereferencing null).
+The function ``actor_cast`` converts between actor pointers and handles. The first common use case is to convert a ``strong_actor_ptr`` to either ``actor`` or ``typed_actor<...>`` before being able to send messages to an actor. The second common use case is to convert ``actor_addr`` to ``strong_actor_ptr`` to upgrade a weak reference to a strong reference. Note that casting ``actor_addr`` to a strong actor pointer or handle can result in invalid handles. The syntax for ``actor_cast`` resembles builtin C++ casts. For example, ``actor_cast<actor>(x)`` converts ``x`` to an handle of type ``actor``.
 
 .. _breaking-cycles:
 

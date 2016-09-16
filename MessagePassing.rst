@@ -14,22 +14,42 @@ Structure of Mailbox Elements
 
 When enqueuing a message to the mailbox of an actor, CAF wraps the content of the message into a ``mailbox_element`` (shown below) to add meta data and processing paths.
 
-::
+.. figure:: mailbox_element.png
+   :alt: UML class diagram for ``mailbox_element``\ 
 
-         +-----------------+
-         | mailbox_element |
-         +-----------------+
-         | sender          |
-         | message ID      |
-         | stages          |
-         | content         |
-         +-----------------+
+   UML class diagram for ``mailbox_element``\ 
 
-The sender is stored as a ``strong_actor_ptr`` (see :ref:`actor-pointer`) and denotes the origin of the message. The message ID is either 0—invalid—or a positive integer value that allows the sender to match a response to its request. The ``stages`` vector stores the path of the message. Response messages, i.e., the returned values of a message handler, are sent to ``stages.back()`` after calling ``stages.pop_back()``. This allows CAF to build pipelines of arbitrary size. If no more stage is left, the response reaches the sender. Finally, ``content`` is a ``message`` object (see :ref:`message`) storing a type-erased tuple.
+The sender is stored as a ``strong_actor_ptr`` (see :ref:`actor-pointer`) and denotes the origin of the message. The message ID is either 0—invalid—or a positive integer value that allows the sender to match a response to its request. The ``stages`` vector stores the path of the message. Response messages, i.e., the returned values of a message handler, are sent to ``stages.back()`` after calling ``stages.pop_back()``. This allows CAF to build pipelines of arbitrary size. If no more stage is left, the response reaches the sender. Finally, ``content()`` grants access to the type-erased tuple storing the message itself.
 
 Mailbox elements are created by CAF automatically and are usually invisible to the programmer. However, understanding how messages are processed internally helps understanding the behavior of the message passing layer.
 
 It is worth mentioning that CAF usually wraps the mailbox element and its content into a single object in order to reduce the number of memory allocations.
+
+.. _copy-on-write:
+
+Copy on Write
+-------------
+
+CAF allows multiple actors to implicitly share message contents, as long as no actor performs writes. This allows groups (see :ref:`groups`) to send the same content to all subscribed actors without any copying overhead.
+
+Actors copy message contents whenever other actors hold references to it and if one or more arguments of a message handler take a mutable reference.
+
+.. _requirements-for-message-types:
+
+Requirements for Message Types
+------------------------------
+
+Message types in CAF must meet the following requirements:
+
+#. Serializable or inspectable (see :ref:`type-inspection`)
+
+#. Default constructible
+
+#. Copy constructible
+
+A type is serializable if it provides free function ``serialize(Serializer&, T&)`` or ``serialize(Serializer&, T&, const unsigned int)``. Accordingly, a type is inspectable if it provides a free function ``inspect(Inspector&, T&)``.
+
+Requirement 2 is a consequence of requirement 1, because CAF needs to be able to create an object of a type before it can call ``serialize`` or ``inspect`` on it. Requirement 3 allows CAF to implement Copy on Write (see :ref:`copy-on-write`).
 
 .. _special-handler:
 

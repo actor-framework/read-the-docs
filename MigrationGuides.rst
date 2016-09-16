@@ -125,6 +125,4 @@ Version 0.15 replaces the singleton-based architecture with ``actor_system``. Mo
 
 Patterns are now limited to the simple notation, because the advanced features (1) are not implementable for statically typed actors, (2) are not portable to Windows/MSVC, and (3) drastically impact compile times. Dropping this functionality also simplifies the implementation and improves performance.
 
-Actor handles now implement a *non-null* assumption. Therefore, ``invalid_actor`` and the default constructor for all actor handles have been removed. Invalid handles can still be created by using ``unsafe_actor_handle_init`` for delaying proper initialization. Calling ``destroy(x)`` on handle releases its reference and allows developers to break cycles manually. Passing an invalid handle (i.e. constructed unsafe or destroyed) to any function in CAF is undefined behavior.
-
 The ``blocking_api`` flag has been removed. All variants of *spawn* now auto-detect blocking actors.
