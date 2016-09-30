@@ -10,8 +10,8 @@ Remote spawning is an extension of the dynamic spawn using run-time type names (
     void client(actor_system& system, const config& cfg) {
       auto node = system.middleman().connect(cfg.host, cfg.port);
       if (!node) {
-        std::cerr << "*** connect failed: "
-                  << system.render(node.error()) << std::endl;
+        cerr << "*** connect failed: "
+             << system.render(node.error()) << endl;
         return;
       }
       auto type = "calculator"; // type of the actor we wish to spawn
@@ -20,8 +20,8 @@ Remote spawning is an extension of the dynamic spawn using run-time type names (
       auto worker = system.middleman().remote_spawn<calculator>(*node, type,
                                                                 args, tout);
       if (!worker) {
-        std::cerr << "*** remote spawn failed: "
-                  << system.render(worker.error()) << std::endl;
+        cerr << "*** remote spawn failed: "
+             << system.render(worker.error()) << endl;
         return;
       }
       // start using worker in main loop

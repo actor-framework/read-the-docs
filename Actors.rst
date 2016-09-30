@@ -254,12 +254,12 @@ Spawning an actor for each implementation is illustrated below.
 
 ::
 
-      auto a1 = system.spawn(blocking_calculator_fun);
       auto a2 = system.spawn(calculator_fun);
       auto a3 = system.spawn(typed_calculator_fun);
       auto a4 = system.spawn<blocking_calculator>();
       auto a5 = system.spawn<calculator>();
       auto a6 = system.spawn<typed_calculator>();
+      scoped_actor self{system};
 
 Additional arguments to ``spawn`` are passed to the constructor of a class or used as additional function arguments, respectively. In the example above, none of the three functions takes any argument other than the implicit but optional ``self`` pointer.
 
