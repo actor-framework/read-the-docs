@@ -1,7 +1,7 @@
 CAF User Manual
 ===============
 
-**C++ Actor Framework** version 0.15.1.
+**C++ Actor Framework** version 0.15.2.
 
 Contents
 ========

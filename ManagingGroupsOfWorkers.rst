@@ -23,7 +23,8 @@ A dispatching policy is a functor with the following signature:
 ::
 
     using uplock = upgrade_lock<detail::shared_spinlock>;
-    using policy = std::function<void (uplock& guard,
+    using policy = std::function<void (actor_system& sys,
+                                       uplock& guard,
                                        const actor_vec& workers,
                                        mailbox_element_ptr& ptr,
                                        execution_unit* host)>;
