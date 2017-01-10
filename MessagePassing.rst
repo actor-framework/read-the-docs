@@ -300,7 +300,7 @@ Returning the result of ``delegate(...)`` from a message handler, as shown in th
 
 ::
 
-    void actor_a(event_based_actor* self, calc worker) {
+    void actor_a(event_based_actor* self, const calc& worker) {
       self->request(worker, std::chrono::seconds(10), add_atom::value, 1, 2).then(
         [=](int result) {
           aout(self) << "1 + 2 = " << result << endl;
@@ -308,7 +308,7 @@ Returning the result of ``delegate(...)`` from a message handler, as shown in th
       );
     }
 
-    calc::behavior_type actor_b(calc::pointer self, calc worker) {
+    calc::behavior_type actor_b(calc::pointer self, const calc& worker) {
       return {
         [=](add_atom add, int x, int y) {
           return self->delegate(worker, add, x, y);
