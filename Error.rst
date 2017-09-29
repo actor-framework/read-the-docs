@@ -97,7 +97,7 @@ System Error Codes (SECs) use the error category ``"system"``. They represent er
       /// Indicates that a request message timed out.
       request_timeout,
       /// Indicates that requested group module does not exist.
-      no_such_group_module,
+      no_such_group_module = 5,
       /// Unpublishing or connecting failed: no actor bound to given port.
       no_actor_published_at_port,
       /// Connecting failed because a remote actor had an unexpected interface.
@@ -107,7 +107,7 @@ System Error Codes (SECs) use the error category ``"system"``. They represent er
       /// An actor received an unsupported key for `('sys', 'get', key)` messages.
       unsupported_sys_key,
       /// An actor received an unsupported system message.
-      unsupported_sys_message,
+      unsupported_sys_message = 10,
       /// A remote node disconnected during CAF handshake.
       disconnect_during_handshake,
       /// Tried to forward a message via BASP to an invalid actor handle.
@@ -117,7 +117,7 @@ System Error Codes (SECs) use the error category ``"system"``. They represent er
       /// Middleman could not assign a connection handle to a broker.
       failed_to_assign_scribe_from_handle,
       /// Middleman could not assign an acceptor handle to a broker.
-      failed_to_assign_doorman_from_handle,
+      failed_to_assign_doorman_from_handle = 15,
       /// User requested to close port 0 or to close a port not managed by CAF.
       cannot_close_invalid_port,
       /// Middleman could not connect to a remote node.
@@ -127,7 +127,7 @@ System Error Codes (SECs) use the error category ``"system"``. They represent er
       /// A C system call in the middleman failed.
       network_syscall_failed,
       /// A function received one or more invalid arguments.
-      invalid_argument,
+      invalid_argument = 20,
       /// A network socket reported an invalid network protocol family.
       invalid_protocol_family,
       /// Middleman could not publish an actor because it was invalid.
@@ -137,7 +137,7 @@ System Error Codes (SECs) use the error category ``"system"``. They represent er
       /// Serialization failed because there was not enough data to read.
       end_of_stream,
       /// Serialization failed because no CAF context is available.
-      no_context,
+      no_context = 25,
       /// Serialization failed because CAF misses run-time type information.
       unknown_type,
       /// Serialization of actors failed because no proxy registry is available.
@@ -146,7 +146,7 @@ System Error Codes (SECs) use the error category ``"system"``. They represent er
       runtime_error,
       /// Linking to a remote actor failed because actor no longer exists.
       remote_linking_failed,
-      /// A function view was called without assigning an actor first.
+      /// Adding an upstream to a stream failed.
 
 .. _exit-reason:
 

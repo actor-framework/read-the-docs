@@ -5,6 +5,13 @@ Frequently Asked Questions
 
 This Section is a compilation of the most common questions via GitHub, chat, and mailing list.
 
+.. _can-i-encrypt-caf-communication:
+
+Can I Encrypt CAF Communication?
+--------------------------------
+
+Yes, by using the OpenSSL module (see :ref:`free-remoting-functions`).
+
 .. _can-i-create-messages-dynamically:
 
 Can I Create Messages Dynamically?
@@ -25,3 +32,18 @@ Usually, messages are created implicitly when sending messages but can also be c
       mb.append(str);
     // create the message
     message msg = mb.to_message();
+
+.. _what-debugging-tools-exist:
+
+What Debugging Tools Exist?
+---------------------------
+
+The ``scripts/`` and ``tools/`` directories contain some useful tools to aid in development and debugging.
+
+``scripts/atom.py`` converts integer atom values back into strings.
+
+``scripts/demystify.py`` replaces cryptic ``typed_mpi<...>`` templates with ``replies_to<...>::with<...>`` and ``atom_constant<...>`` with a human-readable representation of the actual atom.
+
+``scripts/caf-prof`` is an R script that generates plots from CAF profiler output.
+
+``caf-vec`` is a (highly) experimental tool that annotates CAF logs with vector timestamps. It gives you happens-before relations and a nice visualization via `ShiViz <https://bestchai.bitbucket.io/shiviz/>`__. There is an associated `RFC <https://github.com/actor-framework/rfcs/blob/master/proposals/0001-minimal-debugging-and-shiviz-support.md>`__ for more information on caf-vec.

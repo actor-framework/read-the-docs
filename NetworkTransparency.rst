@@ -10,21 +10,25 @@ The middleman is the main component of the I/O module and enables distribution. 
 Class ``middleman``
 -------------------
 
-+--------------------------------------------------------------+------------------------+
-| **Remoting**                                                 |                        |
-+==============================================================+========================+
-| ``expected<uint16> publish(T, uint16, const char*, bool)``   | See :ref:`remoting`.   |
-+--------------------------------------------------------------+------------------------+
-| ``expected<void> unpublish(T x, uint16)``                    | See :ref:`remoting`.   |
-+--------------------------------------------------------------+------------------------+
-| ``expected<T> remote_actor<T = actor>(string, uint16)``      | See :ref:`remoting`.   |
-+--------------------------------------------------------------+------------------------+
-| ``expected<T> spawn_broker(F fun, ...)``                     | See :ref:`broker`.     |
-+--------------------------------------------------------------+------------------------+
-| ``expected<T> spawn_client(F, string, uint16, ...)``         | See :ref:`broker`.     |
-+--------------------------------------------------------------+------------------------+
-| ``expected<T> spawn_server(F, uint16, ...)``                 | See :ref:`broker`.     |
-+--------------------------------------------------------------+------------------------+
++------------------------------------------------------------------+------------------------+
+| **Remoting**                                                     |                        |
++==================================================================+========================+
+| ``expected<uint16> open(uint16, const char*, bool)``             | See :ref:`remoting`.   |
++------------------------------------------------------------------+------------------------+
+| ``expected<uint16> publish(T, uint16, const char*, bool)``       | See :ref:`remoting`.   |
++------------------------------------------------------------------+------------------------+
+| ``expected<void> unpublish(T x, uint16)``                        | See :ref:`remoting`.   |
++------------------------------------------------------------------+------------------------+
+| ``expected<node_id> connect(std::string host, uint16_t port)``   | See :ref:`remoting`.   |
++------------------------------------------------------------------+------------------------+
+| ``expected<T> remote_actor<T = actor>(string, uint16)``          | See :ref:`remoting`.   |
++------------------------------------------------------------------+------------------------+
+| ``expected<T> spawn_broker(F fun, ...)``                         | See :ref:`broker`.     |
++------------------------------------------------------------------+------------------------+
+| ``expected<T> spawn_client(F, string, uint16, ...)``             | See :ref:`broker`.     |
++------------------------------------------------------------------+------------------------+
+| ``expected<T> spawn_server(F, uint16, ...)``                     | See :ref:`broker`.     |
++------------------------------------------------------------------+------------------------+
 
 .. _remoting:
 
@@ -76,3 +80,24 @@ After a server has published an actor with ``publish``, clients can connect to t
     }
 
 There is no difference between server and client after the connection phase. Remote actors use the same handle types as local actors and are thus fully transparent.
+
+The function pair ``open`` and ``connect`` allows users to connect CAF instances without remote actor setup. The function ``connect`` returns a ``node_id`` that can be used for remote spawning (see :ref:`remote-spawn`).
+
+.. _free-remoting-functions:
+
+Free Functions
+--------------
+
+The following free functions in the namespace ``caf::io`` avoid calling the middleman directly. This enables users to easily switch between communication backends as long as the interfaces have the same signatures. For example, the (experimental) OpenSSL binding of CAF implements the same functions in the namespace ``caf::openssl`` to easily switch between encrypted and unencrypted communication.
+
++---------------------------------------------------------------------------------+------------------------+
+| ``expected<uint16> open(actor_system&, uint16, const char*, bool)``             | See :ref:`remoting`.   |
++=================================================================================+========================+
+| ``expected<uint16> publish(T, uint16, const char*, bool)``                      | See :ref:`remoting`.   |
++---------------------------------------------------------------------------------+------------------------+
+| ``expected<void> unpublish(T x, uint16)``                                       | See :ref:`remoting`.   |
++---------------------------------------------------------------------------------+------------------------+
+| ``expected<node_id> connect(actor_system&, std::string host, uint16_t port)``   | See :ref:`remoting`.   |
++---------------------------------------------------------------------------------+------------------------+
+| ``expected<T> remote_actor<T = actor>(actor_system&, string, uint16)``          | See :ref:`remoting`.   |
++---------------------------------------------------------------------------------+------------------------+

@@ -63,7 +63,7 @@ CAF has three system-level message types (``down_msg``, ``exit_msg``, and ``erro
 Down Handler
 ~~~~~~~~~~~~
 
-Actors can monitor the lifetime of other actors by calling ``self->monitor(other)``. This will cause the runtime system of CAF to send a ``down_msg`` for ``other`` if it dies. Actors drop down messages unless they provide a custom handler via ``set_down_handler(f)``, where ``f`` is a function object with signature ``void (down_message&)`` or ``void (scheduled_actor*, down_message&)``. The latter signature allows users to implement down message handlers as free function.
+Actors can monitor the lifetime of other actors by calling ``self->monitor(other)``. This will cause the runtime system of CAF to send a ``down_msg`` for ``other`` if it dies. Actors drop down messages unless they provide a custom handler via ``set_down_handler(f)``, where ``f`` is a function object with signature ``void (down_msg&)`` or ``void (scheduled_actor*, down_msg&)``. The latter signature allows users to implement down message handlers as free function.
 
 .. _exit-message:
 

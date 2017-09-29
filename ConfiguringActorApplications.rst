@@ -173,6 +173,23 @@ INI files are organized in categories. No value is allowed outside of a category
     max-consecutive-reads=50
     ; heartbeat message interval in ms (0 disables heartbeating)
     heartbeat-interval=0
+    ; configures whether the MM detaches its internal utility actors
+    middleman-detach-utility-actors=true
+
+    ; when compiling with logging enabled
+    [logger]
+    ; file name template for output log file files (empty string disables logging)
+    file-name="actor_log_[PID]_[TIMESTAMP]_[NODE].log"
+    ; format for rendering individual log file entries
+    file-format="%r %c %p %a %t %C %M %F:%L %m%n"
+    ; mode for console log output generation (none|colored|uncolored)
+    console='none'
+    ; format for printing individual log entries to the console
+    console-format="%m"
+    ; excludes listed components from logging
+    component-filter=""
+    ; configures the severity level for logs (quiet|error|warning|info|debug|trace)
+    verbosity='trace'
 
 .. _add-custom-message-type:
 
@@ -260,3 +277,80 @@ Our final example illustrates how to spawn a ``calculator`` locally by using its
 Adding dynamically typed actors to the config is achieved in the same way. When spawning a dynamically typed actor in this way, the template parameter is simply ``actor``. For example, spawning an actor “foo” which requires one string is created with ``system.spawn<actor>("foo", make_message("bar"))``.
 
 Because constructor (or function) arguments for spawning the actor are stored in a ``message``, only actors with appropriate input types are allowed. For example, ``const char*`` arguments—or any other pointer type—are not allowed and must be replaced by ``std::string``.
+
+.. _log-output:
+
+Log Output
+----------
+
+Logging is disabled in CAF per default. It can be enabled by setting the ``--with-log-level=`` option of the ``configure`` script to one of “error”, “warning”, “info”, “debug”, or “trace” (from least output to most). Alternatively, setting the CMake variable ``CAF_LOG_LEVEL`` to 0, 1, 2, 3, or 4 (from least output to most) has the same effect.
+
+All logger-related configuration options listed here and in :ref:`system-config-options` are silently ignored if logging is disabled.
+
+.. _log-output-file-name:
+
+File Name
+~~~~~~~~~
+
+The output file is generated from the template configured by ``logger-file-name``. This template supports the following variables.
+
++-------------------+----------------------------------+
+| **Variable**      | **Output**                       |
++===================+==================================+
+| ``[PID]``         | The OS-specific process ID.      |
++-------------------+----------------------------------+
+| ``[TIMESTAMP]``   | The UNIX timestamp on startup.   |
++-------------------+----------------------------------+
+| ``[NODE]``        | The node ID of the CAF system.   |
++-------------------+----------------------------------+
+
+.. _log-output-console:
+
+Console
+~~~~~~~
+
+Console output is disabled per default. Setting ``logger-console`` to either ``"uncolored"`` or ``"colored"`` prints log events to ``std::clog``. Using the ``"colored"`` option will print the log events in different colors depending on the severity level.
+
+.. _log-output-format-strings:
+
+Format Strings
+~~~~~~~~~~~~~~
+
+CAF uses log4j-like format strings (e.g. ``"%c %m%n"``) to configure how individual events are printed via ``logger-file-format`` and ``logger-console-format``. Note that format modifiers are not supported at the moment. The recognized field identifiers are:
+
++-----------------+------------------------------------------------------------------------------------------------------------------------------------+
+| **Character**   | **Output**                                                                                                                         |
++=================+====================================================================================================================================+
+| ``c``           | The category/component. This name is defined by the macro ``CAF_LOG_COMPONENT``. Set this macro before including any CAF header.   |
++-----------------+------------------------------------------------------------------------------------------------------------------------------------+
+| ``C``           | The full qualifier of the current function. For example, the qualifier of ``void ns::foo::bar()`` is printed as ``ns.foo``.        |
++-----------------+------------------------------------------------------------------------------------------------------------------------------------+
+| ``d``           | The date in ISO 8601 format, i.e., ``"YYYY-MM-DD hh:mm:ss"``.                                                                      |
++-----------------+------------------------------------------------------------------------------------------------------------------------------------+
+| ``F``           | The file name.                                                                                                                     |
++-----------------+------------------------------------------------------------------------------------------------------------------------------------+
+| ``L``           | The line number.                                                                                                                   |
++-----------------+------------------------------------------------------------------------------------------------------------------------------------+
+| ``m``           | The user-defined log message.                                                                                                      |
++-----------------+------------------------------------------------------------------------------------------------------------------------------------+
+| ``M``           | The name of the current function. For example, the name of ``void ns::foo::bar()`` is printed as ``bar``.                          |
++-----------------+------------------------------------------------------------------------------------------------------------------------------------+
+| ``n``           | A newline.                                                                                                                         |
++-----------------+------------------------------------------------------------------------------------------------------------------------------------+
+| ``p``           | The priority (severity level).                                                                                                     |
++-----------------+------------------------------------------------------------------------------------------------------------------------------------+
+| ``r``           | Elapsed time since starting the application in milliseconds.                                                                       |
++-----------------+------------------------------------------------------------------------------------------------------------------------------------+
+| ``t``           | ID of the current thread.                                                                                                          |
++-----------------+------------------------------------------------------------------------------------------------------------------------------------+
+| ``a``           | ID of the current actor (or “actor0” when not logging inside an actor).                                                            |
++-----------------+------------------------------------------------------------------------------------------------------------------------------------+
+| ``%``           | A single percent sign.                                                                                                             |
++-----------------+------------------------------------------------------------------------------------------------------------------------------------+
+
+.. _log-output-filtering:
+
+Filtering
+~~~~~~~~~
+
+The two configuration options ``logger-component-filter`` and ``logger-verbosity`` reduce the amount of generated log events. The former is a list of excluded component names and the latter can increase the reported severity level (but not decrease it beyond the level defined at compile time).
