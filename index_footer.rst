@@ -2,7 +2,7 @@ Version Information
 ===================
 
 This version of the Manual was automatically generated from CAF commit
-`d011b9e <https://github.com/actor-framework/actor-framework/commit/d011b9e>`_
+`049c2f1 <https://github.com/actor-framework/actor-framework/commit/049c2f1>`_
 and Manual commit
 `8b7707c <https://github.com/actor-framework/manual/commit/8b7707c>`_.
 
