@@ -1,11 +1,43 @@
+.. raw:: latex
+
+   \definecolor{lightgrey}{rgb}{0.9,0.9,0.9}
+
+.. raw:: latex
+
+   \definecolor{lightblue}{rgb}{0,0,1}
+
+.. raw:: latex
+
+   \definecolor{grey}{rgb}{0.5,0.5,0.5}
+
+.. raw:: latex
+
+   \definecolor{blue}{rgb}{0,0,1}
+
+.. raw:: latex
+
+   \definecolor{violet}{rgb}{0.5,0,0.5}
+
+.. raw:: latex
+
+   \definecolor{darkred}{rgb}{0.5,0,0}
+
+.. raw:: latex
+
+   \definecolor{darkblue}{rgb}{0,0,0.5}
+
+.. raw:: latex
+
+   \definecolor{darkgreen}{rgb}{0,0.5,0}
+
 .. _system-config:
 
 Configuring Actor Applications
 ==============================
 
-CAF configures applications at startup using an ``actor_system_config`` or a user-defined subclass of that type. The config objects allow users to add custom types, to load modules, and to fine-tune the behavior of loaded modules with command line options or configuration files (see :ref:`system-config-options`).
+CAF configures applications at startup using an ``actor_system_config`` or a user-defined subclass of that type. The config objects allow users to add custom types, to load modules, and to fine-tune the behavior of loaded modules with command line options or configuration files (see § \ `1.2 <#system-config-options>`__).
 
-The following code example is a minimal CAF application with a middleman (see :ref:`middleman`) but without any custom configuration options.
+The following code example is a minimal CAF application with a middleman (see § \ `:ref:`middleman` <#middleman>`__) but without any custom configuration options.
 
 ::
 
@@ -122,7 +154,11 @@ Boolean options do not require arguments. The member variable ``server_mode`` is
 
 CAF prefixes all of its default CLI options with ``caf#``, except for “help” (``--help``, ``-h``, or ``-?``). The default name for the INI file is ``caf-application.ini``. Users can change the file name and path by passing ``--caf#config-file=<path>`` on the command line.
 
-INI files are organized in categories. No value is allowed outside of a category (no implicit “global” category). CAF reads ``true`` and ``false`` as boolean, numbers as (signed) integers or ``double``, ``"``-enclosed characters as strings, and ``'``-enclosed characters as atoms (see :ref:`atom`). The following example INI file lists all standard options in CAF and their default value. Note that some options such as ``scheduler.max-threads`` are usually detected at runtime and thus have no hard-coded default.
+INI files are organized in categories. No value is allowed outside of a category (no implicit “global” category). CAF reads ``true`` and ``false`` as boolean, numbers as (signed) integers or ``double``, ``"``-enclosed characters as strings, and ``'``-enclosed characters as atoms (see § \ `:ref:`atom` <#atom>`__). The following example INI file lists all standard options in CAF and their default value. Note that some options such as ``scheduler.max-threads`` are usually detected at runtime and thus have no hard-coded default.
+
+.. raw:: latex
+
+   \clearpage
 
 ::
 
@@ -181,6 +217,10 @@ INI files are organized in categories. No value is allowed outside of a category
     ; setting this to false allows fully deterministic execution in unit test and
     ; requires the user to trigger I/O manually
     detach-multiplexer=true
+    ; enable or disable communication via the TCP transport protocol
+    middleman_enable_tcp=true
+    ; enable or disable communication via the UDP transport protocol
+    middleman_enable_udp=false
 
     ; when compiling with logging enabled
     [logger]
@@ -197,12 +237,16 @@ INI files are organized in categories. No value is allowed outside of a category
     ; configures the severity level for logs (quiet|error|warning|info|debug|trace)
     verbosity='trace'
 
+.. raw:: latex
+
+   \clearpage
+
 .. _add-custom-message-type:
 
 Adding Custom Message Types
 ---------------------------
 
-CAF requires serialization support for all of its message types (see :ref:`type-inspection`). However, CAF also needs a mapping of unique type names to user-defined types at runtime. This is required to deserialize arbitrary messages from the network.
+CAF requires serialization support for all of its message types (see § `:ref:`type-inspection` <#type-inspection>`__). However, CAF also needs a mapping of unique type names to user-defined types at runtime. This is required to deserialize arbitrary messages from the network.
 
 As an introductory example, we (again) use the following POD type ``foo``.
 
@@ -213,7 +257,7 @@ As an introductory example, we (again) use the following POD type ``foo``.
       int b;
     };
 
-To make ``foo`` serializable, we make it inspectable (see :ref:`type-inspection`):
+To make ``foo`` serializable, we make it inspectable (see § `:ref:`type-inspection` <#type-inspection>`__):
 
 ::
 
@@ -240,14 +284,18 @@ Finally, we give ``foo`` a platform-neutral name and add it to the list of seria
 Adding Custom Error Types
 -------------------------
 
-Adding a custom error type to the system is a convenience feature to allow improve the string representation. Error types can be added by implementing a render function and passing it to ``add_error_category``, as shown in :ref:`custom-error`.
+Adding a custom error type to the system is a convenience feature to allow improve the string representation. Error types can be added by implementing a render function and passing it to ``add_error_category``, as shown in § \ `:ref:`custom-error` <#custom-error>`__.
+
+.. raw:: latex
+
+   \clearpage
 
 .. _add-custom-actor-type:
 
-Adding Custom Actor Types  :sup:`experimental` 
+Adding Custom Actor Types :sup:`experimental` 
 ----------------------------------------------
 
-Adding actor types to the configuration allows users to spawn actors by their name. In particular, this enables spawning of actors on a different node (see :ref:`remote-spawn`). For our example configuration, we consider the following simple ``calculator`` actor.
+Adding actor types to the configuration allows users to spawn actors by their name. In particular, this enables spawning of actors on a different node (see § `:ref:`remote-spawn` <#remote-spawn>`__). For our example configuration, we consider the following simple ``calculator`` actor.
 
 ::
 
@@ -259,7 +307,7 @@ Adding actor types to the configuration allows users to spawn actors by their na
 
     calculator::behavior_type calculator_fun(calculator::pointer self) {
 
-Adding the calculator actor type to our config is achieved by calling ``add_actor_type<T>``. Note that adding an actor type in this way implicitly calls ``add_message_type<T>`` for typed actors (see :ref:`add-custom-message-type`). This makes our ``calculator`` actor type serializable and also enables remote nodes to spawn calculators anywhere in the distributed actor system (assuming all nodes use the same config).
+Adding the calculator actor type to our config is achieved by calling ``add_actor_type<T>``. Note that adding an actor type in this way implicitly calls ``add_message_type<T>`` for typed actors (see § `1.3 <#add-custom-message-type>`__). This makes our ``calculator`` actor type serializable and also enables remote nodes to spawn calculators anywhere in the distributed actor system (assuming all nodes use the same config).
 
 ::
 
@@ -280,9 +328,13 @@ Our final example illustrates how to spawn a ``calculator`` locally by using its
     }
     calculator c = std::move(*x);
 
-Adding dynamically typed actors to the config is achieved in the same way. When spawning a dynamically typed actor in this way, the template parameter is simply ``actor``. For example, spawning an actor “foo” which requires one string is created with ``system.spawn<actor>("foo", make_message("bar"))``.
+Adding dynamically typed actors to the config is achieved in the same way. When spawning a dynamically typed actor in this way, the template parameter is simply ``actor``. For example, spawning an actor "foo" which requires one string is created with ``system.spawn<actor>("foo", make_message("bar"))``.
 
 Because constructor (or function) arguments for spawning the actor are stored in a ``message``, only actors with appropriate input types are allowed. For example, ``const char*`` arguments—or any other pointer type—are not allowed and must be replaced by ``std::string``.
+
+.. raw:: latex
+
+   \clearpage
 
 .. _log-output:
 
@@ -291,7 +343,7 @@ Log Output
 
 Logging is disabled in CAF per default. It can be enabled by setting the ``--with-log-level=`` option of the ``configure`` script to one of “error”, “warning”, “info”, “debug”, or “trace” (from least output to most). Alternatively, setting the CMake variable ``CAF_LOG_LEVEL`` to 0, 1, 2, 3, or 4 (from least output to most) has the same effect.
 
-All logger-related configuration options listed here and in :ref:`system-config-options` are silently ignored if logging is disabled.
+All logger-related configuration options listed here and in § \ `1.2 <#system-config-options>`__ are silently ignored if logging is disabled.
 
 .. _log-output-file-name:
 
@@ -300,15 +352,15 @@ File Name
 
 The output file is generated from the template configured by ``logger-file-name``. This template supports the following variables.
 
-+-------------------+----------------------------------+
-| **Variable**      | **Output**                       |
-+===================+==================================+
-| ``[PID]``         | The OS-specific process ID.      |
-+-------------------+----------------------------------+
-| ``[TIMESTAMP]``   | The UNIX timestamp on startup.   |
-+-------------------+----------------------------------+
-| ``[NODE]``        | The node ID of the CAF system.   |
-+-------------------+----------------------------------+
++-----------------+--------------------------------+
+| **Variable**    | **Output**                     |
++=================+================================+
+| ``[PID]``       | The OS-specific process ID.    |
++-----------------+--------------------------------+
+| ``[TIMESTAMP]`` | The UNIX timestamp on startup. |
++-----------------+--------------------------------+
+| ``[NODE]``      | The node ID of the CAF system. |
++-----------------+--------------------------------+
 
 .. _log-output-console:
 
@@ -324,35 +376,50 @@ Format Strings
 
 CAF uses log4j-like format strings (e.g. ``"%c %m%n"``) to configure how individual events are printed via ``logger-file-format`` and ``logger-console-format``. Note that format modifiers are not supported at the moment. The recognized field identifiers are:
 
-+-----------------+------------------------------------------------------------------------------------------------------------------------------------+
-| **Character**   | **Output**                                                                                                                         |
-+=================+====================================================================================================================================+
-| ``c``           | The category/component. This name is defined by the macro ``CAF_LOG_COMPONENT``. Set this macro before including any CAF header.   |
-+-----------------+------------------------------------------------------------------------------------------------------------------------------------+
-| ``C``           | The full qualifier of the current function. For example, the qualifier of ``void ns::foo::bar()`` is printed as ``ns.foo``.        |
-+-----------------+------------------------------------------------------------------------------------------------------------------------------------+
-| ``d``           | The date in ISO 8601 format, i.e., ``"YYYY-MM-DD hh:mm:ss"``.                                                                      |
-+-----------------+------------------------------------------------------------------------------------------------------------------------------------+
-| ``F``           | The file name.                                                                                                                     |
-+-----------------+------------------------------------------------------------------------------------------------------------------------------------+
-| ``L``           | The line number.                                                                                                                   |
-+-----------------+------------------------------------------------------------------------------------------------------------------------------------+
-| ``m``           | The user-defined log message.                                                                                                      |
-+-----------------+------------------------------------------------------------------------------------------------------------------------------------+
-| ``M``           | The name of the current function. For example, the name of ``void ns::foo::bar()`` is printed as ``bar``.                          |
-+-----------------+------------------------------------------------------------------------------------------------------------------------------------+
-| ``n``           | A newline.                                                                                                                         |
-+-----------------+------------------------------------------------------------------------------------------------------------------------------------+
-| ``p``           | The priority (severity level).                                                                                                     |
-+-----------------+------------------------------------------------------------------------------------------------------------------------------------+
-| ``r``           | Elapsed time since starting the application in milliseconds.                                                                       |
-+-----------------+------------------------------------------------------------------------------------------------------------------------------------+
-| ``t``           | ID of the current thread.                                                                                                          |
-+-----------------+------------------------------------------------------------------------------------------------------------------------------------+
-| ``a``           | ID of the current actor (or “actor0” when not logging inside an actor).                                                            |
-+-----------------+------------------------------------------------------------------------------------------------------------------------------------+
-| ``%``           | A single percent sign.                                                                                                             |
-+-----------------+------------------------------------------------------------------------------------------------------------------------------------+
++-----------------------------------+-----------------------------------+
+| **Character**                     | **Output**                        |
++===================================+===================================+
+| ``c``                             | The category/component. This name |
+|                                   | is defined by the macro           |
+|                                   | ``CAF_LOG_COMPONENT``. Set this   |
+|                                   | macro before including any CAF    |
+|                                   | header.                           |
++-----------------------------------+-----------------------------------+
+| ``C``                             | The full qualifier of the current |
+|                                   | function. For example, the        |
+|                                   | qualifier of                      |
+|                                   | ``void ns::foo::bar()`` is        |
+|                                   | printed as ``ns.foo``.            |
++-----------------------------------+-----------------------------------+
+| ``d``                             | The date in ISO 8601 format,      |
+|                                   | i.e., ``"YYYY-MM-DD hh:mm:ss"``.  |
++-----------------------------------+-----------------------------------+
+| ``F``                             | The file name.                    |
++-----------------------------------+-----------------------------------+
+| ``L``                             | The line number.                  |
++-----------------------------------+-----------------------------------+
+| ``m``                             | The user-defined log message.     |
++-----------------------------------+-----------------------------------+
+| ``M``                             | The name of the current function. |
+|                                   | For example, the name of          |
+|                                   | ``void ns::foo::bar()`` is        |
+|                                   | printed as ``bar``.               |
++-----------------------------------+-----------------------------------+
+| ``n``                             | A newline.                        |
++-----------------------------------+-----------------------------------+
+| ``p``                             | The priority (severity level).    |
++-----------------------------------+-----------------------------------+
+| ``r``                             | Elapsed time since starting the   |
+|                                   | application in milliseconds.      |
++-----------------------------------+-----------------------------------+
+| ``t``                             | ID of the current thread.         |
++-----------------------------------+-----------------------------------+
+| ``a``                             | ID of the current actor (or       |
+|                                   | “actor0” when not logging inside  |
+|                                   | an actor).                        |
++-----------------------------------+-----------------------------------+
+| ``%``                             | A single percent sign.            |
++-----------------------------------+-----------------------------------+
 
 .. _log-output-filtering:
 

@@ -1,9 +1,41 @@
+.. raw:: latex
+
+   \definecolor{lightgrey}{rgb}{0.9,0.9,0.9}
+
+.. raw:: latex
+
+   \definecolor{lightblue}{rgb}{0,0,1}
+
+.. raw:: latex
+
+   \definecolor{grey}{rgb}{0.5,0.5,0.5}
+
+.. raw:: latex
+
+   \definecolor{blue}{rgb}{0,0,1}
+
+.. raw:: latex
+
+   \definecolor{violet}{rgb}{0.5,0,0.5}
+
+.. raw:: latex
+
+   \definecolor{darkred}{rgb}{0.5,0,0}
+
+.. raw:: latex
+
+   \definecolor{darkblue}{rgb}{0,0,0.5}
+
+.. raw:: latex
+
+   \definecolor{darkgreen}{rgb}{0,0.5,0}
+
 .. _remote-spawn:
 
-Remote Spawning of Actors  :sup:`experimental` 
+Remote Spawning of Actors :sup:`experimental` 
 ==============================================
 
-Remote spawning is an extension of the dynamic spawn using run-time type names (see :ref:`add-custom-actor-type`). The following example assumes a typed actor handle named ``calculator`` with an actor implementing this messaging interface named “calculator”.
+Remote spawning is an extension of the dynamic spawn using run-time type names (see § `:ref:`add-custom-actor-type` <#add-custom-actor-type>`__). The following example assumes a typed actor handle named ``calculator`` with an actor implementing this messaging interface named "calculator".
 
 ::
 

@@ -1,3 +1,35 @@
+.. raw:: latex
+
+   \definecolor{lightgrey}{rgb}{0.9,0.9,0.9}
+
+.. raw:: latex
+
+   \definecolor{lightblue}{rgb}{0,0,1}
+
+.. raw:: latex
+
+   \definecolor{grey}{rgb}{0.5,0.5,0.5}
+
+.. raw:: latex
+
+   \definecolor{blue}{rgb}{0,0,1}
+
+.. raw:: latex
+
+   \definecolor{violet}{rgb}{0.5,0,0.5}
+
+.. raw:: latex
+
+   \definecolor{darkred}{rgb}{0.5,0,0}
+
+.. raw:: latex
+
+   \definecolor{darkblue}{rgb}{0,0,0.5}
+
+.. raw:: latex
+
+   \definecolor{darkgreen}{rgb}{0,0.5,0}
+
 .. _migration-guides:
 
 Migration Guides
@@ -19,7 +51,7 @@ Version 0.9 included a lot of changes and improvements in its implementation, bu
 
  
 
-This is the biggest library change since the initial release. The major problem with this keyword-like identifier is that it must have a single type as it’s implemented as a thread-local variable. Since there are so many different kinds of actors (event-based or blocking, untyped or typed), ``self`` needs to perform type erasure at some point, rendering it ultimately useless. Instead of a thread-local pointer, you can now use the first argument in functor-based actors to “catch” the self pointer with proper type information.
+This is the biggest library change since the initial release. The major problem with this keyword-like identifier is that it must have a single type as it’s implemented as a thread-local variable. Since there are so many different kinds of actors (event-based or blocking, untyped or typed), ``self`` needs to perform type erasure at some point, rendering it ultimately useless. Instead of a thread-local pointer, you can now use the first argument in functor-based actors to "catch" the self pointer with proper type information.
 
 .. _actor_ptr-has-been-replaced:
 
@@ -38,6 +70,10 @@ The API for typed actors is now similar to the API for untyped actors
  
 
 The APIs of typed and untyped actors have been harmonized. Typed actors can now be published in the network and also use all operations untyped actors can.
+
+.. raw:: latex
+
+   \clearpage
 
 .. _to-0.10-libcppa-to-caf:
 
@@ -103,9 +139,9 @@ Version 0.12 removed two features:
 
 This release removes the (since 0.9 deprecated) ``cppa`` headers and deprecates all ``*_send_tuple`` versions (simply use the function without ``_tuple`` suffix). ``local_actor::on_exit`` once again became virtual.
 
-In case you were using the old ``cppa::options_description`` API, you can migrate to the new API based on ``extract`` (see :ref:`extract-opts`).
+In case you were using the old ``cppa::options_description`` API, you can migrate to the new API based on ``extract`` (see § `:ref:`extract-opts` <#extract-opts>`__).
 
-Most importantly, version 0.13 slightly changes ``last_dequeued`` and ``last_sender``. Both functions will now cause undefined behavior (dereferencing a ``nullptr``) instead of returning dummy values when accessed from outside a callback or after forwarding the current message. Besides, these function names were not a good choice in the first place, since “last” implies accessing data received in the past. As a result, both functions are now deprecated. Their replacements are named ``current_message`` and ``current_sender`` (see :ref:`interface`).
+Most importantly, version 0.13 slightly changes ``last_dequeued`` and ``last_sender``. Both functions will now cause undefined behavior (dereferencing a ``nullptr``) instead of returning dummy values when accessed from outside a callback or after forwarding the current message. Besides, these function names were not a good choice in the first place, since “last” implies accessing data received in the past. As a result, both functions are now deprecated. Their replacements are named ``current_message`` and ``current_sender`` (see § `:ref:`interface` <#interface>`__).
 
 .. _to-0.14:
 
@@ -116,12 +152,16 @@ The function ``timed_sync_send`` has been removed. It offered an alternative way
 
 The policy classes ``broadcast``, ``random``, and ``round_robin`` in ``actor_pool`` were removed and replaced by factory functions using the same name.
 
+.. raw:: latex
+
+   \clearpage
+
 .. _to-0.15:
 
 0.14 to 0.15
 ------------
 
-Version 0.15 replaces the singleton-based architecture with ``actor_system``. Most of the free functions in namespace ``caf`` are now member functions of ``actor_system`` (see :ref:`actor-system`). Likewise, most functions in namespace ``caf::io`` are now member functions of ``middleman`` (see :ref:`middleman`). The structure of CAF applications has changed fundamentally with a focus on configurability. Setting and fine-tuning the scheduler, changing parameters of the middleman, etc. is now bundled in the class ``actor_system_config``. The new configuration mechanism is also easily extensible.
+Version 0.15 replaces the singleton-based architecture with ``actor_system``. Most of the free functions in namespace ``caf`` are now member functions of ``actor_system`` (see § `:ref:`actor-system` <#actor-system>`__). Likewise, most functions in namespace ``caf::io`` are now member functions of ``middleman`` (see § `:ref:`middleman` <#middleman>`__). The structure of CAF applications has changed fundamentally with a focus on configurability. Setting and fine-tuning the scheduler, changing parameters of the middleman, etc. is now bundled in the class ``actor_system_config``. The new configuration mechanism is also easily extensible.
 
 Patterns are now limited to the simple notation, because the advanced features (1) are not implementable for statically typed actors, (2) are not portable to Windows/MSVC, and (3) drastically impact compile times. Dropping this functionality also simplifies the implementation and improves performance.
 

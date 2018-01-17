@@ -1,6 +1,38 @@
+.. raw:: latex
+
+   \definecolor{lightgrey}{rgb}{0.9,0.9,0.9}
+
+.. raw:: latex
+
+   \definecolor{lightblue}{rgb}{0,0,1}
+
+.. raw:: latex
+
+   \definecolor{grey}{rgb}{0.5,0.5,0.5}
+
+.. raw:: latex
+
+   \definecolor{blue}{rgb}{0,0,1}
+
+.. raw:: latex
+
+   \definecolor{violet}{rgb}{0.5,0,0.5}
+
+.. raw:: latex
+
+   \definecolor{darkred}{rgb}{0.5,0,0}
+
+.. raw:: latex
+
+   \definecolor{darkblue}{rgb}{0,0,0.5}
+
+.. raw:: latex
+
+   \definecolor{darkgreen}{rgb}{0,0.5,0}
+
 .. _worker-groups:
 
-Managing Groups of Workers  :sup:`experimental` 
+Managing Groups of Workers :sup:`experimental` 
 ===============================================
 
 When managing a set of workers, a central actor often dispatches requests to a set of workers. For this purpose, the class ``actor_pool`` implements a lightweight abstraction for managing a set of workers using a dispatching policy. Unlike groups, pools usually own their workers.

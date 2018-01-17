@@ -1,9 +1,41 @@
+.. raw:: latex
+
+   \definecolor{lightgrey}{rgb}{0.9,0.9,0.9}
+
+.. raw:: latex
+
+   \definecolor{lightblue}{rgb}{0,0,1}
+
+.. raw:: latex
+
+   \definecolor{grey}{rgb}{0.5,0.5,0.5}
+
+.. raw:: latex
+
+   \definecolor{blue}{rgb}{0,0,1}
+
+.. raw:: latex
+
+   \definecolor{violet}{rgb}{0.5,0,0.5}
+
+.. raw:: latex
+
+   \definecolor{darkred}{rgb}{0.5,0,0}
+
+.. raw:: latex
+
+   \definecolor{darkblue}{rgb}{0,0,0.5}
+
+.. raw:: latex
+
+   \definecolor{darkgreen}{rgb}{0,0.5,0}
+
 .. _type-inspection:
 
 Type Inspection (Serialization and String Conversion)
 =====================================================
 
-CAF is designed with distributed systems in mind. Hence, all message types must be serializable and need a platform-neutral, unique name that is configured at startup (see :ref:`add-custom-message-type`). Using a message type that is not serializable causes a compiler error (see :ref:`unsafe-message-type`). CAF serializes individual elements of a message by using the inspection API. This API allows users to provide code for serialization as well as string conversion with a single free function. The signature for a class ``my_class`` is always as follows:
+CAF is designed with distributed systems in mind. Hence, all message types must be serializable and need a platform-neutral, unique name that is configured at startup (see § `:ref:`add-custom-message-type` <#add-custom-message-type>`__). Using a message type that is not serializable causes a compiler error (see § `1.4 <#unsafe-message-type>`__). CAF serializes individual elements of a message by using the inspection API. This API allows users to provide code for serialization as well as string conversion with a single free function. The signature for a class ``my_class`` is always as follows:
 
 ::
 
@@ -96,11 +128,14 @@ Message types that are not serializable cause compile time errors when used in a
 
 ::
 
-    #define CAF_ALLOW_UNSAFE_MESSAGE_TYPE(type_name)                               \
       namespace caf {                                                              \
       template <>                                                                  \
       struct allowed_unsafe_message_type<type_name> : std::true_type {};           \
       }
+
+.. raw:: latex
+
+   \clearpage
 
 .. _splitting-save-and-load-operations:
 
@@ -141,6 +176,10 @@ If loading and storing cannot be implemented in a single function, users can que
       int a_;
       int b_;
     };
+
+.. raw:: latex
+
+   \clearpage
 
 Since there is no access to the data fields ``a_`` and ``b_`` (and assuming no changes to ``foo`` are possible), we need to split our implementation of ``inspect`` as shown below.
 

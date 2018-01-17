@@ -1,36 +1,76 @@
+.. raw:: latex
+
+   \definecolor{lightgrey}{rgb}{0.9,0.9,0.9}
+
+.. raw:: latex
+
+   \definecolor{lightblue}{rgb}{0,0,1}
+
+.. raw:: latex
+
+   \definecolor{grey}{rgb}{0.5,0.5,0.5}
+
+.. raw:: latex
+
+   \definecolor{blue}{rgb}{0,0,1}
+
+.. raw:: latex
+
+   \definecolor{violet}{rgb}{0.5,0,0.5}
+
+.. raw:: latex
+
+   \definecolor{darkred}{rgb}{0.5,0,0}
+
+.. raw:: latex
+
+   \definecolor{darkblue}{rgb}{0,0,0.5}
+
+.. raw:: latex
+
+   \definecolor{darkgreen}{rgb}{0,0.5,0}
+
 .. _error:
 
 Errors
 ======
 
-Errors in CAF have a code and a category, similar to ``std::error_code`` and ``std::error_condition``. Unlike its counterparts from the C++ standard library, ``error`` is plattform-neutral and serializable. Instead of using category singletons, CAF stores categories as atoms (see :ref:`atom`). Errors can also include a message to provide additional context information.
+Errors in CAF have a code and a category, similar to ``std::error_code`` and ``std::error_condition``. Unlike its counterparts from the C++ standard library, ``error`` is plattform-neutral and serializable. Instead of using category singletons, CAF stores categories as atoms (see § \ `:ref:`atom` <#atom>`__). Errors can also include a message to provide additional context information.
 
 .. _class-interface:
 
 Class Interface
 ---------------
 
-+--------------------------------------------+----------------------------------------------------------------------+
-| **Constructors**                           |                                                                      |
-+============================================+======================================================================+
-| ``(Enum x)``                               | Construct error by calling ``make_error(x)``                         |
-+--------------------------------------------+----------------------------------------------------------------------+
-| ``(uint8_t x, atom_value y)``              | Construct error with code ``x`` and category ``y``                   |
-+--------------------------------------------+----------------------------------------------------------------------+
-| ``(uint8_t x, atom_value y, message z)``   | Construct error with code ``x``, category ``y``, and context ``z``   |
-+--------------------------------------------+----------------------------------------------------------------------+
-|                                            |                                                                      |
-+--------------------------------------------+----------------------------------------------------------------------+
-| **Observers**                              |                                                                      |
-+--------------------------------------------+----------------------------------------------------------------------+
-| ``uint8_t code()``                         | Returns the error code                                               |
-+--------------------------------------------+----------------------------------------------------------------------+
-| ``atom_value category()``                  | Returns the error category                                           |
-+--------------------------------------------+----------------------------------------------------------------------+
-| ``message context()``                      | Returns additional context information                               |
-+--------------------------------------------+----------------------------------------------------------------------+
-| ``explicit operator bool()``               | Returns ``code() != 0``                                              |
-+--------------------------------------------+----------------------------------------------------------------------+
+.. raw:: latex
+
+   \small
+
++-----------------------------------+-----------------------------------+
+| **Constructors**                  |                                   |
++===================================+===================================+
+| ``(Enum x)``                      | Construct error by calling        |
+|                                   | ``make_error(x)``                 |
++-----------------------------------+-----------------------------------+
+| ``(uint8_t x, atom_value y)``     | Construct error with code ``x``   |
+|                                   | and category ``y``                |
++-----------------------------------+-----------------------------------+
+| ``(uint8_t x, atom_value y, messa | Construct error with code ``x``,  |
+| ge z)``                           | category ``y``, and context ``z`` |
++-----------------------------------+-----------------------------------+
+|                                   |                                   |
++-----------------------------------+-----------------------------------+
+| **Observers**                     |                                   |
++-----------------------------------+-----------------------------------+
+| ``uint8_t code()``                | Returns the error code            |
++-----------------------------------+-----------------------------------+
+| ``atom_value category()``         | Returns the error category        |
++-----------------------------------+-----------------------------------+
+| ``message context()``             | Returns additional context        |
+|                                   | information                       |
++-----------------------------------+-----------------------------------+
+| ``explicit operator bool()``      | Returns ``code() != 0``           |
++-----------------------------------+-----------------------------------+
 
 .. _custom-error:
 
@@ -76,6 +116,10 @@ The following code adds a rendering function to the actor system to provide a mo
 
 With the custom rendering function, ``system.render(make_error(math_error::division_by_zero))`` returns ``"math_error(division_by_zero)"``.
 
+.. raw:: latex
+
+   \clearpage
+
 .. _sec:
 
 System Error Codes
@@ -85,7 +129,6 @@ System Error Codes (SECs) use the error category ``"system"``. They represent er
 
 ::
 
-    /// SEC stands for "System Error Code". This enum contains
     /// error codes used internally by CAF.
     enum class sec : uint8_t {
       /// Indicates that an actor dropped an unexpected message.
@@ -147,17 +190,17 @@ System Error Codes (SECs) use the error category ``"system"``. They represent er
       /// Linking to a remote actor failed because actor no longer exists.
       remote_linking_failed,
       /// Adding an upstream to a stream failed.
+      cannot_add_upstream = 30,
 
 .. _exit-reason:
 
 Default Exit Reasons
 --------------------
 
-CAF uses the error category ``"exit"`` for default exit reasons. These errors are usually fail states set by the actor system itself. The two exceptions are ``exit_reason::user_shutdown`` and ``exit_reason::kill``. The former is used in CAF to signalize orderly, user-requested shutdown and can be used by programmers in the same way. The latter terminates an actor unconditionally when used in ``send_exit``, even if the default handler for exit messages (see :ref:`exit-message`) is overridden.
+CAF uses the error category ``"exit"`` for default exit reasons. These errors are usually fail states set by the actor system itself. The two exceptions are ``exit_reason::user_shutdown`` and ``exit_reason::kill``. The former is used in CAF to signalize orderly, user-requested shutdown and can be used by programmers in the same way. The latter terminates an actor unconditionally when used in ``send_exit``, even if the default handler for exit messages (see § \ `:ref:`exit-message` <#exit-message>`__) is overridden.
 
 ::
 
-    /// This error category represents fail conditions for actors.
     enum class exit_reason : uint8_t {
       /// Indicates that an actor finished execution without error.
       normal = 0,

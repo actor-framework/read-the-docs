@@ -1,3 +1,35 @@
+.. raw:: latex
+
+   \definecolor{lightgrey}{rgb}{0.9,0.9,0.9}
+
+.. raw:: latex
+
+   \definecolor{lightblue}{rgb}{0,0,1}
+
+.. raw:: latex
+
+   \definecolor{grey}{rgb}{0.5,0.5,0.5}
+
+.. raw:: latex
+
+   \definecolor{blue}{rgb}{0,0,1}
+
+.. raw:: latex
+
+   \definecolor{violet}{rgb}{0.5,0,0.5}
+
+.. raw:: latex
+
+   \definecolor{darkred}{rgb}{0.5,0,0}
+
+.. raw:: latex
+
+   \definecolor{darkblue}{rgb}{0,0,0.5}
+
+.. raw:: latex
+
+   \definecolor{darkgreen}{rgb}{0,0.5,0}
+
 .. _broker:
 
 Network I/O with Brokers
@@ -54,6 +86,10 @@ Writes data to the output buffer.
 
 Sends the data from the output buffer.
 
+.. raw:: latex
+
+   \clearpage
+
 ::
 
     template <class F, class... Ts>
@@ -99,7 +135,7 @@ Indicates that ``source`` accepted a new (TCP) connection identified by ``handle
       std::vector<char> buf;
     };
 
-Contains raw bytes received from ``handle``. The amount of data received per event is controlled with ``configure_read`` (see :ref:`broker-class])` It is worth mentioning that the buffer is re-used whenever possible.
+Contains raw bytes received from ``handle``. The amount of data received per event is controlled with ``configure_read`` (see `1.2 <#broker-class>`__). It is worth mentioning that the buffer is re-used whenever possible.
 
 ::
 
@@ -123,11 +159,11 @@ A ``connection_closed_msg`` or ``acceptor_closed_msg`` informs the broker that o
       accept_handle handle;
     };
 
-A ``connection_passivated_msg`` or ``acceptor_passivated_msg`` informs the broker that one of it handles entered passive mode and no longer accepts new data or connections (see :ref:`trigger`).
+A ``connection_passivated_msg`` or ``acceptor_passivated_msg`` informs the broker that one of it handles entered passive mode and no longer accepts new data or connections (see § `1.4 <#trigger>`__).
 
 .. _trigger:
 
-Manually Triggering Events  :sup:`experimental` 
+Manually Triggering Events :sup:`experimental` 
 -----------------------------------------------
 
 Brokers receive new events as ``new_connection_msg`` and ``new_data_msg`` as soon and as often as they occur, per default. This means a fast peer can overwhelm a broker by sending it data faster than the broker can process it. In particular if the broker outsources work items to other actors, because work items can accumulate in the mailboxes of the workers.

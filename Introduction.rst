@@ -1,3 +1,35 @@
+.. raw:: latex
+
+   \definecolor{lightgrey}{rgb}{0.9,0.9,0.9}
+
+.. raw:: latex
+
+   \definecolor{lightblue}{rgb}{0,0,1}
+
+.. raw:: latex
+
+   \definecolor{grey}{rgb}{0.5,0.5,0.5}
+
+.. raw:: latex
+
+   \definecolor{blue}{rgb}{0,0,1}
+
+.. raw:: latex
+
+   \definecolor{violet}{rgb}{0.5,0,0.5}
+
+.. raw:: latex
+
+   \definecolor{darkred}{rgb}{0.5,0,0}
+
+.. raw:: latex
+
+   \definecolor{darkblue}{rgb}{0,0,0.5}
+
+.. raw:: latex
+
+   \definecolor{darkgreen}{rgb}{0,0.5,0}
+
 .. _introduction:
 
 Introduction
@@ -49,21 +81,21 @@ CAF uses reference counting for actors. The three ways to store a reference to a
 Address
 ^^^^^^^
 
-Each actor has a (network-wide) unique logical address. This identifier is represented by ``actor_addr``, which allows to identify and monitor an actor. Unlike other actor frameworks, CAF does *not* allow users to send messages to addresses. This limitation is due to the fact that the address does not contain any type information. Hence, it would not be safe to send it a message, because the receiving actor might use a statically typed interface that does not accept the given message. Because an ``actor_addr`` fills the role of an identifier, it has *weak reference semantics* (see :ref:`reference-counting`).
+Each actor has a (network-wide) unique logical address. This identifier is represented by ``actor_addr``, which allows to identify and monitor an actor. Unlike other actor frameworks, CAF does *not* allow users to send messages to addresses. This limitation is due to the fact that the address does not contain any type information. Hence, it would not be safe to send it a message, because the receiving actor might use a statically typed interface that does not accept the given message. Because an ``actor_addr`` fills the role of an identifier, it has *weak reference semantics* (see § `:ref:`reference-counting` <#reference-counting>`__).
 
 .. _actor-handle:
 
 Handle
 ^^^^^^
 
-An actor handle contains the address of an actor along with its type information and is required for sending messages to actors. The distinction between handles and addresses—which is unique to CAF when comparing it to other actor systems—is a consequence of the design decision to enforce static type checking for all messages. Dynamically typed actors use ``actor`` handles, while statically typed actors use ``typed_actor<...>`` handles. Both types have *strong reference semantics* (see :ref:`reference-counting`).
+An actor handle contains the address of an actor along with its type information and is required for sending messages to actors. The distinction between handles and addresses—which is unique to CAF when comparing it to other actor systems—is a consequence of the design decision to enforce static type checking for all messages. Dynamically typed actors use ``actor`` handles, while statically typed actors use ``typed_actor<...>`` handles. Both types have *strong reference semantics* (see § `:ref:`reference-counting` <#reference-counting>`__).
 
 .. _actor-pointer:
 
 Pointer
 ^^^^^^^
 
-In a few instances, CAF uses ``strong_actor_ptr`` to refer to an actor using *strong reference semantics* (see :ref:`reference-counting`) without knowing the proper handle type. Pointers must be converted to a handle via ``actor_cast`` (see :ref:`actor-cast`) prior to sending messages. A ``strong_actor_ptr`` can be *null*.
+In a few instances, CAF uses ``strong_actor_ptr`` to refer to an actor using *strong reference semantics* (see § `:ref:`reference-counting` <#reference-counting>`__) without knowing the proper handle type. Pointers must be converted to a handle via ``actor_cast`` (see § `:ref:`actor-cast` <#actor-cast>`__) prior to sending messages. A ``strong_actor_ptr`` can be *null*.
 
 .. _spawning:
 
@@ -77,14 +109,14 @@ Spawning
 Monitor
 ~~~~~~~
 
-A monitored actor sends a down message (see :ref:`down-message`) to all actors monitoring it as part of its termination. This allows actors to supervise other actors and to take actions when one of the supervised actors fails, i.e., terminates with a non-normal exit reason.
+A monitored actor sends a down message (see § \ `:ref:`down-message` <#down-message>`__) to all actors monitoring it as part of its termination. This allows actors to supervise other actors and to take actions when one of the supervised actors fails, i.e., terminates with a non-normal exit reason.
 
 .. _link:
 
 Link
 ~~~~
 
-A link is a bidirectional connection between two actors. Each actor sends an exit message (see :ref:`exit-message`) to all of its links as part of its termination. Unlike down messages, exit messages cause the receiving actor to terminate as well when receiving a non-normal exit reason per default. This allows developers to create a set of actors with the guarantee that either all or no actors are alive. Actors can override the default handler to implement error recovery strategies.
+A link is a bidirectional connection between two actors. Each actor sends an exit message (see § \ `:ref:`exit-message` <#exit-message>`__) to all of its links as part of its termination. Unlike down messages, exit messages cause the receiving actor to terminate as well when receiving a non-normal exit reason per default. This allows developers to create a set of actors with the guarantee that either all or no actors are alive. Actors can override the default handler to implement error recovery strategies.
 
 .. _experimental-features:
 

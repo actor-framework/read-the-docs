@@ -1,34 +1,78 @@
+.. raw:: latex
+
+   \definecolor{lightgrey}{rgb}{0.9,0.9,0.9}
+
+.. raw:: latex
+
+   \definecolor{lightblue}{rgb}{0,0,1}
+
+.. raw:: latex
+
+   \definecolor{grey}{rgb}{0.5,0.5,0.5}
+
+.. raw:: latex
+
+   \definecolor{blue}{rgb}{0,0,1}
+
+.. raw:: latex
+
+   \definecolor{violet}{rgb}{0.5,0,0.5}
+
+.. raw:: latex
+
+   \definecolor{darkred}{rgb}{0.5,0,0}
+
+.. raw:: latex
+
+   \definecolor{darkblue}{rgb}{0,0,0.5}
+
+.. raw:: latex
+
+   \definecolor{darkgreen}{rgb}{0,0.5,0}
+
 .. _middleman:
 
 Middleman
 =========
 
-The middleman is the main component of the I/O module and enables distribution. It transparently manages proxy actor instances representing remote actors, maintains connections to other nodes, and takes care of serialization of messages. Applications install a middleman by loading ``caf::io::middleman`` as module (see :ref:`system-config`). Users can include ``"caf/io/all.hpp"`` to get access to all public classes of the I/O module.
+The middleman is the main component of the I/O module and enables distribution. It transparently manages proxy actor instances representing remote actors, maintains connections to other nodes, and takes care of serialization of messages. Applications install a middleman by loading ``caf::io::middleman`` as module (see § \ `:ref:`system-config` <#system-config>`__). Users can include ``"caf/io/all.hpp"`` to get access to all public classes of the I/O module.
 
 .. _class-middleman:
 
 Class ``middleman``
 -------------------
 
-+------------------------------------------------------------------+------------------------+
-| **Remoting**                                                     |                        |
-+==================================================================+========================+
-| ``expected<uint16> open(uint16, const char*, bool)``             | See :ref:`remoting`.   |
-+------------------------------------------------------------------+------------------------+
-| ``expected<uint16> publish(T, uint16, const char*, bool)``       | See :ref:`remoting`.   |
-+------------------------------------------------------------------+------------------------+
-| ``expected<void> unpublish(T x, uint16)``                        | See :ref:`remoting`.   |
-+------------------------------------------------------------------+------------------------+
-| ``expected<node_id> connect(std::string host, uint16_t port)``   | See :ref:`remoting`.   |
-+------------------------------------------------------------------+------------------------+
-| ``expected<T> remote_actor<T = actor>(string, uint16)``          | See :ref:`remoting`.   |
-+------------------------------------------------------------------+------------------------+
-| ``expected<T> spawn_broker(F fun, ...)``                         | See :ref:`broker`.     |
-+------------------------------------------------------------------+------------------------+
-| ``expected<T> spawn_client(F, string, uint16, ...)``             | See :ref:`broker`.     |
-+------------------------------------------------------------------+------------------------+
-| ``expected<T> spawn_server(F, uint16, ...)``                     | See :ref:`broker`.     |
-+------------------------------------------------------------------+------------------------+
+.. raw:: latex
+
+   \small
+
++-----------------------------------+-----------------------------------+
+| **Remoting**                      |                                   |
++===================================+===================================+
+| ``expected<uint16> open(uint16, c | See § \ `1.2 <#remoting>`__.      |
+| onst char*, bool)``               |                                   |
++-----------------------------------+-----------------------------------+
+| ``expected<uint16> publish(T, uin | See § \ `1.2 <#remoting>`__.      |
+| t16, const char*, bool)``         |                                   |
++-----------------------------------+-----------------------------------+
+| ``expected<void> unpublish(T x, u | See § \ `1.2 <#remoting>`__.      |
+| int16)``                          |                                   |
++-----------------------------------+-----------------------------------+
+| ``expected<node_id> connect(std:: | See § \ `1.2 <#remoting>`__.      |
+| string host, uint16_t port)``     |                                   |
++-----------------------------------+-----------------------------------+
+| ``expected<T> remote_actor<T = ac | See § \ `1.2 <#remoting>`__.      |
+| tor>(string, uint16)``            |                                   |
++-----------------------------------+-----------------------------------+
+| ``expected<T> spawn_broker(F fun, | See § \ `:ref:`broker` <#broker>` |
+|  ...)``                           | __.                               |
++-----------------------------------+-----------------------------------+
+| ``expected<T> spawn_client(F, str | See § \ `:ref:`broker` <#broker>` |
+| ing, uint16, ...)``               | __.                               |
++-----------------------------------+-----------------------------------+
+| ``expected<T> spawn_server(F, uin | See § \ `:ref:`broker` <#broker>` |
+| t16, ...)``                       | __.                               |
++-----------------------------------+-----------------------------------+
 
 .. _remoting:
 
@@ -46,7 +90,7 @@ The member function ``publish`` binds an actor to a given port, thereby allowing
 
 The first argument is a handle of type ``actor`` or ``typed_actor<...>``. The second argument denotes the TCP port. The OS will pick a random high-level port when passing 0. The third parameter configures the listening address. Passing null will accept all incoming connections (``INADDR_ANY``). Finally, the flag ``reuse_addr`` controls the behavior when binding an IP address to a port, with the same semantics as the BSD socket flag ``SO_REUSEADDR``. For example, with ``reuse_addr = false``, binding two sockets to 0.0.0.0:42 and 10.0.0.1:42 will fail with ``EADDRINUSE`` since 0.0.0.0 includes 10.0.0.1. With ``reuse_addr = true`` binding would succeed because 10.0.0.1 and 0.0.0.0 are not literally equal addresses.
 
-The member function returns the bound port on success. Otherwise, an ``error`` (see :ref:`error`) is returned.
+The member function returns the bound port on success. Otherwise, an ``error`` (see § `:ref:`error` <#error>`__) is returned.
 
 ::
 
@@ -55,7 +99,11 @@ The member function returns the bound port on success. Otherwise, an ``error`` (
 
 The member function ``unpublish`` allows actors to close a port manually. This is performed automatically if the published actor terminates. Passing 0 as second argument closes all ports an actor is published to, otherwise only one specific port is closed.
 
-The function returns an ``error`` (see :ref:`error`) if the actor was not bound to given port.
+The function returns an ``error`` (see § `:ref:`error` <#error>`__) if the actor was not bound to given port.
+
+.. raw:: latex
+
+   \clearpage
 
 ::
 
@@ -81,7 +129,7 @@ After a server has published an actor with ``publish``, clients can connect to t
 
 There is no difference between server and client after the connection phase. Remote actors use the same handle types as local actors and are thus fully transparent.
 
-The function pair ``open`` and ``connect`` allows users to connect CAF instances without remote actor setup. The function ``connect`` returns a ``node_id`` that can be used for remote spawning (see :ref:`remote-spawn`).
+The function pair ``open`` and ``connect`` allows users to connect CAF instances without remote actor setup. The function ``connect`` returns a ``node_id`` that can be used for remote spawning (see § `:ref:`remote-spawn` <#remote-spawn>`__).
 
 .. _free-remoting-functions:
 
@@ -90,14 +138,12 @@ Free Functions
 
 The following free functions in the namespace ``caf::io`` avoid calling the middleman directly. This enables users to easily switch between communication backends as long as the interfaces have the same signatures. For example, the (experimental) OpenSSL binding of CAF implements the same functions in the namespace ``caf::openssl`` to easily switch between encrypted and unencrypted communication.
 
-+---------------------------------------------------------------------------------+------------------------+
-| ``expected<uint16> open(actor_system&, uint16, const char*, bool)``             | See :ref:`remoting`.   |
-+=================================================================================+========================+
-| ``expected<uint16> publish(T, uint16, const char*, bool)``                      | See :ref:`remoting`.   |
-+---------------------------------------------------------------------------------+------------------------+
-| ``expected<void> unpublish(T x, uint16)``                                       | See :ref:`remoting`.   |
-+---------------------------------------------------------------------------------+------------------------+
-| ``expected<node_id> connect(actor_system&, std::string host, uint16_t port)``   | See :ref:`remoting`.   |
-+---------------------------------------------------------------------------------+------------------------+
-| ``expected<T> remote_actor<T = actor>(actor_system&, string, uint16)``          | See :ref:`remoting`.   |
-+---------------------------------------------------------------------------------+------------------------+
+.. raw:: latex
+
+   \small
+
+| ll ``expected<uint16> open(actor_system&, uint16, const char*, bool)`` & See § \ `1.2 <#remoting>`__.
+| ``expected<uint16> publish(T, uint16, const char*, bool)`` & See § \ `1.2 <#remoting>`__.
+| ``expected<void> unpublish(T x, uint16)`` & See § \ `1.2 <#remoting>`__.
+| ``expected<node_id> connect(actor_system&, std::string host, uint16_t port)`` & See § \ `1.2 <#remoting>`__.
+| ``expected<T> remote_actor<T = actor>(actor_system&, string, uint16)`` & See § \ `1.2 <#remoting>`__.

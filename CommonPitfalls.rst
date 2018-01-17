@@ -1,3 +1,35 @@
+.. raw:: latex
+
+   \definecolor{lightgrey}{rgb}{0.9,0.9,0.9}
+
+.. raw:: latex
+
+   \definecolor{lightblue}{rgb}{0,0,1}
+
+.. raw:: latex
+
+   \definecolor{grey}{rgb}{0.5,0.5,0.5}
+
+.. raw:: latex
+
+   \definecolor{blue}{rgb}{0,0,1}
+
+.. raw:: latex
+
+   \definecolor{violet}{rgb}{0.5,0,0.5}
+
+.. raw:: latex
+
+   \definecolor{darkred}{rgb}{0.5,0,0}
+
+.. raw:: latex
+
+   \definecolor{darkblue}{rgb}{0,0,0.5}
+
+.. raw:: latex
+
+   \definecolor{darkgreen}{rgb}{0,0.5,0}
+
 .. _pitfalls:
 
 Common Pitfalls
@@ -50,6 +82,10 @@ Requests
 -  A handle returned by ``request`` represents *exactly one* response message. It is not possible to receive more than one response message.
 
 -  The handle returned by ``request`` is bound to the calling actor. It is not possible to transfer a handle to a response to another actor.
+
+.. raw:: latex
+
+   \clearpage
 
 .. _sharing:
 

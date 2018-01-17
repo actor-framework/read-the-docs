@@ -1,3 +1,35 @@
+.. raw:: latex
+
+   \definecolor{lightgrey}{rgb}{0.9,0.9,0.9}
+
+.. raw:: latex
+
+   \definecolor{lightblue}{rgb}{0,0,1}
+
+.. raw:: latex
+
+   \definecolor{grey}{rgb}{0.5,0.5,0.5}
+
+.. raw:: latex
+
+   \definecolor{blue}{rgb}{0,0,1}
+
+.. raw:: latex
+
+   \definecolor{violet}{rgb}{0.5,0,0.5}
+
+.. raw:: latex
+
+   \definecolor{darkred}{rgb}{0.5,0,0}
+
+.. raw:: latex
+
+   \definecolor{darkblue}{rgb}{0,0,0.5}
+
+.. raw:: latex
+
+   \definecolor{darkgreen}{rgb}{0,0.5,0}
+
 .. _scheduler:
 
 Scheduler
@@ -46,6 +78,10 @@ Work Stealing
 
 The default policy in CAF is work stealing. The key idea of this algorithm is to remove the bottleneck of a single, global work queue. The original algorithm was developed for fully strict computations by Blumofe et al in 1994. It schedules any number of tasks to ``P`` workers, where ``P`` is the number of processors available.
 
+.. raw:: latex
+
+   \centering
+
 .. figure:: stealing.png
    :alt: Stealing of work items
 
@@ -55,7 +91,7 @@ Each worker dequeues work items from an individual queue until it is drained. On
 
 CAF uses a double-ended queue for its workers, which is synchronized with two spinlocks. One downside of a decentralized algorithm such as work stealing is, that idle states are hard to detect. Did only one worker run out of work items or all? Since each worker has only local knowledge, it cannot decide when it could safely suspend itself. Likewise, workers cannot resume if new job items arrived at one or more workers. For this reason, CAF uses three polling intervals. Once a worker runs out of work items, it tries to steal items from others. First, it uses the *aggressive* polling interval. It falls back to a *moderate* interval after a predefined number of trials. After another predefined number of trials, it will finally use a *relaxed* interval.
 
-Per default, the *aggressive* strategy performs 100 steal attempts with no sleep interval in between. The *moderate* strategy tries to steal 500 times with 50 microseconds sleep between two steal attempts. Finally, the *relaxed* strategy runs indefinitely but sleeps for 10 milliseconds between two attempts. These defaults can be overridden via system config at startup (see :ref:`system-config`).
+Per default, the *aggressive* strategy performs 100 steal attempts with no sleep interval in between. The *moderate* strategy tries to steal 500 times with 50 microseconds sleep between two steal attempts. Finally, the *relaxed* strategy runs indefinitely but sleeps for 10 milliseconds between two attempts. These defaults can be overridden via system config at startup (see § \ `:ref:`system-config` <#system-config>`__).
 
 .. _work-sharing:
 

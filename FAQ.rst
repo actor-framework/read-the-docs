@@ -1,3 +1,35 @@
+.. raw:: latex
+
+   \definecolor{lightgrey}{rgb}{0.9,0.9,0.9}
+
+.. raw:: latex
+
+   \definecolor{lightblue}{rgb}{0,0,1}
+
+.. raw:: latex
+
+   \definecolor{grey}{rgb}{0.5,0.5,0.5}
+
+.. raw:: latex
+
+   \definecolor{blue}{rgb}{0,0,1}
+
+.. raw:: latex
+
+   \definecolor{violet}{rgb}{0.5,0,0.5}
+
+.. raw:: latex
+
+   \definecolor{darkred}{rgb}{0.5,0,0}
+
+.. raw:: latex
+
+   \definecolor{darkblue}{rgb}{0,0,0.5}
+
+.. raw:: latex
+
+   \definecolor{darkgreen}{rgb}{0,0.5,0}
+
 .. _faq:
 
 Frequently Asked Questions
@@ -10,7 +42,7 @@ This Section is a compilation of the most common questions via GitHub, chat, and
 Can I Encrypt CAF Communication?
 --------------------------------
 
-Yes, by using the OpenSSL module (see :ref:`free-remoting-functions`).
+Yes, by using the OpenSSL module (see § \ `:ref:`free-remoting-functions` <#free-remoting-functions>`__).
 
 .. _can-i-create-messages-dynamically:
 
