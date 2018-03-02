@@ -147,3 +147,14 @@ The following free functions in the namespace ``caf::io`` avoid calling the midd
 | ``expected<void> unpublish(T x, uint16)`` & See § \ `1.2 <#remoting>`__.
 | ``expected<node_id> connect(actor_system&, std::string host, uint16_t port)`` & See § \ `1.2 <#remoting>`__.
 | ``expected<T> remote_actor<T = actor>(actor_system&, string, uint16)`` & See § \ `1.2 <#remoting>`__.
+
+.. _transport-protocols:
+
+Transport Protocols :sup:`experimental` 
+----------------------------------------
+
+CAF communication uses TCP per default and thus the functions shown in the middleman API above are related to TCP. There are two alternatives to plain TCP: TLS via the OpenSSL module shortly discussed in § \ `1.3 <#free-remoting-functions>`__ and UDP.
+
+UDP is integrated in the default multiplexer and BASP broker. Set the flag ``middleman_enable_udp`` to true to enable it (see § `:ref:`system-config` <#system-config>`__). This does not require you to disable TCP. Use ``publish_udp`` and ``remote_actor_udp`` to establish communication.
+
+Communication via UDP is inherently unreliable and unordered. CAF reestablishes order and drops messages that arrive late. Messages that are sent via datagrams are limited to a maximum of 65.535 bytes which is used as a receive buffer size by CAF. Note that messages that exceed the MTU are fragmented by IP and are considered lost if a single fragment is lost. Optional reliability based on retransmissions and messages slicing on the application layer are planned for the future.
