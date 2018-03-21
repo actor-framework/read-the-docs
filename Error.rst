@@ -131,6 +131,8 @@ System Error Codes (SECs) use the error category ``"system"``. They represent er
 
     /// error codes used internally by CAF.
     enum class sec : uint8_t {
+      /// No error.
+      none = 0,
       /// Indicates that an actor dropped an unexpected message.
       unexpected_message = 1,
       /// Indicates that a response message did not match the provided handler.
@@ -189,8 +191,6 @@ System Error Codes (SECs) use the error category ``"system"``. They represent er
       runtime_error,
       /// Linking to a remote actor failed because actor no longer exists.
       remote_linking_failed,
-      /// Adding an upstream to a stream failed.
-      cannot_add_upstream = 30,
 
 .. _exit-reason:
 

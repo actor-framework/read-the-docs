@@ -132,7 +132,6 @@ CAF organizes program options in categories and parses CLI arguments as well as 
 
 ::
 
-    class config : public actor_system_config {
     public:
       uint16_t port = 0;
       std::string host = "localhost";
@@ -218,9 +217,9 @@ INI files are organized in categories. No value is allowed outside of a category
     ; requires the user to trigger I/O manually
     detach-multiplexer=true
     ; enable or disable communication via the TCP transport protocol
-    middleman_enable_tcp=true
+    enable-tcp=true
     ; enable or disable communication via the UDP transport protocol
-    middleman_enable_udp=false
+    enable-udp=false
 
     ; when compiling with logging enabled
     [logger]
