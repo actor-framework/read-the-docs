@@ -128,7 +128,6 @@ Message types that are not serializable cause compile time errors when used in a
 
 ::
 
-      namespace caf {                                                              \
       template <>                                                                  \
       struct allowed_unsafe_message_type<type_name> : std::true_type {};           \
       }

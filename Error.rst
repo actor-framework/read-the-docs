@@ -129,7 +129,6 @@ System Error Codes (SECs) use the error category ``"system"``. They represent er
 
 ::
 
-    /// error codes used internally by CAF.
     enum class sec : uint8_t {
       /// No error.
       none = 0,
@@ -191,6 +190,7 @@ System Error Codes (SECs) use the error category ``"system"``. They represent er
       runtime_error,
       /// Linking to a remote actor failed because actor no longer exists.
       remote_linking_failed,
+      /// Adding an upstream to a stream failed.
 
 .. _exit-reason:
 
@@ -201,7 +201,6 @@ CAF uses the error category ``"exit"`` for default exit reasons. These errors ar
 
 ::
 
-    enum class exit_reason : uint8_t {
       /// Indicates that an actor finished execution without error.
       normal = 0,
       /// Indicates that an actor died because of an unhandled exception.
@@ -221,3 +220,5 @@ CAF uses the error category ``"exit"`` for default exit reasons. These errors ar
       /// Indicates that an actor was killed because it became unreachable.
       unreachable
     };
+
+    /// Returns a string representation of given exit reason.
