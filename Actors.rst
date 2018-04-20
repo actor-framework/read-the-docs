@@ -292,7 +292,7 @@ The following three functions implement the prototypes shown in § \ `1.4 <#s
 
     // function-based, dynamically typed, event-based API
     behavior calculator_fun(event_based_actor*) {
-      return behavior{
+      return {
         [](add_atom, int a, int b) {
           return a + b;
         },
