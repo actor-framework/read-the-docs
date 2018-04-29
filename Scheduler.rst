@@ -54,18 +54,18 @@ The scheduler of CAF is fully customizable by using a policy-based design. The f
 
 ::
 
-    struct scheduler_policy {
-      struct coordinator_data;
-      struct worker_data;
-      void central_enqueue(Coordinator* self, resumable* job);
-      void external_enqueue(Worker* self, resumable* job);
-      void internal_enqueue(Worker* self, resumable* job);
-      void resume_job_later(Worker* self, resumable* job);
-      resumable* dequeue(Worker* self);
-      void before_resume(Worker* self, resumable* job);
-      void after_resume(Worker* self, resumable* job);
-      void after_completion(Worker* self, resumable* job);
-    };
+   struct scheduler_policy {
+     struct coordinator_data;
+     struct worker_data;
+     void central_enqueue(Coordinator* self, resumable* job);
+     void external_enqueue(Worker* self, resumable* job);
+     void internal_enqueue(Worker* self, resumable* job);
+     void resume_job_later(Worker* self, resumable* job);
+     resumable* dequeue(Worker* self);
+     void before_resume(Worker* self, resumable* job);
+     void after_resume(Worker* self, resumable* job);
+     void after_completion(Worker* self, resumable* job);
+   };
 
 Whenever a new work item is scheduled—usually by sending a message to an idle actor—, one of the functions ``central_enqueue``, ``external_enqueue``, and ``internal_enqueue`` is called. The first function is called whenever non-actor code interacts with the actor system. For example when spawning an actor from ``main``. Its first argument is a pointer to the coordinator singleton and the second argument is the new work item—usually an actor that became ready. The function ``external_enqueue`` is never called directly by CAF. It models the transfer of a task to a worker by the coordinator or another worker. Its first argument is the worker receiving the new task referenced in the second argument. The third function, ``internal_enqueue``, is called whenever an actor interacts with other actors in the system. Its first argument is the current worker and the second argument is the new work item.
 

@@ -46,26 +46,26 @@ Defining Message Handlers
 
    ::
 
-       message_handler wrong = (
-         [](int i) { /*...*/ },
-         [](float f) { /*...*/ }
-       );
+      message_handler wrong = (
+        [](int i) { /*...*/ },
+        [](float f) { /*...*/ }
+      );
 
    The correct way to initialize message handlers and behaviors is to either use the constructor or the member function ``assign``:
 
    ::
 
-       message_handler ok1{
-         [](int i) { /*...*/ },
-         [](float f) { /*...*/ }
-       };
+      message_handler ok1{
+        [](int i) { /*...*/ },
+        [](float f) { /*...*/ }
+      };
 
-       message_handler ok2;
-       // some place later
-       ok2.assign(
-         [](int i) { /*...*/ },
-         [](float f) { /*...*/ }
-       );
+      message_handler ok2;
+      // some place later
+      ok2.assign(
+        [](int i) { /*...*/ },
+        [](float f) { /*...*/ }
+      );
 
 .. _event-based-api:
 

@@ -55,15 +55,15 @@ Usually, messages are created implicitly when sending messages but can also be c
 
 ::
 
-    message_builder mb;
-    // prefix message with some atom
-    mb.append(strings_atom::value);
-    // fill message with some strings
-    std::vector<std::string> strings{/*...*/};
-    for (auto& str : strings)
-      mb.append(str);
-    // create the message
-    message msg = mb.to_message();
+   message_builder mb;
+   // prefix message with some atom
+   mb.append(strings_atom::value);
+   // fill message with some strings
+   std::vector<std::string> strings{/*...*/};
+   for (auto& str : strings)
+     mb.append(str);
+   // create the message
+   message msg = mb.to_message();
 
 .. _what-debugging-tools-exist:
 

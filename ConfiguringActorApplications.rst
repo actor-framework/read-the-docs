@@ -41,56 +41,56 @@ The following code example is a minimal CAF application with a middleman (see 
 
 ::
 
-    void caf_main(actor_system& system) {
-      // ...
-    }
-    CAF_MAIN(io::middleman)
+   void caf_main(actor_system& system) {
+     // ...
+   }
+   CAF_MAIN(io::middleman)
 
 The compiler expands this example code to the following.
 
 ::
 
-    void caf_main(actor_system& system) {
-      // ...
-    }
-    int main(int argc, char** argv) {
-      return exec_main<io::middleman>(caf_main, argc, argv);
-    }
+   void caf_main(actor_system& system) {
+     // ...
+   }
+   int main(int argc, char** argv) {
+     return exec_main<io::middleman>(caf_main, argc, argv);
+   }
 
 The function ``exec_main`` creates a config object, loads all modules requested in ``CAF_MAIN`` and then calls ``caf_main``. A minimal implementation for ``main`` performing all these steps manually is shown in the next example for the sake of completeness.
 
 ::
 
-    int main(int argc, char** argv) {
-      actor_system_config cfg;
-      // read CLI options
-      cfg.parse(argc, argv);
-      // return immediately if a help text was printed
-      if (cfg.cli_helptext_printed)
-        return 0;
-      // load modules
-      cfg.load<io::middleman>();
-      // create actor system and call caf_main
-      actor_system system{cfg};
-      caf_main(system);
-    }
+   int main(int argc, char** argv) {
+     actor_system_config cfg;
+     // read CLI options
+     cfg.parse(argc, argv);
+     // return immediately if a help text was printed
+     if (cfg.cli_helptext_printed)
+       return 0;
+     // load modules
+     cfg.load<io::middleman>();
+     // create actor system and call caf_main
+     actor_system system{cfg};
+     caf_main(system);
+   }
 
 However, setting up config objects by hand is usually not necessary. CAF automatically selects user-defined subclasses of ``actor_system_config`` if ``caf_main`` takes a second parameter by reference, as shown in the minimal example below.
 
 ::
 
-    class my_config : public actor_system_config {
-    public:
-      my_config() {
-        // ...
-      }
-    };
+   class my_config : public actor_system_config {
+   public:
+     my_config() {
+       // ...
+     }
+   };
 
-    void caf_main(actor_system& system, const my_config& cfg) {
-      // ...
-    }
+   void caf_main(actor_system& system, const my_config& cfg) {
+     // ...
+   }
 
-    CAF_MAIN()
+   CAF_MAIN()
 
 Users can perform additional initialization, add custom program options, etc. simply by implementing a default constructor.
 
@@ -103,23 +103,23 @@ The simplest way to load modules is to use the macro ``CAF_MAIN`` and to pass a 
 
 ::
 
-    void caf_main(actor_system& system) {
-      // ...
-    }
-    CAF_MAIN(mod1, mod2, ...)
+   void caf_main(actor_system& system) {
+     // ...
+   }
+   CAF_MAIN(mod1, mod2, ...)
 
 Alternatively, users can load modules in user-defined config classes.
 
 ::
 
-    class my_config : public actor_system_config {
-    public:
-      my_config() {
-        load<mod1>();
-        load<mod2>();
-        // ...
-      }
-    };
+   class my_config : public actor_system_config {
+   public:
+     my_config() {
+       load<mod1>();
+       load<mod2>();
+       // ...
+     }
+   };
 
 The third option is to simply call ``x.load<mod1>()`` on a config object *before* initializing an actor system with it.
 
@@ -132,18 +132,18 @@ CAF organizes program options in categories and parses CLI arguments as well as 
 
 ::
 
-    public:
-      uint16_t port = 0;
-      std::string host = "localhost";
-      bool server_mode = false;
+   public:
+     uint16_t port = 0;
+     std::string host = "localhost";
+     bool server_mode = false;
 
-      config() {
-        opt_group{custom_options_, "global"}
-        .add(port, "port,p", "set port")
-        .add(host, "host,H", "set host (ignored in server mode)")
-        .add(server_mode, "server-mode,s", "enable server mode");
-      }
-    };
+     config() {
+       opt_group{custom_options_, "global"}
+       .add(port, "port,p", "set port")
+       .add(host, "host,H", "set host (ignored in server mode)")
+       .add(server_mode, "server-mode,s", "enable server mode");
+     }
+   };
 
 The line ``opt_group{custom_options_, "global"}`` adds the “global” category to the config parser. The following calls to ``add`` then append individual options to the category. The first argument to ``add`` is the associated variable. The second argument is the name for the parameter, optionally suffixed with a comma-separated single-character short name. The short name is only considered for CLI parsing and allows users to abbreviate commonly used option names. The third and final argument to ``add`` is a help text.
 
@@ -161,80 +161,80 @@ INI files are organized in categories. No value is allowed outside of a category
 
 ::
 
-    ; This file shows all possible parameters with defaults.
-    ; Values enclosed in <> are detected at runtime unless defined by the user.
+   ; This file shows all possible parameters with defaults.
+   ; Values enclosed in <> are detected at runtime unless defined by the user.
 
-    ; when using the default scheduler
-    [scheduler]
-    ; accepted alternative: 'sharing'
-    policy='stealing'
-    ; configures whether the scheduler generates profiling output
-    enable-profiling=false
-    ; forces a fixed number of threads if set
-    max-threads=<number of cores>
-    ; maximum number of messages actors can consume in one run
-    max-throughput=<infinite>
-    ; measurement resolution in milliseconds (only if profiling is enabled)
-    profiling-ms-resolution=100
-    ; output file for profiler data (only if profiling is enabled)
-    profiling-output-file="/dev/null"
+   ; when using the default scheduler
+   [scheduler]
+   ; accepted alternative: 'sharing'
+   policy='stealing'
+   ; configures whether the scheduler generates profiling output
+   enable-profiling=false
+   ; forces a fixed number of threads if set
+   max-threads=<number of cores>
+   ; maximum number of messages actors can consume in one run
+   max-throughput=<infinite>
+   ; measurement resolution in milliseconds (only if profiling is enabled)
+   profiling-ms-resolution=100
+   ; output file for profiler data (only if profiling is enabled)
+   profiling-output-file="/dev/null"
 
-    ; when using 'stealing' as scheduler policy
-    [work-stealing]
-    ; number of zero-sleep-interval polling attempts
-    aggressive-poll-attempts=100
-    ; frequency of steal attempts during aggressive polling
-    aggressive-steal-interval=10
-    ; number of moderately aggressive polling attempts
-    moderate-poll-attempts=500
-    ; frequency of steal attempts during moderate polling
-    moderate-steal-interval=5
-    ; sleep interval in microseconds between poll attempts
-    moderate-sleep-duration=50
-    ; frequency of steal attempts during relaxed polling
-    relaxed-steal-interval=1
-    ; sleep interval in microseconds between poll attempts
-    relaxed-sleep-duration=10000
+   ; when using 'stealing' as scheduler policy
+   [work-stealing]
+   ; number of zero-sleep-interval polling attempts
+   aggressive-poll-attempts=100
+   ; frequency of steal attempts during aggressive polling
+   aggressive-steal-interval=10
+   ; number of moderately aggressive polling attempts
+   moderate-poll-attempts=500
+   ; frequency of steal attempts during moderate polling
+   moderate-steal-interval=5
+   ; sleep interval in microseconds between poll attempts
+   moderate-sleep-duration=50
+   ; frequency of steal attempts during relaxed polling
+   relaxed-steal-interval=1
+   ; sleep interval in microseconds between poll attempts
+   relaxed-sleep-duration=10000
 
-    ; when loading io::middleman
-    [middleman]
-    ; configures whether MMs try to span a full mesh
-    enable-automatic-connections=false
-    ; accepted alternative: 'asio' (only when compiling CAF with ASIO)
-    network-backend='default'
-    ; application identifier of this node, prevents connection to other CAF
-    ; instances with different identifier
-    app-identifier=""
-    ; maximum number of consecutive I/O reads per broker
-    max-consecutive-reads=50
-    ; heartbeat message interval in ms (0 disables heartbeating)
-    heartbeat-interval=0
-    ; configures whether the MM detaches its internal utility actors, setting
-    ; this to false allows fully deterministic execution in unit tests
-    detach-utility-actors=true
-    ; configures whether the MM starts a background thread for I/O activity,
-    ; setting this to false allows fully deterministic execution in unit test and
-    ; requires the user to trigger I/O manually
-    detach-multiplexer=true
-    ; enable or disable communication via the TCP transport protocol
-    enable-tcp=true
-    ; enable or disable communication via the UDP transport protocol
-    enable-udp=false
+   ; when loading io::middleman
+   [middleman]
+   ; configures whether MMs try to span a full mesh
+   enable-automatic-connections=false
+   ; accepted alternative: 'asio' (only when compiling CAF with ASIO)
+   network-backend='default'
+   ; application identifier of this node, prevents connection to other CAF
+   ; instances with different identifier
+   app-identifier=""
+   ; maximum number of consecutive I/O reads per broker
+   max-consecutive-reads=50
+   ; heartbeat message interval in ms (0 disables heartbeating)
+   heartbeat-interval=0
+   ; configures whether the MM detaches its internal utility actors, setting
+   ; this to false allows fully deterministic execution in unit tests
+   detach-utility-actors=true
+   ; configures whether the MM starts a background thread for I/O activity,
+   ; setting this to false allows fully deterministic execution in unit test and
+   ; requires the user to trigger I/O manually
+   detach-multiplexer=true
+   ; enable or disable communication via the TCP transport protocol
+   enable-tcp=true
+   ; enable or disable communication via the UDP transport protocol
+   enable-udp=false
 
-    ; when compiling with logging enabled
-    [logger]
-    ; file name template for output log file files (empty string disables logging)
-    file-name="actor_log_[PID]_[TIMESTAMP]_[NODE].log"
-    ; format for rendering individual log file entries
-    file-format="%r %c %p %a %t %C %M %F:%L %m%n"
-    ; mode for console log output generation (none|colored|uncolored)
-    console='none'
-    ; format for printing individual log entries to the console
-    console-format="%m"
-    ; excludes listed components from logging
-    component-filter=""
-    ; configures the severity level for logs (quiet|error|warning|info|debug|trace)
-    verbosity='trace'
+   ; when compiling with logging enabled
+   [logger]
+   ; file name template for output log file files (empty string disables logging)
+   file-name="actor_log_[PID]_[TIMESTAMP]_[NODE].log"
+   ; format for rendering individual log file entries
+   file-format="%r %c %p %a %t %C %M %F:%L %m%n"
+   ; mode for console log output generation (none|colored|uncolored)
+   console='none'
+   ; format for printing individual log entries to the console
+   console-format="%m"
+   ; excludes listed components from logging
+   component-filter=""
+   ; configures the severity level for logs (quiet|error|warning|info|debug|trace)
+   verbosity='trace'
 
 .. raw:: latex
 
@@ -251,32 +251,32 @@ As an introductory example, we (again) use the following POD type ``foo``.
 
 ::
 
-    struct foo {
-      std::vector<int> a;
-      int b;
-    };
+   struct foo {
+     std::vector<int> a;
+     int b;
+   };
 
 To make ``foo`` serializable, we make it inspectable (see § `:ref:`type-inspection` <#type-inspection>`__):
 
 ::
 
-    template <class Inspector>
-    typename Inspector::result_type inspect(Inspector& f, foo& x) {
-      return f(meta::type_name("foo"), x.a, x.b);
-    }
+   template <class Inspector>
+   typename Inspector::result_type inspect(Inspector& f, foo& x) {
+     return f(meta::type_name("foo"), x.a, x.b);
+   }
 
 Finally, we give ``foo`` a platform-neutral name and add it to the list of serializable types by using a custom config class.
 
 ::
 
-    class config : public actor_system_config {
-    public:
-      config() {
-        add_message_type<foo>("foo");
-      }
-    };
+   class config : public actor_system_config {
+   public:
+     config() {
+       add_message_type<foo>("foo");
+     }
+   };
 
-    void caf_main(actor_system& system, const config&) {
+   void caf_main(actor_system& system, const config&) {
 
 .. _adding-custom-error-types:
 
@@ -291,41 +291,41 @@ Adding a custom error type to the system is a convenience feature to allow impro
 
 .. _add-custom-actor-type:
 
-Adding Custom Actor Types :sup:`experimental` 
-----------------------------------------------
+Adding Custom Actor Types experimental 
+---------------------------------------
 
 Adding actor types to the configuration allows users to spawn actors by their name. In particular, this enables spawning of actors on a different node (see § `:ref:`remote-spawn` <#remote-spawn>`__). For our example configuration, we consider the following simple ``calculator`` actor.
 
 ::
 
-    using add_atom = atom_constant<atom("add")>;
-    using sub_atom = atom_constant<atom("sub")>;
+   using add_atom = atom_constant<atom("add")>;
+   using sub_atom = atom_constant<atom("sub")>;
 
-    using calculator = typed_actor<replies_to<add_atom, int, int>::with<int>,
-                                   replies_to<sub_atom, int, int>::with<int>>;
+   using calculator = typed_actor<replies_to<add_atom, int, int>::with<int>,
+                                  replies_to<sub_atom, int, int>::with<int>>;
 
-    calculator::behavior_type calculator_fun(calculator::pointer self) {
+   calculator::behavior_type calculator_fun(calculator::pointer self) {
 
 Adding the calculator actor type to our config is achieved by calling ``add_actor_type<T>``. Note that adding an actor type in this way implicitly calls ``add_message_type<T>`` for typed actors (see § `1.3 <#add-custom-message-type>`__). This makes our ``calculator`` actor type serializable and also enables remote nodes to spawn calculators anywhere in the distributed actor system (assuming all nodes use the same config).
 
 ::
 
-    struct config : actor_system_config {
-      config() {
-        add_actor_type("calculator", calculator_fun);
-      }
+   struct config : actor_system_config {
+     config() {
+       add_actor_type("calculator", calculator_fun);
+     }
 
 Our final example illustrates how to spawn a ``calculator`` locally by using its type name. Because the dynamic type name lookup can fail and the construction arguments passed as message can mismatch, this version of ``spawn`` returns ``expected<T>``.
 
 ::
 
-    auto x = system.spawn<calculator>("calculator", make_message());
-    if (! x) {
-      std::cerr << "*** unable to spawn calculator: "
-                << system.render(x.error()) << std::endl;
-      return;
-    }
-    calculator c = std::move(*x);
+   auto x = system.spawn<calculator>("calculator", make_message());
+   if (! x) {
+     std::cerr << "*** unable to spawn calculator: "
+               << system.render(x.error()) << std::endl;
+     return;
+   }
+   calculator c = std::move(*x);
 
 Adding dynamically typed actors to the config is achieved in the same way. When spawning a dynamically typed actor in this way, the template parameter is simply ``actor``. For example, spawning an actor "foo" which requires one string is created with ``system.spawn<actor>("foo", make_message("bar"))``.
 
@@ -375,50 +375,35 @@ Format Strings
 
 CAF uses log4j-like format strings (e.g. ``"%c %m%n"``) to configure how individual events are printed via ``logger-file-format`` and ``logger-console-format``. Note that format modifiers are not supported at the moment. The recognized field identifiers are:
 
-+-----------------------------------+-----------------------------------+
-| **Character**                     | **Output**                        |
-+===================================+===================================+
-| ``c``                             | The category/component. This name |
-|                                   | is defined by the macro           |
-|                                   | ``CAF_LOG_COMPONENT``. Set this   |
-|                                   | macro before including any CAF    |
-|                                   | header.                           |
-+-----------------------------------+-----------------------------------+
-| ``C``                             | The full qualifier of the current |
-|                                   | function. For example, the        |
-|                                   | qualifier of                      |
-|                                   | ``void ns::foo::bar()`` is        |
-|                                   | printed as ``ns.foo``.            |
-+-----------------------------------+-----------------------------------+
-| ``d``                             | The date in ISO 8601 format,      |
-|                                   | i.e., ``"YYYY-MM-DD hh:mm:ss"``.  |
-+-----------------------------------+-----------------------------------+
-| ``F``                             | The file name.                    |
-+-----------------------------------+-----------------------------------+
-| ``L``                             | The line number.                  |
-+-----------------------------------+-----------------------------------+
-| ``m``                             | The user-defined log message.     |
-+-----------------------------------+-----------------------------------+
-| ``M``                             | The name of the current function. |
-|                                   | For example, the name of          |
-|                                   | ``void ns::foo::bar()`` is        |
-|                                   | printed as ``bar``.               |
-+-----------------------------------+-----------------------------------+
-| ``n``                             | A newline.                        |
-+-----------------------------------+-----------------------------------+
-| ``p``                             | The priority (severity level).    |
-+-----------------------------------+-----------------------------------+
-| ``r``                             | Elapsed time since starting the   |
-|                                   | application in milliseconds.      |
-+-----------------------------------+-----------------------------------+
-| ``t``                             | ID of the current thread.         |
-+-----------------------------------+-----------------------------------+
-| ``a``                             | ID of the current actor (or       |
-|                                   | “actor0” when not logging inside  |
-|                                   | an actor).                        |
-+-----------------------------------+-----------------------------------+
-| ``%``                             | A single percent sign.            |
-+-----------------------------------+-----------------------------------+
++---------------+----------------------------------------------------------------------------------------------------------------------------------+
+| **Character** | **Output**                                                                                                                       |
++===============+==================================================================================================================================+
+| ``c``         | The category/component. This name is defined by the macro ``CAF_LOG_COMPONENT``. Set this macro before including any CAF header. |
++---------------+----------------------------------------------------------------------------------------------------------------------------------+
+| ``C``         | The full qualifier of the current function. For example, the qualifier of ``void ns::foo::bar()`` is printed as ``ns.foo``.      |
++---------------+----------------------------------------------------------------------------------------------------------------------------------+
+| ``d``         | The date in ISO 8601 format, i.e., ``"YYYY-MM-DD hh:mm:ss"``.                                                                    |
++---------------+----------------------------------------------------------------------------------------------------------------------------------+
+| ``F``         | The file name.                                                                                                                   |
++---------------+----------------------------------------------------------------------------------------------------------------------------------+
+| ``L``         | The line number.                                                                                                                 |
++---------------+----------------------------------------------------------------------------------------------------------------------------------+
+| ``m``         | The user-defined log message.                                                                                                    |
++---------------+----------------------------------------------------------------------------------------------------------------------------------+
+| ``M``         | The name of the current function. For example, the name of ``void ns::foo::bar()`` is printed as ``bar``.                        |
++---------------+----------------------------------------------------------------------------------------------------------------------------------+
+| ``n``         | A newline.                                                                                                                       |
++---------------+----------------------------------------------------------------------------------------------------------------------------------+
+| ``p``         | The priority (severity level).                                                                                                   |
++---------------+----------------------------------------------------------------------------------------------------------------------------------+
+| ``r``         | Elapsed time since starting the application in milliseconds.                                                                     |
++---------------+----------------------------------------------------------------------------------------------------------------------------------+
+| ``t``         | ID of the current thread.                                                                                                        |
++---------------+----------------------------------------------------------------------------------------------------------------------------------+
+| ``a``         | ID of the current actor (or “actor0” when not logging inside an actor).                                                          |
++---------------+----------------------------------------------------------------------------------------------------------------------------------+
+| ``%``         | A single percent sign.                                                                                                           |
++---------------+----------------------------------------------------------------------------------------------------------------------------------+
 
 .. _log-output-filtering:
 

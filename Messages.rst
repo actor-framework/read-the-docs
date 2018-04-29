@@ -126,46 +126,39 @@ Class ``message_builder``
 
    \small
 
-+-----------------------------------+-----------------------------------+
-| **Constructors**                  |                                   |
-+===================================+===================================+
-| ``(void)``                        | Creates an empty message builder. |
-+-----------------------------------+-----------------------------------+
-| ``(Iter first, Iter last)``       | Adds all elements from range      |
-|                                   | ``[first, last)``.                |
-+-----------------------------------+-----------------------------------+
-|                                   |                                   |
-+-----------------------------------+-----------------------------------+
-| **Observers**                     |                                   |
-+-----------------------------------+-----------------------------------+
-| ``bool empty()``                  | Returns whether this message is   |
-|                                   | empty.                            |
-+-----------------------------------+-----------------------------------+
-| ``size_t size()``                 | Returns the size of this message. |
-+-----------------------------------+-----------------------------------+
-| ``message to_message(    )``      | Converts the buffer to an actual  |
-|                                   | message object.                   |
-+-----------------------------------+-----------------------------------+
-| ``append(T val)``                 | Adds ``val`` to the buffer.       |
-+-----------------------------------+-----------------------------------+
-| ``append(Iter first, Iter last)`` | Adds all elements from range      |
-|                                   | ``[first, last)``.                |
-+-----------------------------------+-----------------------------------+
-| ``message extract(message_handler | See § \ `1.5 <#extract>`__.       |
-| )``                               |                                   |
-+-----------------------------------+-----------------------------------+
-| ``message extract_opts(...)``     | See § \ `1.6 <#extract-opts>`__.  |
-+-----------------------------------+-----------------------------------+
-|                                   |                                   |
-+-----------------------------------+-----------------------------------+
-| **Modifiers**                     |                                   |
-+-----------------------------------+-----------------------------------+
-| ``optional<message>``             | Returns ``f(*this)``.             |
-| ``apply(message_handler f)``      |                                   |
-+-----------------------------------+-----------------------------------+
-| ``message move_to_message()``     | Transfers ownership of its data   |
-|                                   | to the new message.               |
-+-----------------------------------+-----------------------------------+
++----------------------------------------------------+-----------------------------------------------------+
+| **Constructors**                                   |                                                     |
++====================================================+=====================================================+
+| ``(void)``                                         | Creates an empty message builder.                   |
++----------------------------------------------------+-----------------------------------------------------+
+| ``(Iter first, Iter last)``                        | Adds all elements from range ``[first, last)``.     |
++----------------------------------------------------+-----------------------------------------------------+
+|                                                    |                                                     |
++----------------------------------------------------+-----------------------------------------------------+
+| **Observers**                                      |                                                     |
++----------------------------------------------------+-----------------------------------------------------+
+| ``bool empty()``                                   | Returns whether this message is empty.              |
++----------------------------------------------------+-----------------------------------------------------+
+| ``size_t size()``                                  | Returns the size of this message.                   |
++----------------------------------------------------+-----------------------------------------------------+
+| ``message to_message(    )``                       | Converts the buffer to an actual message object.    |
++----------------------------------------------------+-----------------------------------------------------+
+| ``append(T val)``                                  | Adds ``val`` to the buffer.                         |
++----------------------------------------------------+-----------------------------------------------------+
+| ``append(Iter first, Iter last)``                  | Adds all elements from range ``[first, last)``.     |
++----------------------------------------------------+-----------------------------------------------------+
+| ``message extract(message_handler)``               | See § \ `1.5 <#extract>`__.                         |
++----------------------------------------------------+-----------------------------------------------------+
+| ``message extract_opts(...)``                      | See § \ `1.6 <#extract-opts>`__.                    |
++----------------------------------------------------+-----------------------------------------------------+
+|                                                    |                                                     |
++----------------------------------------------------+-----------------------------------------------------+
+| **Modifiers**                                      |                                                     |
++----------------------------------------------------+-----------------------------------------------------+
+| ``optional<message>`` ``apply(message_handler f)`` | Returns ``f(*this)``.                               |
++----------------------------------------------------+-----------------------------------------------------+
+| ``message move_to_message()``                      | Transfers ownership of its data to the new message. |
++----------------------------------------------------+-----------------------------------------------------+
 
 .. raw:: latex
 
@@ -182,13 +175,13 @@ For example:
 
 ::
 
-    auto msg = make_message(1, 2.f, 3.f, 4);
-    // remove float and integer pairs
-    auto msg2 = msg.extract({
-      [](float, float) { },
-      [](int, int) { }
-    });
-    assert(msg2 == make_message(1, 4));
+   auto msg = make_message(1, 2.f, 3.f, 4);
+   // remove float and integer pairs
+   auto msg2 = msg.extract({
+     [](float, float) { },
+     [](int, int) { }
+   });
+   assert(msg2 == make_message(1, 4));
 
 Step-by-step explanation:
 
@@ -221,38 +214,38 @@ The class ``message`` also contains a convenience interface to ``extract`` for p
 
 ::
 
-    int main(int argc, char** argv) {
-      uint16_t port;
-      string host = "localhost";
-      auto res = message_builder(argv + 1, argv + argc).extract_opts({
-        {"port,p", "set port", port},
-        {"host,H", "set host (default: localhost)", host},
-        {"verbose,v", "enable verbose mode"}
-      });
-      if (! res.error.empty()) {
-        // read invalid CLI arguments
-        cerr << res.error << endl;
-        return 1;
-      }
-      if (res.opts.count("help") > 0) {
-        // CLI arguments contained "-h", "--help", or "-?" (builtin);
-        cout << res.helptext << endl;
-        return 0;
-      }
-      if (! res.remainder.empty()) {
-        // res.remainder stors all extra arguments that weren't consumed
-      }
-      if (res.opts.count("verbose") > 0) {
-        // enable verbose mode
-      }
-      // ...
-    }
+   int main(int argc, char** argv) {
+     uint16_t port;
+     string host = "localhost";
+     auto res = message_builder(argv + 1, argv + argc).extract_opts({
+       {"port,p", "set port", port},
+       {"host,H", "set host (default: localhost)", host},
+       {"verbose,v", "enable verbose mode"}
+     });
+     if (! res.error.empty()) {
+       // read invalid CLI arguments
+       cerr << res.error << endl;
+       return 1;
+     }
+     if (res.opts.count("help") > 0) {
+       // CLI arguments contained "-h", "--help", or "-?" (builtin);
+       cout << res.helptext << endl;
+       return 0;
+     }
+     if (! res.remainder.empty()) {
+       // res.remainder stors all extra arguments that weren't consumed
+     }
+     if (res.opts.count("verbose") > 0) {
+       // enable verbose mode
+     }
+     // ...
+   }
 
-    /*
-    Output of ./program_name -h:
+   /*
+   Output of ./program_name -h:
 
-    Allowed options:
-      -p [--port] arg  : set port
-      -H [--host] arg  : set host (default: localhost)
-      -v [--verbose]   : enable verbose mode
-    */
+   Allowed options:
+     -p [--port] arg  : set port
+     -H [--host] arg  : set host (default: localhost)
+     -v [--verbose]   : enable verbose mode
+   */

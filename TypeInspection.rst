@@ -39,26 +39,26 @@ CAF is designed with distributed systems in mind. Hence, all message types must 
 
 ::
 
-    template <class Inspector>
-    typename Inspector::result_type inspect(Inspector& f, my_class& x) {
-      return f(...);
-    }
+   template <class Inspector>
+   typename Inspector::result_type inspect(Inspector& f, my_class& x) {
+     return f(...);
+   }
 
 The function ``inspect`` passes meta information and data fields to the variadic call operator of the inspector. The following example illustrates an implementation for ``inspect`` for a simple POD struct.
 
 ::
 
-    // POD struct foo
-    struct foo {
-      std::vector<int> a;
-      int b;
-    };
+   // POD struct foo
+   struct foo {
+     std::vector<int> a;
+     int b;
+   };
 
-    // foo needs to be serializable
-    template <class Inspector>
-    typename Inspector::result_type inspect(Inspector& f, foo& x) {
-      return f(meta::type_name("foo"), x.a, x.b);
-    }
+   // foo needs to be serializable
+   template <class Inspector>
+   typename Inspector::result_type inspect(Inspector& f, foo& x) {
+     return f(meta::type_name("foo"), x.a, x.b);
+   }
 
 The inspector recursively inspects all data fields and has builtin support for (1) ``std::tuple``, (2) ``std::pair``, (3) C arrays, (4) any container type with ``x.size()``, ``x.empty()``, ``x.begin()`` and ``x.end()``.
 
@@ -73,17 +73,17 @@ The following concept class shows the requirements for inspectors. The placehold
 
 ::
 
-    Inspector {
-      using result_type = T;
-      
-      if (inspector only requires read access to the state of T)
-        static constexpr bool reads_state = true;
-      else
-        static constexpr bool writes_state = true;
-      
-      template <class... Ts>
-      result_type operator()(Ts&&...);
-    }
+   Inspector {
+     using result_type = T;
+     
+     if (inspector only requires read access to the state of T)
+       static constexpr bool reads_state = true;
+     else
+       static constexpr bool writes_state = true;
+     
+     template <class... Ts>
+     result_type operator()(Ts&&...);
+   }
 
 A saving ``Inspector`` is required to handle constant lvalue and rvalue references. A loading ``Inspector`` must only accept mutable lvalue references to data fields, but still allow for constant lvalue references and rvalue references to annotations.
 
@@ -128,9 +128,9 @@ Message types that are not serializable cause compile time errors when used in a
 
 ::
 
-      template <>                                                                  \
-      struct allowed_unsafe_message_type<type_name> : std::true_type {};           \
-      }
+     template <>                                                                  \
+     struct allowed_unsafe_message_type<type_name> : std::true_type {};           \
+     }
 
 .. raw:: latex
 
@@ -145,36 +145,36 @@ If loading and storing cannot be implemented in a single function, users can que
 
 ::
 
-    // no friend access for `inspect`
-    class foo {
-    public:
-      foo(int a0 = 0, int b0 = 0) : a_(a0), b_(b0) {
-        // nop
-      }
+   // no friend access for `inspect`
+   class foo {
+   public:
+     foo(int a0 = 0, int b0 = 0) : a_(a0), b_(b0) {
+       // nop
+     }
 
-      foo(const foo&) = default;
-      foo& operator=(const foo&) = default;
+     foo(const foo&) = default;
+     foo& operator=(const foo&) = default;
 
-      int a() const {
-        return a_;
-      }
+     int a() const {
+       return a_;
+     }
 
-      void set_a(int val) {
-        a_ = val;
-      }
+     void set_a(int val) {
+       a_ = val;
+     }
 
-      int b() const {
-        return b_;
-      }
+     int b() const {
+       return b_;
+     }
 
-      void set_b(int val) {
-        b_ = val;
-      }
+     void set_b(int val) {
+       b_ = val;
+     }
 
-    private:
-      int a_;
-      int b_;
-    };
+   private:
+     int a_;
+     int b_;
+   };
 
 .. raw:: latex
 
@@ -184,33 +184,33 @@ Since there is no access to the data fields ``a_`` and ``b_`` (and assuming no c
 
 ::
 
-    template <class Inspector>
-    typename std::enable_if<Inspector::reads_state,
-                            typename Inspector::result_type>::type
-    inspect(Inspector& f, foo& x) {
-      return f(meta::type_name("foo"), x.a(), x.b());
-    }
+   template <class Inspector>
+   typename std::enable_if<Inspector::reads_state,
+                           typename Inspector::result_type>::type
+   inspect(Inspector& f, foo& x) {
+     return f(meta::type_name("foo"), x.a(), x.b());
+   }
 
-    template <class Inspector>
-    typename std::enable_if<Inspector::writes_state,
-                            typename Inspector::result_type>::type
-    inspect(Inspector& f, foo& x) {
-      int a;
-      int b;
-      // write back to x at scope exit
-      auto g = make_scope_guard([&] {
-        x.set_a(a);
-        x.set_b(b);
-      });
-      return f(meta::type_name("foo"), a, b);
-    }
+   template <class Inspector>
+   typename std::enable_if<Inspector::writes_state,
+                           typename Inspector::result_type>::type
+   inspect(Inspector& f, foo& x) {
+     int a;
+     int b;
+     // write back to x at scope exit
+     auto g = make_scope_guard([&] {
+       x.set_a(a);
+       x.set_b(b);
+     });
+     return f(meta::type_name("foo"), a, b);
+   }
 
-    behavior testee(event_based_actor* self) {
-      return {
-        [=](const foo& x) {
-          aout(self) << to_string(x) << endl;
-        }
-      };
-    }
+   behavior testee(event_based_actor* self) {
+     return {
+       [=](const foo& x) {
+         aout(self) << to_string(x) << endl;
+       }
+     };
+   }
 
 The purpose of the scope guard in the example above is to write the content of the temporaries back to ``foo`` at scope exit automatically. Storing the result of ``f(...)`` in a temporary first and then writing the changes to ``foo`` is not possible, because ``f(...)`` can return ``void``.

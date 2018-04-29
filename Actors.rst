@@ -191,11 +191,11 @@ Statically typed actors require abstract messaging interfaces to allow the compi
 
 ::
 
-    using add_atom = atom_constant<atom("add")>;
-    using sub_atom = atom_constant<atom("sub")>;
+   using add_atom = atom_constant<atom("add")>;
+   using sub_atom = atom_constant<atom("sub")>;
 
-    using calculator_actor = typed_actor<replies_to<add_atom, int, int>::with<int>,
-                                         replies_to<sub_atom, int, int>::with<int>>;
+   using calculator_actor = typed_actor<replies_to<add_atom, int, int>::with<int>,
+                                        replies_to<sub_atom, int, int>::with<int>>;
 
 It is not required to create a type alias such as ``calculator_actor``, but it makes dealing with statically typed actors much easier. Also, a central alias definition eases refactoring later on.
 
@@ -203,8 +203,8 @@ Interfaces have set semantics. This means the following two type aliases ``i1`` 
 
 ::
 
-    using i1 = typed_actor<replies_to<A>::with<B>, replies_to<C>::with<D>>;
-    using i2 = typed_actor<replies_to<C>::with<D>, replies_to<A>::with<B>>;
+   using i1 = typed_actor<replies_to<A>::with<B>, replies_to<C>::with<D>>;
+   using i2 = typed_actor<replies_to<C>::with<D>, replies_to<A>::with<B>>;
 
 Further, actor handles of type ``A`` are assignable to handles of type ``B`` as long as ``B`` is a subset of ``A``.
 
@@ -214,29 +214,23 @@ For convenience, the class ``typed_actor<...>`` defines the member types shown b
 
    \small
 
-+-----------------------------------+-----------------------------------+
-| **Types**                         |                                   |
-+===================================+===================================+
-| ``behavior_type``                 | A statically typed set of message |
-|                                   | handlers.                         |
-+-----------------------------------+-----------------------------------+
-| ``base``                          | Base type for actors, i.e.,       |
-|                                   | ``typed_event_based_actor<...>``. |
-+-----------------------------------+-----------------------------------+
-| ``pointer``                       | A pointer of type ``base*``.      |
-+-----------------------------------+-----------------------------------+
-| ``stateful_base<T>``              | See                               |
-|                                   | § \ `1.7 <#stateful-actor>`__.    |
-+-----------------------------------+-----------------------------------+
-| ``stateful_pointer<T>``           | A pointer of type                 |
-|                                   | ``stateful_base<T>*``.            |
-+-----------------------------------+-----------------------------------+
-| ``extend<Ts...>``                 | Extend this typed actor with      |
-|                                   | ``Ts...``.                        |
-+-----------------------------------+-----------------------------------+
-| ``extend_with<Other>``            | Extend this typed actor with all  |
-|                                   | cases from ``Other``.             |
-+-----------------------------------+-----------------------------------+
++-------------------------+---------------------------------------------------------------+
+| **Types**               |                                                               |
++=========================+===============================================================+
+| ``behavior_type``       | A statically typed set of message handlers.                   |
++-------------------------+---------------------------------------------------------------+
+| ``base``                | Base type for actors, i.e., ``typed_event_based_actor<...>``. |
++-------------------------+---------------------------------------------------------------+
+| ``pointer``             | A pointer of type ``base*``.                                  |
++-------------------------+---------------------------------------------------------------+
+| ``stateful_base<T>``    | See § \ `1.7 <#stateful-actor>`__.                            |
++-------------------------+---------------------------------------------------------------+
+| ``stateful_pointer<T>`` | A pointer of type ``stateful_base<T>*``.                      |
++-------------------------+---------------------------------------------------------------+
+| ``extend<Ts...>``       | Extend this typed actor with ``Ts...``.                       |
++-------------------------+---------------------------------------------------------------+
+| ``extend_with<Other>``  | Extend this typed actor with all cases from ``Other``.        |
++-------------------------+---------------------------------------------------------------+
 
 .. raw:: latex
 
@@ -251,23 +245,23 @@ Both statically and dynamically typed actors are spawned from an ``actor_system`
 
 ::
 
-    behavior calculator_fun(event_based_actor* self);
-    void blocking_calculator_fun(blocking_actor* self);
-    calculator_actor::behavior_type typed_calculator_fun();
-    class calculator;
-    class blocking_calculator;
-    class typed_calculator;
+   behavior calculator_fun(event_based_actor* self);
+   void blocking_calculator_fun(blocking_actor* self);
+   calculator_actor::behavior_type typed_calculator_fun();
+   class calculator;
+   class blocking_calculator;
+   class typed_calculator;
 
 Spawning an actor for each implementation is illustrated below.
 
 ::
 
-      auto a2 = system.spawn(calculator_fun);
-      auto a3 = system.spawn(typed_calculator_fun);
-      auto a4 = system.spawn<blocking_calculator>();
-      auto a5 = system.spawn<calculator>();
-      auto a6 = system.spawn<typed_calculator>();
-      scoped_actor self{system};
+     auto a2 = system.spawn(calculator_fun);
+     auto a3 = system.spawn(typed_calculator_fun);
+     auto a4 = system.spawn<blocking_calculator>();
+     auto a5 = system.spawn<calculator>();
+     auto a6 = system.spawn<typed_calculator>();
+     scoped_actor self{system};
 
 Additional arguments to ``spawn`` are passed to the constructor of a class or used as additional function arguments, respectively. In the example above, none of the three functions takes any argument other than the implicit but optional ``self`` pointer.
 
@@ -290,48 +284,48 @@ The following three functions implement the prototypes shown in § \ `1.4 <#s
 
 ::
 
-    // function-based, dynamically typed, event-based API
-    behavior calculator_fun(event_based_actor*) {
-      return {
-        [](add_atom, int a, int b) {
-          return a + b;
-        },
-        [](sub_atom, int a, int b) {
-          return a - b;
-        }
-      };
-    }
+   // function-based, dynamically typed, event-based API
+   behavior calculator_fun(event_based_actor*) {
+     return {
+       [](add_atom, int a, int b) {
+         return a + b;
+       },
+       [](sub_atom, int a, int b) {
+         return a - b;
+       }
+     };
+   }
 
-    // function-based, dynamically typed, blocking API
-    void blocking_calculator_fun(blocking_actor* self) {
-      bool running = true;
-      self->receive_while(running) (
-        [](add_atom, int a, int b) {
-          return a + b;
-        },
-        [](sub_atom, int a, int b) {
-          return a - b;
-        },
-        [&](exit_msg& em) {
-          if (em.reason) {
-            self->fail_state(std::move(em.reason));
-            running = false;
-          }
-        }
-      );
-    }
+   // function-based, dynamically typed, blocking API
+   void blocking_calculator_fun(blocking_actor* self) {
+     bool running = true;
+     self->receive_while(running) (
+       [](add_atom, int a, int b) {
+         return a + b;
+       },
+       [](sub_atom, int a, int b) {
+         return a - b;
+       },
+       [&](exit_msg& em) {
+         if (em.reason) {
+           self->fail_state(std::move(em.reason));
+           running = false;
+         }
+       }
+     );
+   }
 
-    // function-based, statically typed, event-based API
-    calculator_actor::behavior_type typed_calculator_fun() {
-      return {
-        [](add_atom, int a, int b) {
-          return a + b;
-        },
-        [](sub_atom, int a, int b) {
-          return a - b;
-        }
-      };
-    }
+   // function-based, statically typed, event-based API
+   calculator_actor::behavior_type typed_calculator_fun() {
+     return {
+       [](add_atom, int a, int b) {
+         return a + b;
+       },
+       [](sub_atom, int a, int b) {
+         return a - b;
+       }
+     };
+   }
 
 .. raw:: latex
 
@@ -352,41 +346,41 @@ Implementing actors with classes works for all kinds of actors and allows simple
 
 ::
 
-    // class-based, dynamically typed, event-based API
-    class calculator : public event_based_actor {
-    public:
-      calculator(actor_config& cfg) : event_based_actor(cfg) {
-        // nop
-      }
+   // class-based, dynamically typed, event-based API
+   class calculator : public event_based_actor {
+   public:
+     calculator(actor_config& cfg) : event_based_actor(cfg) {
+       // nop
+     }
 
-      behavior make_behavior() override {
-        return calculator_fun(this);
-      }
-    };
+     behavior make_behavior() override {
+       return calculator_fun(this);
+     }
+   };
 
-    // class-based, dynamically typed, blocking API
-    class blocking_calculator : public blocking_actor {
-    public:
-      blocking_calculator(actor_config& cfg) : blocking_actor(cfg) {
-        // nop
-      }
+   // class-based, dynamically typed, blocking API
+   class blocking_calculator : public blocking_actor {
+   public:
+     blocking_calculator(actor_config& cfg) : blocking_actor(cfg) {
+       // nop
+     }
 
-      void act() override {
-        blocking_calculator_fun(this);
-      }
-    };
+     void act() override {
+       blocking_calculator_fun(this);
+     }
+   };
 
-    // class-based, statically typed, event-based API
-    class typed_calculator : public calculator_actor::base {
-    public:
-      typed_calculator(actor_config& cfg) : calculator_actor::base(cfg) {
-        // nop
-      }
+   // class-based, statically typed, event-based API
+   class typed_calculator : public calculator_actor::base {
+   public:
+     typed_calculator(actor_config& cfg) : calculator_actor::base(cfg) {
+       // nop
+     }
 
-      behavior_type make_behavior() override {
-        return typed_calculator_fun();
-      }
-    };
+     behavior_type make_behavior() override {
+       return typed_calculator_fun();
+     }
+   };
 
 .. raw:: latex
 
@@ -401,40 +395,40 @@ The stateful actor API makes it easy to maintain state in function-based actors.
 
 ::
 
-    using cell = typed_actor<reacts_to<put_atom, int>,
-                             replies_to<get_atom>::with<int>>;
+   using cell = typed_actor<reacts_to<put_atom, int>,
+                            replies_to<get_atom>::with<int>>;
 
-    struct cell_state {
-      int value = 0;
-    };
+   struct cell_state {
+     int value = 0;
+   };
 
-    cell::behavior_type type_checked_cell(cell::stateful_pointer<cell_state> self) {
-      return {
-        [=](put_atom, int val) {
-          self->state.value = val;
-        },
-        [=](get_atom) {
-          return self->state.value;
-        }
-      };
-    }
+   cell::behavior_type type_checked_cell(cell::stateful_pointer<cell_state> self) {
+     return {
+       [=](put_atom, int val) {
+         self->state.value = val;
+       },
+       [=](get_atom) {
+         return self->state.value;
+       }
+     };
+   }
 
-    behavior unchecked_cell(stateful_actor<cell_state>* self) {
-      return {
-        [=](put_atom, int val) {
-          self->state.value = val;
-        },
-        [=](get_atom) {
-          return self->state.value;
-        }
-      };
+   behavior unchecked_cell(stateful_actor<cell_state>* self) {
+     return {
+       [=](put_atom, int val) {
+         self->state.value = val;
+       },
+       [=](get_atom) {
+         return self->state.value;
+       }
+     };
 
 Stateful actors are spawned in the same way as any other function-based actor (see § `1.5 <#function-based>`__).
 
 ::
 
-      auto cell1 = system.spawn(type_checked_cell);
-      auto cell2 = system.spawn(unchecked_cell);
+     auto cell1 = system.spawn(type_checked_cell);
+     auto cell2 = system.spawn(unchecked_cell);
 
 .. raw:: latex
 
@@ -442,8 +436,8 @@ Stateful actors are spawned in the same way as any other function-based actor (s
 
 .. _composable-behavior:
 
-Actors from Composable Behaviors :sup:`experimental` 
------------------------------------------------------
+Actors from Composable Behaviors experimental 
+----------------------------------------------
 
 When building larger systems, it is often useful to implement the behavior of an actor in terms of other, existing behaviors. The composable behaviors in CAF allow developers to generate a behavior class from a messaging interface (see § \ `1.3 <#interface>`__).
 
@@ -457,38 +451,38 @@ Any composable (or composed) behavior with no pure virtual member functions can 
 
 ::
 
-    // using add_atom = atom_constant<atom("add")>; (defined in atom.hpp)
-    using multiply_atom = atom_constant<atom("multiply")>;
+   // using add_atom = atom_constant<atom("add")>; (defined in atom.hpp)
+   using multiply_atom = atom_constant<atom("multiply")>;
 
-    using adder = typed_actor<replies_to<add_atom, int, int>::with<int>>;
-    using multiplier = typed_actor<replies_to<multiply_atom, int, int>::with<int>>;
+   using adder = typed_actor<replies_to<add_atom, int, int>::with<int>>;
+   using multiplier = typed_actor<replies_to<multiply_atom, int, int>::with<int>>;
 
-    class adder_bhvr : public composable_behavior<adder> {
-    public:
-      result<int> operator()(add_atom, int x, int y) override {
-        return x + y;
-      }
-    };
+   class adder_bhvr : public composable_behavior<adder> {
+   public:
+     result<int> operator()(add_atom, int x, int y) override {
+       return x + y;
+     }
+   };
 
-    class multiplier_bhvr : public composable_behavior<multiplier> {
-    public:
-      result<int> operator()(multiply_atom, int x, int y) override {
-        return x * y;
-      }
-    };
+   class multiplier_bhvr : public composable_behavior<multiplier> {
+   public:
+     result<int> operator()(multiply_atom, int x, int y) override {
+       return x * y;
+     }
+   };
 
-    // calculator_bhvr can be inherited from or composed further
-    using calculator_bhvr = composed_behavior<adder_bhvr, multiplier_bhvr>;
+   // calculator_bhvr can be inherited from or composed further
+   using calculator_bhvr = composed_behavior<adder_bhvr, multiplier_bhvr>;
 
-    } // namespace <anonymous>
+   } // namespace <anonymous>
 
-    void caf_main(actor_system& system) {
-      auto f = make_function_view(system.spawn<calculator_bhvr>());
-      cout << "10 + 20 = " << f(add_atom::value, 10, 20) << endl;
-      cout << "7 * 9 = " << f(multiply_atom::value, 7, 9) << endl;
-    }
+   void caf_main(actor_system& system) {
+     auto f = make_function_view(system.spawn<calculator_bhvr>());
+     cout << "10 + 20 = " << f(add_atom::value, 10, 20) << endl;
+     cout << "7 * 9 = " << f(multiply_atom::value, 7, 9) << endl;
+   }
 
-    CAF_MAIN()
+   CAF_MAIN()
 
 .. raw:: latex
 
@@ -500,29 +494,29 @@ When acquiring mutable access to the represented value, CAF copies the value bef
 
 ::
 
-    using dict = typed_actor<reacts_to<put_atom, string, string>,
-                             replies_to<get_atom, string>::with<string>>;
+   using dict = typed_actor<reacts_to<put_atom, string, string>,
+                            replies_to<get_atom, string>::with<string>>;
 
-    class dict_behavior : public composable_behavior<dict> {
-    public:
-      result<string> operator()(get_atom, param<string> key) override {
-        auto i = values_.find(key);
-        if (i == values_.end())
-          return "";
-        return i->second;
-      }
+   class dict_behavior : public composable_behavior<dict> {
+   public:
+     result<string> operator()(get_atom, param<string> key) override {
+       auto i = values_.find(key);
+       if (i == values_.end())
+         return "";
+       return i->second;
+     }
 
-      result<void> operator()(put_atom, param<string> key,
-                              param<string> value) override {
-        if (values_.count(key) != 0)
-          return unit;
-        values_.emplace(key.move(), value.move());
-        return unit;
-      }
+     result<void> operator()(put_atom, param<string> key,
+                             param<string> value) override {
+       if (values_.count(key) != 0)
+         return unit;
+       values_.emplace(key.move(), value.move());
+       return unit;
+     }
 
-    protected:
-      std::unordered_map<string, string> values_;
-    };
+   protected:
+     std::unordered_map<string, string> values_;
+   };
 
 .. _attach:
 
@@ -533,11 +527,11 @@ Users can attach cleanup code to actors. This code is executed immediately if th
 
 ::
 
-    void print_on_exit(const actor& hdl, const std::string& name) {
-      hdl->attach_functor([=](const error& reason) {
-        cout << name << " exited: " << to_string(reason) << endl;
-      });
-    }
+   void print_on_exit(const actor& hdl, const std::string& name) {
+     hdl->attach_functor([=](const error& reason) {
+       cout << name << " exited: " << to_string(reason) << endl;
+     });
+   }
 
 It is possible to attach code to remote actors. However, the cleanup code will run on the local machine.
 
@@ -557,9 +551,9 @@ The function ``receive`` sequentially iterates over all elements in the mailbox 
 
 ::
 
-    self->receive (
-      [](int x) { /* ... */ }
-    );
+   self->receive (
+     [](int x) { /* ... */ }
+   );
 
 .. _catch-all:
 
@@ -572,21 +566,21 @@ The following example showcases a simple receive statement that expects a ``floa
 
 ::
 
-    self->receive(
-      [&](float x) {
-        // ...
-      },
-      [&](const down_msg& x) {
-        // ...
-      },
-      [&](const exit_msg& x) {
-        // ...
-      },
-      others >> [](message_view& x) -> result<message> {
-        // report unexpected message back to client
-        return sec::unexpected_message;
-      }
-    );
+   self->receive(
+     [&](float x) {
+       // ...
+     },
+     [&](const down_msg& x) {
+       // ...
+     },
+     [&](const exit_msg& x) {
+       // ...
+     },
+     others >> [](message_view& x) -> result<message> {
+       // report unexpected message back to client
+       return sec::unexpected_message;
+     }
+   );
 
 .. raw:: latex
 
@@ -601,43 +595,43 @@ Message handler passed to ``receive`` are temporary object at runtime. Hence, ca
 
 ::
 
-    // BAD
-    std::vector<int> results;
-    for (size_t i = 0; i < 10; ++i)
-      receive (
-        [&](int value) {
-          results.push_back(value);
-        }
-      );
+   // BAD
+   std::vector<int> results;
+   for (size_t i = 0; i < 10; ++i)
+     receive (
+       [&](int value) {
+         results.push_back(value);
+       }
+     );
 
-    // GOOD
-    std::vector<int> results;
-    size_t i = 0;
-    receive_for(i, 10) (
-      [&](int value) {
-        results.push_back(value);
-      }
-    );
+   // GOOD
+   std::vector<int> results;
+   size_t i = 0;
+   receive_for(i, 10) (
+     [&](int value) {
+       results.push_back(value);
+     }
+   );
 
 ::
 
-    // BAD
-    size_t received = 0;
-    while (received < 10) {
-      receive (
-        [&](int) {
-          ++received;
-        }
-      );
-    } ;
+   // BAD
+   size_t received = 0;
+   while (received < 10) {
+     receive (
+       [&](int) {
+         ++received;
+       }
+     );
+   } ;
 
-    // GOOD
-    size_t received = 0;
-    receive_while([&] { return received < 10; }) (
-      [&](int) {
-        ++received;
-      }
-    );
+   // GOOD
+   size_t received = 0;
+   receive_while([&] { return received < 10; }) (
+     [&](int) {
+       ++received;
+     }
+   );
 
 .. raw:: latex
 
@@ -645,39 +639,39 @@ Message handler passed to ``receive`` are temporary object at runtime. Hence, ca
 
 ::
 
-    // BAD
-    size_t received = 0;
-    do {
-      receive (
-        [&](int) {
-          ++received;
-        }
-      );
-    } while (received < 10);
+   // BAD
+   size_t received = 0;
+   do {
+     receive (
+       [&](int) {
+         ++received;
+       }
+     );
+   } while (received < 10);
 
-    // GOOD
-    size_t received = 0;
-    do_receive (
-      [&](int) {
-        ++received;
-      }
-    ).until([&] { return received >= 10; });
+   // GOOD
+   size_t received = 0;
+   do_receive (
+     [&](int) {
+       ++received;
+     }
+   ).until([&] { return received >= 10; });
 
 The examples above illustrate the correct usage of the three loops ``receive_for``, ``receive_while`` and ``do_receive(...).until``. It is possible to nest receives and receive loops.
 
 ::
 
-    bool running = true;
-    self->receive_while([&] { return running; }) (
-      [&](int value1) {
-        self->receive (
-          [&](float value2) {
-            aout(self) << value1 << " => " << value2 << endl;
-          }
-        );
-      },
-      // ...
-    );
+   bool running = true;
+   self->receive_while([&] { return running; }) (
+     [&](int value1) {
+       self->receive (
+         [&](float value2) {
+           aout(self) << value1 << " => " << value2 << endl;
+         }
+       );
+     },
+     // ...
+   );
 
 .. _scoped-actors:
 
@@ -688,14 +682,14 @@ The class ``scoped_actor`` offers a simple way of communicating with CAF actors 
 
 ::
 
-    void test(actor_system& system) {
-      scoped_actor self{system};
-      // spawn some actor
-      auto aut = self->spawn(my_actor_impl);
-      self->send(aut, "hi there");
-      // self will be destroyed automatically here; any
-      // actor monitoring it will receive down messages etc.
-    }
+   void test(actor_system& system) {
+     scoped_actor self{system};
+     // spawn some actor
+     auto aut = self->spawn(my_actor_impl);
+     self->send(aut, "hi there");
+     // self will be destroyed automatically here; any
+     // actor monitoring it will receive down messages etc.
+   }
 
 .. |image| image:: actor_types.png
 

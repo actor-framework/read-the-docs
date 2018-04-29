@@ -108,9 +108,9 @@ This new class can be used to create messages dynamically. For example, the cont
 
 ::
 
-    accept_handle, connection_handle, publish, remote_actor,
-    max_msg_size, typed_publish, typed_remote_actor, publish_local_groups,
-    new_connection_msg, new_data_msg, connection_closed_msg, acceptor_closed_msg
+   accept_handle, connection_handle, publish, remote_actor,
+   max_msg_size, typed_publish, typed_remote_actor, publish_local_groups,
+   new_connection_msg, new_data_msg, connection_closed_msg, acceptor_closed_msg
 
 These classes concern I/O functionality and have thus been moved to ``caf::io``
 

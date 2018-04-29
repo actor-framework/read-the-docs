@@ -46,27 +46,27 @@ As the name implies, a ``behavior`` defines the response of an actor to messages
 
 ::
 
-    message_handler x1{
-      [](int i) { /*...*/ },
-      [](double db) { /*...*/ },
-      [](int a, int b, int c) { /*...*/ }
-    };
+   message_handler x1{
+     [](int i) { /*...*/ },
+     [](double db) { /*...*/ },
+     [](int a, int b, int c) { /*...*/ }
+   };
 
 In our first example, ``x1`` models a behavior accepting messages that consist of either exactly one ``int``, or one ``double``, or three ``int`` values. Any other message is not matched and gets forwarded to the default handler (see § `:ref:`default-handler` <#default-handler>`__).
 
 ::
 
-    message_handler x2{
-      [](double db) { /*...*/ },
-      [](double db) { /* - unrachable - */ }
-    };
+   message_handler x2{
+     [](double db) { /*...*/ },
+     [](double db) { /* - unrachable - */ }
+   };
 
 Our second example illustrates an important characteristic of the matching mechanism. Each message is matched against the callbacks in the order they are defined. The algorithm stops at the first match. Hence, the second callback in ``x2`` is unreachable.
 
 ::
 
-    message_handler x3 = x1.or_else(x2);
-    message_handler x4 = x2.or_else(x1);
+   message_handler x3 = x1.or_else(x2);
+   message_handler x4 = x2.or_else(x1);
 
 Message handlers can be combined using ``or_else``. This composition is not commutative, as our third examples illustrates. The resulting message handler will first try to handle a message using the left-hand operand and will fall back to the right-hand operand if the former did not match. Thus, ``x3`` behaves exactly like ``x1``. This is because the second callback in ``x1`` will consume any message with a single ``double`` and both callbacks in ``x2`` are thus unreachable. The handler ``x4`` will consume messages with a single ``double`` using the first callback in ``x2``, essentially overriding the second callback in ``x1``.
 
@@ -85,8 +85,8 @@ Atoms in CAF are mapped to integer values at compile time. This mapping is guara
 
 ::
 
-    atom_value a1 = atom("add");
-    atom_value a2 = atom("multiply");
+   atom_value a1 = atom("add");
+   atom_value a2 = atom("multiply");
 
 **Warning**: The compiler cannot enforce the restrictions at compile time, except for a length check. The assertion ``atom("!?") != atom("?!")`` is not true, because each invalid character translates to a whitespace character.
 
@@ -94,22 +94,22 @@ While the ``atom_value`` is computed at compile time, it is not uniquely typed a
 
 ::
 
-    using add_atom = atom_constant<atom("add")>;
-    using multiply_atom = atom_constant<atom("multiply")>;
+   using add_atom = atom_constant<atom("add")>;
+   using multiply_atom = atom_constant<atom("multiply")>;
 
 Using these constants, we can now define message passing interfaces in a convenient way:
 
 ::
 
-    behavior do_math{
-      [](add_atom, int a, int b) {
-        return a + b;
-      },
-      [](multiply_atom, int a, int b) {
-        return a * b;
-      }
-    };
+   behavior do_math{
+     [](add_atom, int a, int b) {
+       return a + b;
+     },
+     [](multiply_atom, int a, int b) {
+       return a * b;
+     }
+   };
 
-    // caller side: send(math_actor, add_atom::value, 1, 2)
+   // caller side: send(math_actor, add_atom::value, 1, 2)
 
 Atom constants define a static member ``value``. Please note that this static ``value`` member does *not* have the type ``atom_value``, unlike ``std::integral_constant`` for example.

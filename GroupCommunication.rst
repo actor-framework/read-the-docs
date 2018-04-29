@@ -39,24 +39,24 @@ CAF supports publish/subscribe-based group communication. Dynamically typed acto
 
 ::
 
-    std::string module = "local";
-    std::string id = "foo";
-    auto expected_grp = system.groups().get(module, id);
-    if (! expected_grp) {
-      std::cerr << "*** cannot load group: "
-                << system.render(expected_grp.error()) << std::endl;
-      return;
-    }                    
-    auto grp = std::move(*expected_grp);
-    scoped_actor self{system};
-    self->join(grp);
-    self->send(grp, "test");
-    self->receive(
-      [](const std::string& str) {
-        assert(str == "test");
-      }
-    );
-    self->leave(grp);
+   std::string module = "local";
+   std::string id = "foo";
+   auto expected_grp = system.groups().get(module, id);
+   if (! expected_grp) {
+     std::cerr << "*** cannot load group: "
+               << system.render(expected_grp.error()) << std::endl;
+     return;
+   }                    
+   auto grp = std::move(*expected_grp);
+   scoped_actor self{system};
+   self->join(grp);
+   self->send(grp, "test");
+   self->receive(
+     [](const std::string& str) {
+       assert(str == "test");
+     }
+   );
+   self->leave(grp);
 
 It is worth mentioning that the module ``"local"`` is guaranteed to never return an error. The example above uses the general API for retrieving the group. However, local modules can be easier accessed by calling ``system.groups().get_local(id)``, which returns ``group`` instead of ``expected<group>``.
 

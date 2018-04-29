@@ -62,9 +62,9 @@ The figure above depicts the default memory layout when using shared pointers. T
    \centering
 
 .. figure:: make_shared.png
-   :alt: Memory layout when using ``std::make_shared``\ 
+   :alt: Memory layout when using ``std::make_shared``
 
-   Memory layout when using ``std::make_shared``\ 
+   Memory layout when using ``std::make_shared``
 
 When using ``make_shared`` or ``allocate_shared``, the standard library can store reference count and data in a single memory block as shown above. However, ``shared_ptr`` still has to store two pointers, because it is unaware where the data is allocated.
 
@@ -73,9 +73,9 @@ When using ``make_shared`` or ``allocate_shared``, the standard library can stor
    \centering
 
 .. figure:: enable_shared_from_this.png
-   :alt: Memory layout with ``std::enable_shared_from_this``\ 
+   :alt: Memory layout with ``std::enable_shared_from_this``
 
-   Memory layout with ``std::enable_shared_from_this``\ 
+   Memory layout with ``std::enable_shared_from_this``
 
 Finally, the design of the standard library becomes convoluted when an object should be able to hand out a ``shared_ptr`` to itself. Classes must inherit from ``std::enable_shared_from_this`` to navigate from an object to its control block. This additional navigation path is required, because ``std::shared_ptr`` needs two pointers. One to the data and one to the control block. Programmers can still use ``make_shared`` for such objects, in which case the object is again stored along with the control block.
 
