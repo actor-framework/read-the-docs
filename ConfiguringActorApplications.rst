@@ -151,9 +151,33 @@ The custom ``config`` class allows end users to set the port for the application
 
 Boolean options do not require arguments. The member variable ``server_mode`` is set to ``true`` if the command line contains either ``--server-mode`` or ``-s``.
 
-CAF prefixes all of its default CLI options with ``caf#``, except for “help” (``--help``, ``-h``, or ``-?``). The default name for the INI file is ``caf-application.ini``. Users can change the file name and path by passing ``--caf#config-file=<path>`` on the command line.
+The example uses member variables for capturing user-provided settings for simplicity. However, this is not required. For example, ``add<bool>("server-mode,s", "enable server mode")`` could be used for declaring the flag instead. All values of the configuration are accessible with ``get_or(config, name, default)``, e.g., ``get_or(system.config(), "global.server-mode", false)`` queries the flag at runtime and returns the given default value ``false`` if the flag is not defined or the stored value is not a boolean. Note that all global options can omit the ``"global."`` prefix.
 
-INI files are organized in categories. No value is allowed outside of a category (no implicit “global” category). CAF reads ``true`` and ``false`` as boolean, numbers as (signed) integers or ``double``, ``"``-enclosed characters as strings, and ``'``-enclosed characters as atoms (see § \ `:ref:`atom` <#atom>`__). The following example INI file lists all standard options in CAF and their default value. Note that some options such as ``scheduler.max-threads`` are usually detected at runtime and thus have no hard-coded default.
+CAF only adds the program options “help” (``--help``, ``-h``, or ``-?``) and “long-help” (``--long-help``) to the “global” category.
+
+The default name for the INI file is ``caf-application.ini``. Users can change the file name and path by passing ``--caf#config-file=<path>`` on the command line.
+
+INI files are organized in categories. No value is allowed outside of a category (no implicit “global” category). The parses uses the following syntax:
+
++-------------------------+-----------------------------+
+| ``key=true``            | is a boolean                |
++-------------------------+-----------------------------+
+| ``key=1``               | is an integer               |
++-------------------------+-----------------------------+
+| ``key=1.0``             | is an floating point number |
++-------------------------+-----------------------------+
+| ``key=1ms``             | is an timespan              |
++-------------------------+-----------------------------+
+| ``key='foo'``           | is an atom                  |
++-------------------------+-----------------------------+
+| ``key="foo"``           | is a string                 |
++-------------------------+-----------------------------+
+| ``key=[0, 1, ...]``     | is as a list                |
++-------------------------+-----------------------------+
+| ``key={a=1, b=2, ...}`` | is a dictionary (map)       |
++-------------------------+-----------------------------+
+
+The following example INI file lists all standard options in CAF and their default value. Note that some options such as ``scheduler.max-threads`` are usually detected at runtime and thus have no hard-coded default.
 
 .. raw:: latex
 
