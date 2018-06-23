@@ -199,7 +199,7 @@ The following example INI file lists all standard options in CAF and their defau
    ; maximum number of messages actors can consume in one run
    max-throughput=<infinite>
    ; measurement resolution in milliseconds (only if profiling is enabled)
-   profiling-ms-resolution=100
+   profiling-resolution=100ms
    ; output file for profiler data (only if profiling is enabled)
    profiling-output-file="/dev/null"
 
@@ -213,12 +213,12 @@ The following example INI file lists all standard options in CAF and their defau
    moderate-poll-attempts=500
    ; frequency of steal attempts during moderate polling
    moderate-steal-interval=5
-   ; sleep interval in microseconds between poll attempts
-   moderate-sleep-duration=50
+   ; sleep interval between poll attempts
+   moderate-sleep-duration=50us
    ; frequency of steal attempts during relaxed polling
    relaxed-steal-interval=1
-   ; sleep interval in microseconds between poll attempts
-   relaxed-sleep-duration=10000
+   ; sleep interval between poll attempts
+   relaxed-sleep-duration=10ms
 
    ; when loading io::middleman
    [middleman]
@@ -232,17 +232,18 @@ The following example INI file lists all standard options in CAF and their defau
    ; maximum number of consecutive I/O reads per broker
    max-consecutive-reads=50
    ; heartbeat message interval in ms (0 disables heartbeating)
-   heartbeat-interval=0
-   ; configures whether the MM detaches its internal utility actors, setting
-   ; this to false allows fully deterministic execution in unit tests
-   detach-utility-actors=true
+   heartbeat-interval=0ms
+   ; configures whether the MM attaches its internal utility actors to the
+   ; scheduler instead of dedicating individual threads (needed only for
+   ; deterministic testing)
+   attach-utility-actors=false
    ; configures whether the MM starts a background thread for I/O activity,
-   ; setting this to false allows fully deterministic execution in unit test and
+   ; setting this to true allows fully deterministic execution in unit test and
    ; requires the user to trigger I/O manually
-   detach-multiplexer=true
-   ; enable or disable communication via the TCP transport protocol
-   enable-tcp=true
-   ; enable or disable communication via the UDP transport protocol
+   manual-multiplexing=false
+   ; disables communication via TCP
+   disable-tcp=false
+   ; enable communication via UDP
    enable-udp=false
 
    ; when compiling with logging enabled
