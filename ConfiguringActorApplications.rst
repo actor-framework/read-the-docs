@@ -224,8 +224,6 @@ The following example INI file lists all standard options in CAF and their defau
    [middleman]
    ; configures whether MMs try to span a full mesh
    enable-automatic-connections=false
-   ; accepted alternative: 'asio' (only when compiling CAF with ASIO)
-   network-backend='default'
    ; application identifier of this node, prevents connection to other CAF
    ; instances with different identifier
    app-identifier=""
