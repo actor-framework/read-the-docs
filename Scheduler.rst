@@ -84,6 +84,7 @@ The default policy in CAF is work stealing. The key idea of this algorithm is to
 
 .. figure:: stealing.png
    :alt: Stealing of work items
+   :name: fig-stealing
 
    Stealing of work items
 

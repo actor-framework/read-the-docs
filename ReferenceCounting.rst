@@ -52,6 +52,7 @@ Before discussing the approach to shared ownership in CAF, we look at the design
 
 .. figure:: shared_ptr.png
    :alt: Shared pointer design in the C++ standard library
+   :name: shared-ptr
 
    Shared pointer design in the C++ standard library
 
@@ -63,6 +64,7 @@ The figure above depicts the default memory layout when using shared pointers. T
 
 .. figure:: make_shared.png
    :alt: Memory layout when using ``std::make_shared``
+   :name: make-shared
 
    Memory layout when using ``std::make_shared``
 
@@ -74,6 +76,7 @@ When using ``make_shared`` or ``allocate_shared``, the standard library can stor
 
 .. figure:: enable_shared_from_this.png
    :alt: Memory layout with ``std::enable_shared_from_this``
+   :name: enable-shared-from-this
 
    Memory layout with ``std::enable_shared_from_this``
 
@@ -92,6 +95,7 @@ In CAF, we use a different approach than the standard library because (1) we alw
 
 .. figure:: refcounting.png
    :alt: Shared pointer design in CAF
+   :name: actor-pointer
 
    Shared pointer design in CAF
 

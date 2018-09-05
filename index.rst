@@ -18,6 +18,7 @@
    Messages
    GroupCommunication
    ManagingGroupsOfWorkers
+   Streaming
 
 .. toctree::
    :maxdepth: 2
