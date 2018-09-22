@@ -1,35 +1,3 @@
-.. raw:: latex
-
-   \definecolor{lightgrey}{rgb}{0.9,0.9,0.9}
-
-.. raw:: latex
-
-   \definecolor{lightblue}{rgb}{0,0,1}
-
-.. raw:: latex
-
-   \definecolor{grey}{rgb}{0.5,0.5,0.5}
-
-.. raw:: latex
-
-   \definecolor{blue}{rgb}{0,0,1}
-
-.. raw:: latex
-
-   \definecolor{violet}{rgb}{0.5,0,0.5}
-
-.. raw:: latex
-
-   \definecolor{darkred}{rgb}{0.5,0,0}
-
-.. raw:: latex
-
-   \definecolor{darkblue}{rgb}{0,0,0.5}
-
-.. raw:: latex
-
-   \definecolor{darkgreen}{rgb}{0,0.5,0}
-
 .. _overview:
 
 Overview
@@ -92,27 +60,23 @@ Supported Operating Systems
 
 -  Windows (static library only)
 
-.. raw:: latex
-
-   \clearpage
-
 .. _hello-world-example:
 
 Hello World Example
 -------------------
 
-::
+.. code-block:: C++
 
    #include <string>
    #include <iostream>
-
+   
    #include "caf/all.hpp"
-
+   
    using std::endl;
    using std::string;
-
+   
    using namespace caf;
-
+   
    behavior mirror(event_based_actor* self) {
      // return the (initial) actor behavior
      return {
@@ -126,7 +90,7 @@ Hello World Example
        }
      };
    }
-
+   
    void hello_world(event_based_actor* self, const actor& buddy) {
      // send "Hello World!" to our buddy ...
      self->request(buddy, std::chrono::seconds(10), "Hello World!").then(
@@ -137,7 +101,7 @@ Hello World Example
        }
      );
    }
-
+   
    int main() {
      // our CAF environment
      actor_system_config cfg;
@@ -148,3 +112,5 @@ Hello World Example
      system.spawn(hello_world, mirror_actor);
      // system will wait until both actors are destroyed before leaving main
    }
+
+

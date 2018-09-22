@@ -1,35 +1,3 @@
-.. raw:: latex
-
-   \definecolor{lightgrey}{rgb}{0.9,0.9,0.9}
-
-.. raw:: latex
-
-   \definecolor{lightblue}{rgb}{0,0,1}
-
-.. raw:: latex
-
-   \definecolor{grey}{rgb}{0.5,0.5,0.5}
-
-.. raw:: latex
-
-   \definecolor{blue}{rgb}{0,0,1}
-
-.. raw:: latex
-
-   \definecolor{violet}{rgb}{0.5,0,0.5}
-
-.. raw:: latex
-
-   \definecolor{darkred}{rgb}{0.5,0,0}
-
-.. raw:: latex
-
-   \definecolor{darkblue}{rgb}{0,0,0.5}
-
-.. raw:: latex
-
-   \definecolor{darkgreen}{rgb}{0,0.5,0}
-
 .. _faq:
 
 Frequently Asked Questions
@@ -42,7 +10,7 @@ This Section is a compilation of the most common questions via GitHub, chat, and
 Can I Encrypt CAF Communication?
 --------------------------------
 
-Yes, by using the OpenSSL module (see § \ `:ref:`free-remoting-functions` <#free-remoting-functions>`__).
+Yes, by using the OpenSSL module .
 
 .. _can-i-create-messages-dynamically:
 
@@ -78,4 +46,4 @@ The ``scripts/`` and ``tools/`` directories contain some useful tools to aid in 
 
 ``scripts/caf-prof`` is an R script that generates plots from CAF profiler output.
 
-``caf-vec`` is a (highly) experimental tool that annotates CAF logs with vector timestamps. It gives you happens-before relations and a nice visualization via `ShiViz <https://bestchai.bitbucket.io/shiviz/>`__. There is an associated `RFC <https://github.com/actor-framework/rfcs/blob/master/proposals/0001-minimal-debugging-and-shiviz-support.md>`__ for more information on caf-vec.
+``caf-vec`` is a (highly) experimental tool that annotates CAF logs with vector timestamps. It gives you happens-before relations and a nice visualization via `ShiViz <https://bestchai.bitbucket.io/shiviz/>`__.

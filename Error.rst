@@ -1,50 +1,14 @@
-.. raw:: latex
-
-   \definecolor{lightgrey}{rgb}{0.9,0.9,0.9}
-
-.. raw:: latex
-
-   \definecolor{lightblue}{rgb}{0,0,1}
-
-.. raw:: latex
-
-   \definecolor{grey}{rgb}{0.5,0.5,0.5}
-
-.. raw:: latex
-
-   \definecolor{blue}{rgb}{0,0,1}
-
-.. raw:: latex
-
-   \definecolor{violet}{rgb}{0.5,0,0.5}
-
-.. raw:: latex
-
-   \definecolor{darkred}{rgb}{0.5,0,0}
-
-.. raw:: latex
-
-   \definecolor{darkblue}{rgb}{0,0,0.5}
-
-.. raw:: latex
-
-   \definecolor{darkgreen}{rgb}{0,0.5,0}
-
 .. _error:
 
 Errors
 ======
 
-Errors in CAF have a code and a category, similar to ``std::error_code`` and ``std::error_condition``. Unlike its counterparts from the C++ standard library, ``error`` is plattform-neutral and serializable. Instead of using category singletons, CAF stores categories as atoms (see § \ `:ref:`atom` <#atom>`__). Errors can also include a message to provide additional context information.
+Errors in CAF have a code and a category, similar to ``std::error_code`` and ``std::error_condition``. Unlike its counterparts from the C++ standard library, ``error`` is plattform-neutral and serializable. Instead of using category singletons, CAF stores categories as atoms . Errors can also include a message to provide additional context information.
 
 .. _class-interface:
 
 Class Interface
 ---------------
-
-.. raw:: latex
-
-   \small
 
 +------------------------------------------+--------------------------------------------------------------------+
 | **Constructors**                         |                                                                    |
@@ -75,16 +39,16 @@ Add Custom Error Categories
 
 Adding custom error categories requires three steps: (1) declare an enum class of type ``uint8_t`` with the first value starting at 1, (2) implement a free function ``make_error`` that converts the enum to an ``error`` object, (3) add the custom category to the actor system with a render function. The last step is optional to allow users to retrieve a better string representation from ``system.render(x)`` than ``to_string(x)`` can offer. Note that any error code with value 0 is interpreted as *not-an-error*. The following example adds a custom error category by performing the first two steps.
 
-::
+.. code-block:: C++
 
    enum class math_error : uint8_t {
      division_by_zero = 1
    };
-
+   
    error make_error(math_error x) {
      return {static_cast<uint8_t>(x), atom("math")};
    }
-
+   
    std::string to_string(math_error x) {
      switch (x) {
        case math_error::division_by_zero:
@@ -98,7 +62,7 @@ The implementation of ``to_string(error)`` is unable to call string conversions 
 
 The following code adds a rendering function to the actor system to provide a more satisfactory string conversion.
 
-::
+.. code-block:: C++
 
    class config : public actor_system_config {
    public:
@@ -112,10 +76,6 @@ The following code adds a rendering function to the actor system to provide a mo
 
 With the custom rendering function, ``system.render(make_error(math_error::division_by_zero))`` returns ``"math_error(division_by_zero)"``.
 
-.. raw:: latex
-
-   \clearpage
-
 .. _sec:
 
 System Error Codes
@@ -123,7 +83,7 @@ System Error Codes
 
 System Error Codes (SECs) use the error category ``"system"``. They represent errors in the actor system or one of its modules and are defined as follows.
 
-::
+.. code-block:: C++
 
    enum class sec : uint8_t {
      /// No error.
@@ -187,16 +147,42 @@ System Error Codes (SECs) use the error category ``"system"``. They represent er
      /// Linking to a remote actor failed because actor no longer exists.
      remote_linking_failed,
      /// Adding an upstream to a stream failed.
+     cannot_add_upstream = 30,
+     /// Adding an upstream to a stream failed because it already exists.
+     upstream_already_exists,
+     /// Unable to process upstream messages because upstream is invalid.
+     invalid_upstream,
+     /// Adding a downstream to a stream failed.
+     cannot_add_downstream,
+     /// Adding a downstream to a stream failed because it already exists.
+     downstream_already_exists,
+     /// Unable to process downstream messages because downstream is invalid.
+     invalid_downstream = 35,
+     /// Cannot start streaming without next stage.
+     no_downstream_stages_defined,
+     /// Actor failed to initialize state after receiving a stream handshake.
+     stream_init_failed,
+     /// Unable to process a stream since due to missing state.
+     invalid_stream_state,
+     /// Stream aborted due to unexpected error.
+     unhandled_stream_error,
+     /// A function view was called without assigning an actor first.
+     bad_function_call = 40,
+     /// Feature is disabled in the actor system config.
+     feature_disabled,
+   };
 
 .. _exit-reason:
 
 Default Exit Reasons
 --------------------
 
-CAF uses the error category ``"exit"`` for default exit reasons. These errors are usually fail states set by the actor system itself. The two exceptions are ``exit_reason::user_shutdown`` and ``exit_reason::kill``. The former is used in CAF to signalize orderly, user-requested shutdown and can be used by programmers in the same way. The latter terminates an actor unconditionally when used in ``send_exit``, even if the default handler for exit messages (see § \ `:ref:`exit-message` <#exit-message>`__) is overridden.
+CAF uses the error category ``"exit"`` for default exit reasons. These errors are usually fail states set by the actor system itself. The two exceptions are ``exit_reason::user_shutdown`` and ``exit_reason::kill``. The former is used in CAF to signalize orderly, user-requested shutdown and can be used by programmers in the same way. The latter terminates an actor unconditionally when used in ``send_exit``, even if the default handler for exit messages  is overridden.
 
-::
+.. code-block:: C++
 
+   /// This error category represents fail conditions for actors.
+   enum class exit_reason : uint8_t {
      /// Indicates that an actor finished execution without error.
      normal = 0,
      /// Indicates that an actor died because of an unhandled exception.
@@ -217,4 +203,4 @@ CAF uses the error category ``"exit"`` for default exit reasons. These errors ar
      unreachable
    };
 
-   /// Returns a string representation of given exit reason.
+

@@ -1,45 +1,11 @@
-.. raw:: latex
-
-   \definecolor{lightgrey}{rgb}{0.9,0.9,0.9}
-
-.. raw:: latex
-
-   \definecolor{lightblue}{rgb}{0,0,1}
-
-.. raw:: latex
-
-   \definecolor{grey}{rgb}{0.5,0.5,0.5}
-
-.. raw:: latex
-
-   \definecolor{blue}{rgb}{0,0,1}
-
-.. raw:: latex
-
-   \definecolor{violet}{rgb}{0.5,0,0.5}
-
-.. raw:: latex
-
-   \definecolor{darkred}{rgb}{0.5,0,0}
-
-.. raw:: latex
-
-   \definecolor{darkblue}{rgb}{0,0,0.5}
-
-.. raw:: latex
-
-   \definecolor{darkgreen}{rgb}{0,0.5,0}
-
 .. _worker-groups:
 
-Managing Groups of Workers experimental 
-========================================
+Managing Groups of Workers 
+===========================
 
 When managing a set of workers, a central actor often dispatches requests to a set of workers. For this purpose, the class ``actor_pool`` implements a lightweight abstraction for managing a set of workers using a dispatching policy. Unlike groups, pools usually own their workers.
 
-Pools are created using the static member function ``make``, which takes either one argument (the policy) or three (number of workers, factory function for workers, and dispatching policy). After construction, one can add new workers via messages of the form ``('SYS', 'PUT', worker)``, remove workers with ``('SYS', 'DELETE', worker)``, and retrieve the set of workers as ``vector<actor>`` via ``('SYS', 'GET')``.
-
-For example, ``send(my_pool, sys_atom::value, put_atom::value, worker)`` adds ``worker`` to ``my_pool``.
+Pools are created using the static member function ``make``, which takes either one argument (the policy) or three (number of workers, factory function for workers, and dispatching policy). After construction, one can add new workers via messages of the form ``(’SYS’, ’PUT’, worker)``, remove workers with ``(’SYS’, ’DELETE’, worker)``, and retrieve the set of workers as ``vector<actor>`` via ``(’SYS’, ’GET’)``.
 
 An actor pool takes ownership of its workers. When forced to quit, it sends an exit messages to all of its workers, forcing them to quit as well. The pool also monitors all of its workers.
 

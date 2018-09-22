@@ -1,49 +1,13 @@
-.. raw:: latex
-
-   \definecolor{lightgrey}{rgb}{0.9,0.9,0.9}
-
-.. raw:: latex
-
-   \definecolor{lightblue}{rgb}{0,0,1}
-
-.. raw:: latex
-
-   \definecolor{grey}{rgb}{0.5,0.5,0.5}
-
-.. raw:: latex
-
-   \definecolor{blue}{rgb}{0,0,1}
-
-.. raw:: latex
-
-   \definecolor{violet}{rgb}{0.5,0,0.5}
-
-.. raw:: latex
-
-   \definecolor{darkred}{rgb}{0.5,0,0}
-
-.. raw:: latex
-
-   \definecolor{darkblue}{rgb}{0,0,0.5}
-
-.. raw:: latex
-
-   \definecolor{darkgreen}{rgb}{0,0.5,0}
-
 .. _registry:
 
 Registry
 ========
 
-The actor registry in CAF keeps track of the number of running actors and allows to map actors to their ID or a custom atom (see § \ `:ref:`atom` <#atom>`__) representing a name. The registry does *not* contain all actors. Actors have to be stored in the registry explicitly. Users can access the registry through an actor system by calling ``system.registry()``. The registry stores actors using ``strong_actor_ptr`` (see § `:ref:`actor-pointer` <#actor-pointer>`__).
+The actor registry in CAF keeps track of the number of running actors and allows to map actors to their ID or a custom atom  representing a name. The registry does *not* contain all actors. Actors have to be stored in the registry explicitly. Users can access the registry through an actor system by calling ``system.registry()``. The registry stores actors using ``strong_actor_ptr`` .
 
-Users can use the registry to make actors system-wide available by name. The middleman (see § \ `:ref:`middleman` <#middleman>`__) uses the registry to keep track of all actors known to remote nodes in order to serialize and deserialize them. Actors are removed automatically when they terminate.
+Users can use the registry to make actors system-wide available by name. The middleman  uses the registry to keep track of all actors known to remote nodes in order to serialize and deserialize them. Actors are removed automatically when they terminate.
 
 It is worth mentioning that the registry is not synchronized between connected actor system. Each actor system has its own, local registry in a distributed setting.
-
-.. raw:: latex
-
-   \small
 
 +--------------------------------------------+-------------------------------------------------+
 | **Types**                                  |                                                 |

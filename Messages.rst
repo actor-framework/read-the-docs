@@ -1,35 +1,3 @@
-.. raw:: latex
-
-   \definecolor{lightgrey}{rgb}{0.9,0.9,0.9}
-
-.. raw:: latex
-
-   \definecolor{lightblue}{rgb}{0,0,1}
-
-.. raw:: latex
-
-   \definecolor{grey}{rgb}{0.5,0.5,0.5}
-
-.. raw:: latex
-
-   \definecolor{blue}{rgb}{0,0,1}
-
-.. raw:: latex
-
-   \definecolor{violet}{rgb}{0.5,0,0.5}
-
-.. raw:: latex
-
-   \definecolor{darkred}{rgb}{0.5,0,0}
-
-.. raw:: latex
-
-   \definecolor{darkblue}{rgb}{0,0,0.5}
-
-.. raw:: latex
-
-   \definecolor{darkgreen}{rgb}{0,0.5,0}
-
 .. _message:
 
 Type-Erased Tuples, Messages and Message Views
@@ -46,11 +14,7 @@ The convenience class ``message_view`` holds a reference to either a stack-locat
 RTTI and Type Numbers
 ---------------------
 
-All builtin types in CAF have a non-zero 6-bit *type number*. All user-defined types are mapped to 0. When querying the run-time type information (RTTI) for individual message or tuple elements, CAF returns a ``std::pair<uint16_t, const std::type_info*>``. The first value is the 6-bit type number. If the type number is non-zero, the second value is a pointer to the C++ type info, otherwise the second value is null. Additionally, CAF generates 32 bit *type tokens*. These tokens are *type hints* that summarizes all types in a type-erased tuple. Two type-erased tuples are of different type if they have different type tokens (the reverse is not true).
-
-.. raw:: latex
-
-   \clearpage
+All builtin types in CAF have a non-zero 6-bit *type number*. All user-defined types are mapped to 0. When querying the run-time type information (RTTI) for individual message or tuple elements, CAF returns a pair consisting of an integer and a pointer to ``std::type_info``. The first value is the 6-bit type number. If the type number is non-zero, the second value is a pointer to the C++ type info, otherwise the second value is null. Additionally, CAF generates 32 bit *type tokens*. These tokens are *type hints* that summarizes all types in a type-erased tuple. Two type-erased tuples are of different type if they have different type tokens (the reverse is not true).
 
 .. _class-type_erased_tuple:
 
@@ -58,10 +22,6 @@ Class ``type_erased_tuple``
 ---------------------------
 
 **Note**: Calling modifiers on a shared type-erased tuple is undefined behavior.
-
-.. raw:: latex
-
-   \small
 
 | ll **Types** &  
 | ``rtti_pair`` & ``std::pair<uint16_t, const std::type_info*>``
@@ -93,18 +53,14 @@ Class ``message``
 
 The class ``message`` includes all member functions of ``type_erased_tuple``. However, calling modifiers is always guaranteed to be safe. A ``message`` automatically detaches its content by copying it from the shared data on mutable access. The class further adds the following member functions over ``type_erased_tuple``. Note that ``apply`` only detaches the content if a callback takes mutable references as arguments.
 
-.. raw:: latex
-
-   \small
-
 | ll **Observers** &  
 | ``message drop(size_t n)`` & Creates a new message with all but the first ``n`` values.
 | ``message drop_right(size_t n)`` & Creates a new message with all but the last ``n`` values.
 | ``message take(size_t n)`` & Creates a new message from the first ``n`` values.
 | ``message take_right(size_t n)`` & Creates a new message from the last ``n`` values.
 | ``message slice(size_t p, size_t n)`` & Creates a new message from ``[p, p + n)``.
-| ``message extract(message_handler)`` & See § \ `1.5 <#extract>`__.
-| ``message extract_opts(...)`` & See § \ `1.6 <#extract-opts>`__.
+| ``message extract(message_handler)`` & See .
+| ``message extract_opts(...)`` & See .
 |   &  
 | **Modifiers** &  
 | ``optional<message> apply(message_handler f)`` & Returns ``f(*this)``.
@@ -113,18 +69,10 @@ The class ``message`` includes all member functions of ``type_erased_tuple``. Ho
 | ``message operator+(message x, message y)`` & Concatenates ``x`` and ``y``.
 | ``message& operator+=(message& x, message y)`` & Concatenates ``x`` and ``y``.
 
-.. raw:: latex
-
-   \clearpage
-
 .. _class-message_builder:
 
 Class ``message_builder``
 -------------------------
-
-.. raw:: latex
-
-   \small
 
 +----------------------------------------------------+-----------------------------------------------------+
 | **Constructors**                                   |                                                     |
@@ -147,9 +95,9 @@ Class ``message_builder``
 +----------------------------------------------------+-----------------------------------------------------+
 | ``append(Iter first, Iter last)``                  | Adds all elements from range ``[first, last)``.     |
 +----------------------------------------------------+-----------------------------------------------------+
-| ``message extract(message_handler)``               | See § \ `1.5 <#extract>`__.                         |
+| ``message extract(message_handler)``               | See .                                               |
 +----------------------------------------------------+-----------------------------------------------------+
-| ``message extract_opts(...)``                      | See § \ `1.6 <#extract-opts>`__.                    |
+| ``message extract_opts(...)``                      | See .                                               |
 +----------------------------------------------------+-----------------------------------------------------+
 |                                                    |                                                     |
 +----------------------------------------------------+-----------------------------------------------------+
@@ -160,16 +108,13 @@ Class ``message_builder``
 | ``message move_to_message()``                      | Transfers ownership of its data to the new message. |
 +----------------------------------------------------+-----------------------------------------------------+
 
-.. raw:: latex
-
-   \clearpage
-
 .. _extract:
 
 Extracting
 ----------
 
-The member function ``message::extract`` removes matched elements from a message. x Messages are filtered by repeatedly applying a message handler to the greatest remaining slice, whereas slices are generated in the sequence ``[0, size)``, ``[0, size-1)``, ``...``, ``[1, size-1)``, ``...``, ``[size-1, size)``. Whenever a slice is matched, it is removed from the message and the next slice starts at the same index on the reduced message.
+The member function ``message::extract`` removes matched elements from a message. x Messages are filtered by repeatedly applying a message handler to the greatest remaining slice, whereas slices are generated in the sequence :math:`[0,
+size)`, :math:`[0, size-1)`, :math:`...`, :math:`[1, size-1)`, :math:`...`, :math:`[size-1, size)`. Whenever a slice is matched, it is removed from the message and the next slice starts at the same index on the reduced message.
 
 For example:
 
@@ -200,10 +145,6 @@ Step-by-step explanation:
 -  Slice 7: ``(4)``, no match
 
 Slice 7 is ``(4)``, i.e., does not contain the first element, because the match on slice 6 occurred at index position 1. The function ``extract`` iterates a message only once, from left to right. The returned message contains the remaining, i.e., unmatched, elements.
-
-.. raw:: latex
-
-   \clearpage
 
 .. _extract-opts:
 

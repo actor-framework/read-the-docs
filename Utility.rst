@@ -1,35 +1,3 @@
-.. raw:: latex
-
-   \definecolor{lightgrey}{rgb}{0.9,0.9,0.9}
-
-.. raw:: latex
-
-   \definecolor{lightblue}{rgb}{0,0,1}
-
-.. raw:: latex
-
-   \definecolor{grey}{rgb}{0.5,0.5,0.5}
-
-.. raw:: latex
-
-   \definecolor{blue}{rgb}{0,0,1}
-
-.. raw:: latex
-
-   \definecolor{violet}{rgb}{0.5,0,0.5}
-
-.. raw:: latex
-
-   \definecolor{darkred}{rgb}{0.5,0,0}
-
-.. raw:: latex
-
-   \definecolor{darkblue}{rgb}{0,0,0.5}
-
-.. raw:: latex
-
-   \definecolor{darkgreen}{rgb}{0,0.5,0}
-
 .. _utility:
 
 Utility
@@ -43,10 +11,6 @@ Class ``optional``
 ------------------
 
 Represents a value that may or may not exist.
-
-.. raw:: latex
-
-   \small
 
 | ll **Constructors** &  
 | ``(T value)`` & Constructs an object with a value.
@@ -62,11 +26,7 @@ Represents a value that may or may not exist.
 Class ``expected``
 ------------------
 
-Represents the result of a computation that *should* return a value. If no value could be produced, the ``expected<T>`` contains an ``error`` (see § `:ref:`error` <#error>`__).
-
-.. raw:: latex
-
-   \small
+Represents the result of a computation that *should* return a value. If no value could be produced, the ``expected<T>`` contains an ``error`` .
 
 | ll **Constructors** &  
 | ``(T value)`` & Constructs an object with a value.

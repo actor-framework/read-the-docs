@@ -1,41 +1,9 @@
-.. raw:: latex
-
-   \definecolor{lightgrey}{rgb}{0.9,0.9,0.9}
-
-.. raw:: latex
-
-   \definecolor{lightblue}{rgb}{0,0,1}
-
-.. raw:: latex
-
-   \definecolor{grey}{rgb}{0.5,0.5,0.5}
-
-.. raw:: latex
-
-   \definecolor{blue}{rgb}{0,0,1}
-
-.. raw:: latex
-
-   \definecolor{violet}{rgb}{0.5,0,0.5}
-
-.. raw:: latex
-
-   \definecolor{darkred}{rgb}{0.5,0,0}
-
-.. raw:: latex
-
-   \definecolor{darkblue}{rgb}{0,0,0.5}
-
-.. raw:: latex
-
-   \definecolor{darkgreen}{rgb}{0,0.5,0}
-
 .. _type-inspection:
 
 Type Inspection (Serialization and String Conversion)
 =====================================================
 
-CAF is designed with distributed systems in mind. Hence, all message types must be serializable and need a platform-neutral, unique name that is configured at startup (see § `:ref:`add-custom-message-type` <#add-custom-message-type>`__). Using a message type that is not serializable causes a compiler error (see § `1.4 <#unsafe-message-type>`__). CAF serializes individual elements of a message by using the inspection API. This API allows users to provide code for serialization as well as string conversion with a single free function. The signature for a class ``my_class`` is always as follows:
+CAF is designed with distributed systems in mind. Hence, all message types must be serializable and need a platform-neutral, unique name that is configured at startup . Using a message type that is not serializable causes a compiler error . CAF serializes individual elements of a message by using the inspection API. This API allows users to provide code for serialization as well as string conversion with a single free function. The signature for a class ``my_class`` is always as follows:
 
 ::
 
@@ -46,14 +14,14 @@ CAF is designed with distributed systems in mind. Hence, all message types must 
 
 The function ``inspect`` passes meta information and data fields to the variadic call operator of the inspector. The following example illustrates an implementation for ``inspect`` for a simple POD struct.
 
-::
+.. code-block:: C++
 
    // POD struct foo
    struct foo {
      std::vector<int> a;
      int b;
    };
-
+   
    // foo needs to be serializable
    template <class Inspector>
    typename Inspector::result_type inspect(Inspector& f, foo& x) {
@@ -75,12 +43,12 @@ The following concept class shows the requirements for inspectors. The placehold
 
    Inspector {
      using result_type = T;
-     
+
      if (inspector only requires read access to the state of T)
        static constexpr bool reads_state = true;
      else
        static constexpr bool writes_state = true;
-     
+
      template <class... Ts>
      result_type operator()(Ts&&...);
    }
@@ -126,16 +94,6 @@ Whitelisting Unsafe Message Types
 
 Message types that are not serializable cause compile time errors when used in actor communication. When using CAF for concurrency only, this errors can be suppressed by whitelisting types with ``CAF_ALLOW_UNSAFE_MESSAGE_TYPE``. The macro is defined as follows.
 
-::
-
-     template <>                                                                  \
-     struct allowed_unsafe_message_type<type_name> : std::true_type {};           \
-     }
-
-.. raw:: latex
-
-   \clearpage
-
 .. _splitting-save-and-load-operations:
 
 Splitting Save and Load Operations
@@ -143,7 +101,7 @@ Splitting Save and Load Operations
 
 If loading and storing cannot be implemented in a single function, users can query whether the inspector is loading or storing. For example, consider the following class ``foo`` with getter and setter functions and no public access to its members.
 
-::
+.. code-block:: C++
 
    // no friend access for `inspect`
    class foo {
@@ -151,38 +109,34 @@ If loading and storing cannot be implemented in a single function, users can que
      foo(int a0 = 0, int b0 = 0) : a_(a0), b_(b0) {
        // nop
      }
-
+   
      foo(const foo&) = default;
      foo& operator=(const foo&) = default;
-
+   
      int a() const {
        return a_;
      }
-
+   
      void set_a(int val) {
        a_ = val;
      }
-
+   
      int b() const {
        return b_;
      }
-
+   
      void set_b(int val) {
        b_ = val;
      }
-
+   
    private:
      int a_;
      int b_;
    };
 
-.. raw:: latex
-
-   \clearpage
-
 Since there is no access to the data fields ``a_`` and ``b_`` (and assuming no changes to ``foo`` are possible), we need to split our implementation of ``inspect`` as shown below.
 
-::
+.. code-block:: C++
 
    template <class Inspector>
    typename std::enable_if<Inspector::reads_state,
@@ -190,7 +144,7 @@ Since there is no access to the data fields ``a_`` and ``b_`` (and assuming no c
    inspect(Inspector& f, foo& x) {
      return f(meta::type_name("foo"), x.a(), x.b());
    }
-
+   
    template <class Inspector>
    typename std::enable_if<Inspector::writes_state,
                            typename Inspector::result_type>::type
@@ -204,7 +158,7 @@ Since there is no access to the data fields ``a_`` and ``b_`` (and assuming no c
      });
      return f(meta::type_name("foo"), a, b);
    }
-
+   
    behavior testee(event_based_actor* self) {
      return {
        [=](const foo& x) {

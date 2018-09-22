@@ -1,43 +1,11 @@
-.. raw:: latex
-
-   \definecolor{lightgrey}{rgb}{0.9,0.9,0.9}
-
-.. raw:: latex
-
-   \definecolor{lightblue}{rgb}{0,0,1}
-
-.. raw:: latex
-
-   \definecolor{grey}{rgb}{0.5,0.5,0.5}
-
-.. raw:: latex
-
-   \definecolor{blue}{rgb}{0,0,1}
-
-.. raw:: latex
-
-   \definecolor{violet}{rgb}{0.5,0,0.5}
-
-.. raw:: latex
-
-   \definecolor{darkred}{rgb}{0.5,0,0}
-
-.. raw:: latex
-
-   \definecolor{darkblue}{rgb}{0,0,0.5}
-
-.. raw:: latex
-
-   \definecolor{darkgreen}{rgb}{0,0.5,0}
-
 .. _system-config:
 
 Configuring Actor Applications
 ==============================
 
-CAF configures applications at startup using an ``actor_system_config`` or a user-defined subclass of that type. The config objects allow users to add custom types, to load modules, and to fine-tune the behavior of loaded modules with command line options or configuration files (see § \ `1.2 <#system-config-options>`__).
+CAF configures applications at startup using an ``actor_system_config`` or a user-defined subclass of that type. The config objects allow users to add custom types, to load modules, and to fine-tune the behavior of loaded modules with command line options or configuration files .
 
-The following code example is a minimal CAF application with a middleman (see § \ `:ref:`middleman` <#middleman>`__) but without any custom configuration options.
+The following code example is a minimal CAF application with a middleman  but without any custom configuration options.
 
 ::
 
@@ -130,13 +98,13 @@ Command Line Options and INI Configuration Files
 
 CAF organizes program options in categories and parses CLI arguments as well as INI files. CLI arguments override values in the INI file which override hard-coded defaults. Users can add any number of custom program options by implementing a subtype of ``actor_system_config``. The example below adds three options to the “global” category.
 
-::
+.. code-block:: C++
 
    public:
      uint16_t port = 0;
      std::string host = "localhost";
      bool server_mode = false;
-
+   
      config() {
        opt_group{custom_options_, "global"}
        .add(port, "port,p", "set port")
@@ -144,18 +112,19 @@ CAF organizes program options in categories and parses CLI arguments as well as 
        .add(server_mode, "server-mode,s", "enable server mode");
      }
    };
+   
 
-The line ``opt_group{custom_options_, "global"}`` adds the “global” category to the config parser. The following calls to ``add`` then append individual options to the category. The first argument to ``add`` is the associated variable. The second argument is the name for the parameter, optionally suffixed with a comma-separated single-character short name. The short name is only considered for CLI parsing and allows users to abbreviate commonly used option names. The third and final argument to ``add`` is a help text.
+We create a new “global” category in ``custom_options_}``. Each following call to ``add`` then appends individual options to the category. The first argument to ``add`` is the associated variable. The second argument is the name for the parameter, optionally suffixed with a comma-separated single-character short name. The short name is only considered for CLI parsing and allows users to abbreviate commonly used option names. The third and final argument to ``add`` is a help text.
 
 The custom ``config`` class allows end users to set the port for the application to 42 with either ``--port=42`` (long name) or ``-p 42`` (short name). The long option name is prefixed by the category when using a different category than “global”. For example, adding the port option to the category “foo” means end users have to type ``--foo.port=42`` when using the long name. Short names are unaffected by the category, but have to be unique.
 
 Boolean options do not require arguments. The member variable ``server_mode`` is set to ``true`` if the command line contains either ``--server-mode`` or ``-s``.
 
-The example uses member variables for capturing user-provided settings for simplicity. However, this is not required. For example, ``add<bool>("server-mode,s", "enable server mode")`` could be used for declaring the flag instead. All values of the configuration are accessible with ``get_or(config, name, default)``, e.g., ``get_or(system.config(), "global.server-mode", false)`` queries the flag at runtime and returns the given default value ``false`` if the flag is not defined or the stored value is not a boolean. Note that all global options can omit the ``"global."`` prefix.
+The example uses member variables for capturing user-provided settings for simplicity. However, this is not required. For example, ``add<bool>(...)`` allows omitting the first argument entirely. All values of the configuration are accessible with ``get_or``. Note that all global options can omit the ``"global."`` prefix.
 
-CAF only adds the program options “help” (``--help``, ``-h``, or ``-?``) and “long-help” (``--long-help``) to the “global” category.
+CAF adds the program options “help” (with short names ``-h`` and ``-?``) as well as “long-help” to the “global” category.
 
-The default name for the INI file is ``caf-application.ini``. Users can change the file name and path by passing ``--caf#config-file=<path>`` on the command line.
+The default name for the INI file is ``caf-application.ini``. Users can change the file name and path by passing ``--config-file=<path>`` on the command line.
 
 INI files are organized in categories. No value is allowed outside of a category (no implicit “global” category). The parses uses the following syntax:
 
@@ -179,15 +148,11 @@ INI files are organized in categories. No value is allowed outside of a category
 
 The following example INI file lists all standard options in CAF and their default value. Note that some options such as ``scheduler.max-threads`` are usually detected at runtime and thus have no hard-coded default.
 
-.. raw:: latex
-
-   \clearpage
-
-::
+.. code-block:: ini
 
    ; This file shows all possible parameters with defaults.
    ; Values enclosed in <> are detected at runtime unless defined by the user.
-
+   
    ; when using the default scheduler
    [scheduler]
    ; accepted alternative: 'sharing'
@@ -202,7 +167,7 @@ The following example INI file lists all standard options in CAF and their defau
    profiling-resolution=100ms
    ; output file for profiler data (only if profiling is enabled)
    profiling-output-file="/dev/null"
-
+   
    ; when using 'stealing' as scheduler policy
    [work-stealing]
    ; number of zero-sleep-interval polling attempts
@@ -219,7 +184,7 @@ The following example INI file lists all standard options in CAF and their defau
    relaxed-steal-interval=1
    ; sleep interval between poll attempts
    relaxed-sleep-duration=10ms
-
+   
    ; when loading io::middleman
    [middleman]
    ; configures whether MMs try to span a full mesh
@@ -243,7 +208,7 @@ The following example INI file lists all standard options in CAF and their defau
    disable-tcp=false
    ; enable communication via UDP
    enable-udp=false
-
+   
    ; when compiling with logging enabled
    [logger]
    ; file name template for output log file files (empty string disables logging)
@@ -259,38 +224,35 @@ The following example INI file lists all standard options in CAF and their defau
    ; configures the severity level for logs (quiet|error|warning|info|debug|trace)
    verbosity='trace'
 
-.. raw:: latex
-
-   \clearpage
-
 .. _add-custom-message-type:
 
 Adding Custom Message Types
 ---------------------------
 
-CAF requires serialization support for all of its message types (see § `:ref:`type-inspection` <#type-inspection>`__). However, CAF also needs a mapping of unique type names to user-defined types at runtime. This is required to deserialize arbitrary messages from the network.
+CAF requires serialization support for all of its message types . However, CAF also needs a mapping of unique type names to user-defined types at runtime. This is required to deserialize arbitrary messages from the network.
 
 As an introductory example, we (again) use the following POD type ``foo``.
 
-::
+.. code-block:: C++
 
    struct foo {
      std::vector<int> a;
      int b;
    };
 
-To make ``foo`` serializable, we make it inspectable (see § `:ref:`type-inspection` <#type-inspection>`__):
+To make ``foo`` serializable, we make it inspectable :
 
-::
+.. code-block:: C++
 
    template <class Inspector>
    typename Inspector::result_type inspect(Inspector& f, foo& x) {
      return f(meta::type_name("foo"), x.a, x.b);
    }
+   
 
 Finally, we give ``foo`` a platform-neutral name and add it to the list of serializable types by using a custom config class.
 
-::
+.. code-block:: C++
 
    class config : public actor_system_config {
    public:
@@ -298,7 +260,7 @@ Finally, we give ``foo`` a platform-neutral name and add it to the list of seria
        add_message_type<foo>("foo");
      }
    };
-
+   
    void caf_main(actor_system& system, const config&) {
 
 .. _adding-custom-error-types:
@@ -306,32 +268,28 @@ Finally, we give ``foo`` a platform-neutral name and add it to the list of seria
 Adding Custom Error Types
 -------------------------
 
-Adding a custom error type to the system is a convenience feature to allow improve the string representation. Error types can be added by implementing a render function and passing it to ``add_error_category``, as shown in § \ `:ref:`custom-error` <#custom-error>`__.
-
-.. raw:: latex
-
-   \clearpage
+Adding a custom error type to the system is a convenience feature to allow improve the string representation. Error types can be added by implementing a render function and passing it to ``add_error_category``, as shown in .
 
 .. _add-custom-actor-type:
 
-Adding Custom Actor Types experimental 
----------------------------------------
+Adding Custom Actor Types 
+--------------------------
 
-Adding actor types to the configuration allows users to spawn actors by their name. In particular, this enables spawning of actors on a different node (see § `:ref:`remote-spawn` <#remote-spawn>`__). For our example configuration, we consider the following simple ``calculator`` actor.
+Adding actor types to the configuration allows users to spawn actors by their name. In particular, this enables spawning of actors on a different node . For our example configuration, we consider the following simple ``calculator`` actor.
 
-::
+.. code-block:: C++
 
    using add_atom = atom_constant<atom("add")>;
    using sub_atom = atom_constant<atom("sub")>;
-
+   
    using calculator = typed_actor<replies_to<add_atom, int, int>::with<int>,
                                   replies_to<sub_atom, int, int>::with<int>>;
-
+   
    calculator::behavior_type calculator_fun(calculator::pointer self) {
 
-Adding the calculator actor type to our config is achieved by calling ``add_actor_type<T>``. Note that adding an actor type in this way implicitly calls ``add_message_type<T>`` for typed actors (see § `1.3 <#add-custom-message-type>`__). This makes our ``calculator`` actor type serializable and also enables remote nodes to spawn calculators anywhere in the distributed actor system (assuming all nodes use the same config).
+Adding the calculator actor type to our config is achieved by calling ``add_actor_type<T>``. Note that adding an actor type in this way implicitly calls ``add_message_type<T>`` for typed actors . This makes our ``calculator`` actor type serializable and also enables remote nodes to spawn calculators anywhere in the distributed actor system (assuming all nodes use the same config).
 
-::
+.. code-block:: C++
 
    struct config : actor_system_config {
      config() {
@@ -350,13 +308,13 @@ Our final example illustrates how to spawn a ``calculator`` locally by using its
    }
    calculator c = std::move(*x);
 
-Adding dynamically typed actors to the config is achieved in the same way. When spawning a dynamically typed actor in this way, the template parameter is simply ``actor``. For example, spawning an actor "foo" which requires one string is created with ``system.spawn<actor>("foo", make_message("bar"))``.
+Adding dynamically typed actors to the config is achieved in the same way. When spawning a dynamically typed actor in this way, the template parameter is simply ``actor``. For example, spawning an actor "foo" which requires one string is created with:
 
-Because constructor (or function) arguments for spawning the actor are stored in a ``message``, only actors with appropriate input types are allowed. For example, ``const char*`` arguments—or any other pointer type—are not allowed and must be replaced by ``std::string``.
+::
 
-.. raw:: latex
+   auto worker = system.spawn<actor>("foo", make_message("bar"));
 
-   \clearpage
+Because constructor (or function) arguments for spawning the actor are stored in a ``message``, only actors with appropriate input types are allowed. For example, pointer types are illegal. Hence users need to replace C-strings with ``std::string``.
 
 .. _log-output:
 
@@ -365,7 +323,7 @@ Log Output
 
 Logging is disabled in CAF per default. It can be enabled by setting the ``--with-log-level=`` option of the ``configure`` script to one of “error”, “warning”, “info”, “debug”, or “trace” (from least output to most). Alternatively, setting the CMake variable ``CAF_LOG_LEVEL`` to 0, 1, 2, 3, or 4 (from least output to most) has the same effect.
 
-All logger-related configuration options listed here and in § \ `1.2 <#system-config-options>`__ are silently ignored if logging is disabled.
+All logger-related configuration options listed here and in are silently ignored if logging is disabled.
 
 .. _log-output-file-name:
 
@@ -396,7 +354,7 @@ Console output is disabled per default. Setting ``logger-console`` to either ``"
 Format Strings
 ~~~~~~~~~~~~~~
 
-CAF uses log4j-like format strings (e.g. ``"%c %m%n"``) to configure how individual events are printed via ``logger-file-format`` and ``logger-console-format``. Note that format modifiers are not supported at the moment. The recognized field identifiers are:
+CAF uses log4j-like format strings for configuring printing of individual events via ``logger-file-format`` and ``logger-console-format``. Note that format modifiers are not supported at the moment. The recognized field identifiers are:
 
 +---------------+----------------------------------------------------------------------------------------------------------------------------------+
 | **Character** | **Output**                                                                                                                       |

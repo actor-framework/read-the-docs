@@ -1,35 +1,3 @@
-.. raw:: latex
-
-   \definecolor{lightgrey}{rgb}{0.9,0.9,0.9}
-
-.. raw:: latex
-
-   \definecolor{lightblue}{rgb}{0,0,1}
-
-.. raw:: latex
-
-   \definecolor{grey}{rgb}{0.5,0.5,0.5}
-
-.. raw:: latex
-
-   \definecolor{blue}{rgb}{0,0,1}
-
-.. raw:: latex
-
-   \definecolor{violet}{rgb}{0.5,0,0.5}
-
-.. raw:: latex
-
-   \definecolor{darkred}{rgb}{0.5,0,0}
-
-.. raw:: latex
-
-   \definecolor{darkblue}{rgb}{0,0,0.5}
-
-.. raw:: latex
-
-   \definecolor{darkgreen}{rgb}{0,0.5,0}
-
 .. _message-handler:
 
 Message Handlers
@@ -52,7 +20,7 @@ As the name implies, a ``behavior`` defines the response of an actor to messages
      [](int a, int b, int c) { /*...*/ }
    };
 
-In our first example, ``x1`` models a behavior accepting messages that consist of either exactly one ``int``, or one ``double``, or three ``int`` values. Any other message is not matched and gets forwarded to the default handler (see § `:ref:`default-handler` <#default-handler>`__).
+In our first example, ``x1`` models a behavior accepting messages that consist of either exactly one ``int``, or one ``double``, or three ``int`` values. Any other message is not matched and gets forwarded to the default handler .
 
 ::
 
@@ -69,10 +37,6 @@ Our second example illustrates an important characteristic of the matching mecha
    message_handler x4 = x2.or_else(x1);
 
 Message handlers can be combined using ``or_else``. This composition is not commutative, as our third examples illustrates. The resulting message handler will first try to handle a message using the left-hand operand and will fall back to the right-hand operand if the former did not match. Thus, ``x3`` behaves exactly like ``x1``. This is because the second callback in ``x1`` will consume any message with a single ``double`` and both callbacks in ``x2`` are thus unreachable. The handler ``x4`` will consume messages with a single ``double`` using the first callback in ``x2``, essentially overriding the second callback in ``x1``.
-
-.. raw:: latex
-
-   \clearpage
 
 .. _atom:
 
