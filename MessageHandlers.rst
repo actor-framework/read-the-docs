@@ -26,7 +26,7 @@ In our first example, ``x1`` models a behavior accepting messages that consist o
 
    message_handler x2{
      [](double db) { /*...*/ },
-     [](double db) { /* - unrachable - */ }
+     [](double db) { /* - unreachable - */ }
    };
 
 Our second example illustrates an important characteristic of the matching mechanism. Each message is matched against the callbacks in the order they are defined. The algorithm stops at the first match. Hence, the second callback in ``x2`` is unreachable.
