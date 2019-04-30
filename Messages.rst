@@ -23,10 +23,7 @@ Class ``type_erased_tuple``
 
 **Note**: Calling modifiers on a shared type-erased tuple is undefined behavior.
 
-| ll **Types** &  
-| ``rtti_pair`` & ``std::pair<uint16_t, const std::type_info*>``
-|   &  
-| **Observers** &  
+| ll **Observers** &  
 | ``bool empty()`` & Returns whether this message is empty.
 | ``size_t size()`` & Returns the size of this message.
 | ``rtti_pair type(size_t pos)`` & Returns run-time type information for the nth element.

@@ -215,14 +215,18 @@ The following example INI file lists all standard options in CAF and their defau
    file-name="actor_log_[PID]_[TIMESTAMP]_[NODE].log"
    ; format for rendering individual log file entries
    file-format="%r %c %p %a %t %C %M %F:%L %m%n"
+   ; configures the minimum severity of messages that are written to the log file
+   ; (quiet|error|warning|info|debug|trace)
+   file-verbosity='trace'
    ; mode for console log output generation (none|colored|uncolored)
    console='none'
    ; format for printing individual log entries to the console
    console-format="%m"
-   ; excludes listed components from logging
-   component-filter=""
-   ; configures the severity level for logs (quiet|error|warning|info|debug|trace)
-   verbosity='trace'
+   ; configures the minimum severity of messages that are written to the console
+   ; (quiet|error|warning|info|debug|trace)
+   console-verbosity='trace'
+   ; excludes listed components from logging (list of atoms)
+   component-blacklist=[]
 
 .. _add-custom-message-type:
 
