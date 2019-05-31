@@ -170,7 +170,7 @@ System Error Codes (SECs) use the error category ``"system"``. They represent er
      bad_function_call = 40,
      /// Feature is disabled in the actor system config.
      feature_disabled,
-   };
+     /// Failed to open file.
 
 .. _exit-reason:
 
