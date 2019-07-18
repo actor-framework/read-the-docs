@@ -14,20 +14,6 @@ CAF is designed with distributed systems in mind. Hence, all message types must 
 
 The function ``inspect`` passes meta information and data fields to the variadic call operator of the inspector. The following example illustrates an implementation for ``inspect`` for a simple POD struct.
 
-.. code-block:: C++
-
-   // POD struct foo
-   struct foo {
-     std::vector<int> a;
-     int b;
-   };
-   
-   // foo needs to be serializable
-   template <class Inspector>
-   typename Inspector::result_type inspect(Inspector& f, foo& x) {
-     return f(meta::type_name("foo"), x.a, x.b);
-   }
-
 The inspector recursively inspects all data fields and has builtin support for (1) ``std::tuple``, (2) ``std::pair``, (3) C arrays, (4) any container type with ``x.size()``, ``x.empty()``, ``x.begin()`` and ``x.end()``.
 
 We consciously made the inspect API as generic as possible to allow for extensibility. This allows users to use CAF’s types in other contexts, to implement parsers, etc.
@@ -101,70 +87,6 @@ Splitting Save and Load Operations
 
 If loading and storing cannot be implemented in a single function, users can query whether the inspector is loading or storing. For example, consider the following class ``foo`` with getter and setter functions and no public access to its members.
 
-.. code-block:: C++
-
-   // no friend access for `inspect`
-   class foo {
-   public:
-     foo(int a0 = 0, int b0 = 0) : a_(a0), b_(b0) {
-       // nop
-     }
-   
-     foo(const foo&) = default;
-     foo& operator=(const foo&) = default;
-   
-     int a() const {
-       return a_;
-     }
-   
-     void set_a(int val) {
-       a_ = val;
-     }
-   
-     int b() const {
-       return b_;
-     }
-   
-     void set_b(int val) {
-       b_ = val;
-     }
-   
-   private:
-     int a_;
-     int b_;
-   };
-
 Since there is no access to the data fields ``a_`` and ``b_`` (and assuming no changes to ``foo`` are possible), we need to split our implementation of ``inspect`` as shown below.
-
-.. code-block:: C++
-
-   template <class Inspector>
-   typename std::enable_if<Inspector::reads_state,
-                           typename Inspector::result_type>::type
-   inspect(Inspector& f, foo& x) {
-     return f(meta::type_name("foo"), x.a(), x.b());
-   }
-   
-   template <class Inspector>
-   typename std::enable_if<Inspector::writes_state,
-                           typename Inspector::result_type>::type
-   inspect(Inspector& f, foo& x) {
-     int a;
-     int b;
-     // write back to x at scope exit
-     auto g = make_scope_guard([&] {
-       x.set_a(a);
-       x.set_b(b);
-     });
-     return f(meta::type_name("foo"), a, b);
-   }
-   
-   behavior testee(event_based_actor* self) {
-     return {
-       [=](const foo& x) {
-         aout(self) << to_string(x) << endl;
-       }
-     };
-   }
 
 The purpose of the scope guard in the example above is to write the content of the temporaries back to ``foo`` at scope exit automatically. Storing the result of ``f(...)`` in a temporary first and then writing the changes to ``foo`` is not possible, because ``f(...)`` can return ``void``.

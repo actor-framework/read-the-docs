@@ -18,7 +18,6 @@ Defining Message Handlers
             [](int i) { /*...*/ },
             [](float f) { /*...*/ }
           );
-          
 
    The correct way to initialize message handlers and behaviors is to either use the constructor or the member function ``assign``:
 
@@ -35,7 +34,6 @@ Defining Message Handlers
             [](int i) { /*...*/ },
             [](float f) { /*...*/ }
           );
-          
 
 .. _event-based-api:
 

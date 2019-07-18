@@ -125,14 +125,6 @@ Messaging Interfaces
 
 Statically typed actors require abstract messaging interfaces to allow the compiler to type-check actor communication. Interfaces in CAF are defined using the variadic template ``typed_actor<...>``, which defines the proper actor handle at the same time. Each template parameter defines one ``input/output`` pair via ``replies_to<X1,...,Xn>::with<Y1,...,Yn>``. For inputs that do not generate outputs, ``reacts_to<X1,...,Xn>`` can be used as shortcut for ``replies_to<X1,...,Xn>::with<void>``. In the same way functions cannot be overloaded only by their return type, interfaces cannot accept one input twice (possibly mapping it to different outputs). The example below defines a messaging interface for a simple calculator.
 
-.. code-block:: C++
-
-   using add_atom = atom_constant<atom("add")>;
-   using sub_atom = atom_constant<atom("sub")>;
-   
-   using calculator_actor = typed_actor<replies_to<add_atom, int, int>::with<int>,
-                                        replies_to<sub_atom, int, int>::with<int>>;
-
 It is not required to create a type alias such as ``calculator_actor``, but it makes dealing with statically typed actors much easier. Also, a central alias definition eases refactoring later on.
 
 Interfaces have set semantics. This means the following two type aliases ``i1`` and ``i2`` are equal:
@@ -146,23 +138,17 @@ Further, actor handles of type ``A`` are assignable to handles of type ``B`` as 
 
 For convenience, the class ``typed_actor<...>`` defines the member types shown below to grant access to derived types.
 
-+-------------------------+---------------------------------------------------------------+
-| **Types**               |                                                               |
-+=========================+===============================================================+
-| ``behavior_type``       | A statically typed set of message handlers.                   |
-+-------------------------+---------------------------------------------------------------+
-| ``base``                | Base type for actors, i.e., ``typed_event_based_actor<...>``. |
-+-------------------------+---------------------------------------------------------------+
-| ``pointer``             | A pointer of type ``base*``.                                  |
-+-------------------------+---------------------------------------------------------------+
-| ``stateful_base<T>``    | See .                                                         |
-+-------------------------+---------------------------------------------------------------+
-| ``stateful_pointer<T>`` | A pointer of type ``stateful_base<T>*``.                      |
-+-------------------------+---------------------------------------------------------------+
-| ``extend<Ts...>``       | Extend this typed actor with ``Ts...``.                       |
-+-------------------------+---------------------------------------------------------------+
-| ``extend_with<Other>``  | Extend this typed actor with all cases from ``Other``.        |
-+-------------------------+---------------------------------------------------------------+
+======================= =============================================================
+**Types**                
+======================= =============================================================
+``behavior_type``       A statically typed set of message handlers.
+``base``                Base type for actors, i.e., ``typed_event_based_actor<...>``.
+``pointer``             A pointer of type ``base*``.
+``stateful_base<T>``    See .
+``stateful_pointer<T>`` A pointer of type ``stateful_base<T>*``.
+``extend<Ts...>``       Extend this typed actor with ``Ts...``.
+``extend_with<Other>``  Extend this typed actor with all cases from ``Other``.
+======================= =============================================================
 
 .. _spawn:
 
@@ -171,25 +157,7 @@ Spawning Actors
 
 Both statically and dynamically typed actors are spawned from an ``actor_system`` using the member function ``spawn``. The function either takes a function as first argument or a class as first template parameter. For example, the following functions and classes represent actors.
 
-.. code-block:: C++
-
-   behavior calculator_fun(event_based_actor* self);
-   void blocking_calculator_fun(blocking_actor* self);
-   calculator_actor::behavior_type typed_calculator_fun();
-   class calculator;
-   class blocking_calculator;
-   class typed_calculator;
-
 Spawning an actor for each implementation is illustrated below.
-
-.. code-block:: C++
-
-     auto a2 = system.spawn(calculator_fun);
-     auto a3 = system.spawn(typed_calculator_fun);
-     auto a4 = system.spawn<blocking_calculator>();
-     auto a5 = system.spawn<calculator>();
-     auto a6 = system.spawn<typed_calculator>();
-     scoped_actor self{system};
 
 Additional arguments to ``spawn`` are passed to the constructor of a class or used as additional function arguments, respectively. In the example above, none of the three functions takes any argument other than the implicit but optional ``self`` pointer.
 
@@ -206,51 +174,6 @@ Event-based actors can either return a ``behavior`` that is used to initialize t
 
 The following three functions implement the prototypes shown in  and illustrate one blocking actor and two event-based actors (statically and dynamically typed).
 
-.. code-block:: C++
-
-   // function-based, dynamically typed, event-based API
-   behavior calculator_fun(event_based_actor*) {
-     return {
-       [](add_atom, int a, int b) {
-         return a + b;
-       },
-       [](sub_atom, int a, int b) {
-         return a - b;
-       }
-     };
-   }
-   
-   // function-based, dynamically typed, blocking API
-   void blocking_calculator_fun(blocking_actor* self) {
-     bool running = true;
-     self->receive_while(running) (
-       [](add_atom, int a, int b) {
-         return a + b;
-       },
-       [](sub_atom, int a, int b) {
-         return a - b;
-       },
-       [&](exit_msg& em) {
-         if (em.reason) {
-           self->fail_state(std::move(em.reason));
-           running = false;
-         }
-       }
-     );
-   }
-   
-   // function-based, statically typed, event-based API
-   calculator_actor::behavior_type typed_calculator_fun() {
-     return {
-       [](add_atom, int a, int b) {
-         return a + b;
-       },
-       [](sub_atom, int a, int b) {
-         return a - b;
-       }
-     };
-   }
-
 .. _class-based:
 
 Class-based Actors
@@ -264,44 +187,6 @@ Implementing an actor using a class requires the following:
 
 Implementing actors with classes works for all kinds of actors and allows simple management of state via member variables. However, composing states via inheritance can get quite tedious. For dynamically typed actors, composing states is particularly hard, because the compiler cannot provide much help. For statically typed actors, CAF also provides an API for composable behaviors  that works well with inheritance. The following three examples implement the forward declarations shown in .
 
-.. code-block:: C++
-
-   // class-based, dynamically typed, event-based API
-   class calculator : public event_based_actor {
-   public:
-     calculator(actor_config& cfg) : event_based_actor(cfg) {
-       // nop
-     }
-   
-     behavior make_behavior() override {
-       return calculator_fun(this);
-     }
-   };
-   
-   // class-based, dynamically typed, blocking API
-   class blocking_calculator : public blocking_actor {
-   public:
-     blocking_calculator(actor_config& cfg) : blocking_actor(cfg) {
-       // nop
-     }
-   
-     void act() override {
-       blocking_calculator_fun(this);
-     }
-   };
-   
-   // class-based, statically typed, event-based API
-   class typed_calculator : public calculator_actor::base {
-   public:
-     typed_calculator(actor_config& cfg) : calculator_actor::base(cfg) {
-       // nop
-     }
-   
-     behavior_type make_behavior() override {
-       return typed_calculator_fun();
-     }
-   };
-
 .. _stateful-actor:
 
 Stateful Actors
@@ -309,42 +194,7 @@ Stateful Actors
 
 The stateful actor API makes it easy to maintain state in function-based actors. It is also safer than putting state in member variables, because the state ceases to exist after an actor is done and is not delayed until the destructor runs. For example, if two actors hold a reference to each other via member variables, they produce a cycle and neither will get destroyed. Using stateful actors instead breaks the cycle, because references are destroyed when an actor calls ``self->quit()`` (or is killed externally). The following example illustrates how to implement stateful actors with static typing as well as with dynamic typing.
 
-.. code-block:: C++
-
-   using cell = typed_actor<reacts_to<put_atom, int>,
-                            replies_to<get_atom>::with<int>>;
-   
-   struct cell_state {
-     int value = 0;
-   };
-   
-   cell::behavior_type type_checked_cell(cell::stateful_pointer<cell_state> self) {
-     return {
-       [=](put_atom, int val) {
-         self->state.value = val;
-       },
-       [=](get_atom) {
-         return self->state.value;
-       }
-     };
-   }
-   
-   behavior unchecked_cell(stateful_actor<cell_state>* self) {
-     return {
-       [=](put_atom, int val) {
-         self->state.value = val;
-       },
-       [=](get_atom) {
-         return self->state.value;
-       }
-     };
-
 Stateful actors are spawned in the same way as any other function-based actor .
-
-.. code-block:: C++
-
-     auto cell1 = system.spawn(type_checked_cell);
-     auto cell2 = system.spawn(unchecked_cell);
 
 .. _composable-behavior:
 
@@ -365,70 +215,9 @@ A behavior that combines the behaviors ``X``, ``Y``, and ``Z`` must inherit from
 
 Any composable (or composed) behavior with no pure virtual member functions can be spawned directly through an actor system by calling ``system.spawn<...>()``, as shown below.
 
-.. code-block:: C++
-
-   // using add_atom = atom_constant<atom("add")>; (defined in atom.hpp)
-   using multiply_atom = atom_constant<atom("multiply")>;
-   
-   using adder = typed_actor<replies_to<add_atom, int, int>::with<int>>;
-   using multiplier = typed_actor<replies_to<multiply_atom, int, int>::with<int>>;
-   
-   class adder_bhvr : public composable_behavior<adder> {
-   public:
-     result<int> operator()(add_atom, int x, int y) override {
-       return x + y;
-     }
-   };
-   
-   class multiplier_bhvr : public composable_behavior<multiplier> {
-   public:
-     result<int> operator()(multiply_atom, int x, int y) override {
-       return x * y;
-     }
-   };
-   
-   // calculator_bhvr can be inherited from or composed further
-   using calculator_bhvr = composed_behavior<adder_bhvr, multiplier_bhvr>;
-   
-   } // namespace <anonymous>
-   
-   void caf_main(actor_system& system) {
-     auto f = make_function_view(system.spawn<calculator_bhvr>());
-     cout << "10 + 20 = " << f(add_atom::value, 10, 20) << endl;
-     cout << "7 * 9 = " << f(multiply_atom::value, 7, 9) << endl;
-   }
-   
-   CAF_MAIN()
-
 The second example illustrates how to use non-primitive values that are wrapped in a ``param<T>`` when working with composable behaviors. The purpose of ``param<T>`` is to provide a single interface for both constant and non-constant access. Constant access is modeled with the implicit conversion operator to a const reference, the member function ``get()``, and ``operator->``.
 
 When acquiring mutable access to the represented value, CAF copies the value before allowing mutable access to it if more than one reference to the value exists. This copy-on-write optimization avoids race conditions by design, while minimizing copy operations . A mutable reference is returned from the member functions ``get_mutable()`` and ``move()``. The latter is a convenience function for ``std::move(x.get_mutable())``. The following example illustrates how to use ``param<std::string>`` when implementing a simple dictionary.
-
-.. code-block:: C++
-
-   using dict = typed_actor<reacts_to<put_atom, string, string>,
-                            replies_to<get_atom, string>::with<string>>;
-   
-   class dict_behavior : public composable_behavior<dict> {
-   public:
-     result<string> operator()(get_atom, param<string> key) override {
-       auto i = values_.find(key);
-       if (i == values_.end())
-         return "";
-       return i->second;
-     }
-   
-     result<void> operator()(put_atom, param<string> key,
-                             param<string> value) override {
-       if (values_.count(key) != 0)
-         return unit;
-       values_.emplace(key.move(), value.move());
-       return unit;
-     }
-   
-   protected:
-     std::unordered_map<string, string> values_;
-   };
 
 .. _attach:
 
@@ -436,14 +225,6 @@ Attaching Cleanup Code to Actors
 --------------------------------
 
 Users can attach cleanup code to actors. This code is executed immediately if the actor has already exited. Otherwise, the actor will execute it as part of its termination. The following example attaches a function object to actors for printing a custom string on exit.
-
-.. code-block:: C++
-
-   void print_on_exit(const actor& hdl, const std::string& name) {
-     hdl->attach_functor([=](const error& reason) {
-       cout << name << " exited: " << to_string(reason) << endl;
-     });
-   }
 
 It is possible to attach code to remote actors. However, the cleanup code will run on the local machine.
 

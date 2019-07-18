@@ -14,27 +14,9 @@ The C++ standard library already offers ``shared_ptr`` and ``weak_ptr`` to manag
 
 Before discussing the approach to shared ownership in CAF, we look at the design of shared pointers in the C++ standard library.
 
-.. figure:: shared_ptr.png
-   :alt: Shared pointer design in the C++ standard library
-   :name: shared-ptr
-
-   Shared pointer design in the C++ standard library
-
 The figure above depicts the default memory layout when using shared pointers. The control block is allocated separately from the data and thus stores a pointer to the data. This is when using manually-allocated objects, for example ``shared_ptr<int> iptr{new int}``. The benefit of this design is that one can destroy ``T`` independently from its control block. While irrelevant for small objects, it can become an issue for large objects. Notably, the shared pointer stores two pointers internally. Otherwise, dereferencing it would require to get the data location from the control block first.
 
-.. figure:: make_shared.png
-   :alt: Memory layout when using \lstinline^std::make_shared^
-   :name: make-shared
-
-   Memory layout when using \lstinline^std::make_shared^
-
 When using ``make_shared`` or ``allocate_shared``, the standard library can store reference count and data in a single memory block as shown above. However, ``shared_ptr`` still has to store two pointers, because it is unaware where the data is allocated.
-
-.. figure:: enable_shared_from_this.png
-   :alt: Memory layout with \lstinline^std::enable_shared_from_this^
-   :name: enable-shared-from-this
-
-   Memory layout with \lstinline^std::enable_shared_from_this^
 
 Finally, the design of the standard library becomes convoluted when an object should be able to hand out a ``shared_ptr`` to itself. Classes must inherit from ``std::enable_shared_from_this`` to navigate from an object to its control block. This additional navigation path is required, because ``std::shared_ptr`` needs two pointers. One to the data and one to the control block. Programmers can still use ``make_shared`` for such objects, in which case the object is again stored along with the control block.
 
@@ -44,12 +26,6 @@ Smart Pointers to Actors
 ------------------------
 
 In CAF, we use a different approach than the standard library because (1) we always allocate actors along with their control block, (2) we need additional information in the control block, and (3) we can store only a single raw pointer internally instead of the two raw pointers ``std::shared_ptr`` needs. The following figure summarizes the design of smart pointers to actors.
-
-.. figure:: refcounting.png
-   :alt: Shared pointer design in CAF
-   :name: actor-pointer
-
-   Shared pointer design in CAF
 
 CAF uses ``strong_actor_ptr`` instead of ``std::shared_ptr<...>`` and ``weak_actor_ptr`` instead of ``std::weak_ptr<...>``. Unlike the counterparts from the standard library, both smart pointer types only store a single pointer.
 

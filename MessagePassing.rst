@@ -14,12 +14,6 @@ Structure of Mailbox Elements
 
 When enqueuing a message to the mailbox of an actor, CAF wraps the content of the message into a ``mailbox_element`` (shown below) to add meta data and processing paths.
 
-.. figure:: mailbox_element.png
-   :alt: UML class diagram for \lstinline^mailbox_element^
-   :name: mailbox_element
-
-   UML class diagram for \lstinline^mailbox_element^
-
 The sender is stored as a ``strong_actor_ptr`` and denotes the origin of the message. The message ID is either 0—invalid—or a positive integer value that allows the sender to match a response to its request. The ``stages`` vector stores the path of the message. Response messages, i.e., the returned values of a message handler, are sent to ``stages.back()`` after calling ``stages.pop_back()``. This allows CAF to build pipelines of arbitrary size. If no more stage is left, the response reaches the sender. Finally, ``content()`` grants access to the type-erased tuple storing the message itself.
 
 Mailbox elements are created by CAF automatically and are usually invisible to the programmer. However, understanding how messages are processed internally helps understanding the behavior of the message passing layer.
@@ -103,69 +97,11 @@ Actors send request messages by calling ``request(receiver, timeout, content...)
 
 In our following example, we use the simple cell actors shown below as communication endpoints.
 
-.. code-block:: C++
-
-   using cell = typed_actor<reacts_to<put_atom, int>,
-                            replies_to<get_atom>::with<int>>;
-   
-   struct cell_state {
-     int value = 0;
-   };
-   
-   cell::behavior_type cell_impl(cell::stateful_pointer<cell_state> self, int x0) {
-     self->state.value = x0;
-     return {
-       [=](put_atom, int val) {
-         self->state.value = val;
-       },
-       [=](get_atom) {
-         return self->state.value;
-       }
-     };
-   }
-
 The first part of the example illustrates how event-based actors can use either ``then`` or ``await``.
-
-.. code-block:: C++
-
-   void waiting_testee(event_based_actor* self, vector<cell> cells) {
-     for (auto& x : cells)
-       self->request(x, seconds(1), get_atom::value).await([=](int y) {
-         aout(self) << "cell #" << x.id() << " -> " << y << endl;
-       });
-   }
-   
-   void multiplexed_testee(event_based_actor* self, vector<cell> cells) {
-     for (auto& x : cells)
-       self->request(x, seconds(1), get_atom::value).then([=](int y) {
-         aout(self) << "cell #" << x.id() << " -> " << y << endl;
-       });
-   }
 
 The second half of the example shows a blocking actor making use of ``receive``. Note that blocking actors have no special-purpose handler for error messages and therefore are required to pass a callback for error messages when handling response messages.
 
-.. code-block:: C++
-
-   void blocking_testee(blocking_actor* self, vector<cell> cells) {
-     for (auto& x : cells)
-       self->request(x, seconds(1), get_atom::value).receive(
-         [&](int y) {
-           aout(self) << "cell #" << x.id() << " -> " << y << endl;
-         },
-         [&](error& err) {
-           aout(self) << "cell #" << x.id()
-                      << " -> " << self->system().render(err) << endl;
-         }
-       );
-   }
-
 We spawn five cells and assign the values 0, 1, 4, 9, and 16.
-
-.. code-block:: C++
-
-     vector<cell> cells;
-     for (auto i = 0; i < 5; ++i)
-       cells.emplace_back(system.spawn(cell_impl, i * i));
 
 When passing the ``cells`` vector to our three different implementations, we observe three outputs. Our ``waiting_testee`` actor will always print:
 
@@ -202,44 +138,7 @@ Requests allow CAF to unambiguously correlate request and response messages. Thi
 
 As an example, we consider a simple divider that returns an error on a division by zero. This examples uses a custom error category .
 
-.. code-block:: C++
-
-   enum class math_error : uint8_t {
-     division_by_zero = 1
-   };
-   
-   error make_error(math_error x) {
-     return {static_cast<uint8_t>(x), atom("math")};
-   }
-   
-   using div_atom = atom_constant<atom("div")>;
-   
-   using divider = typed_actor<replies_to<div_atom, double, double>::with<double>>;
-   
-   divider::behavior_type divider_impl() {
-     return {
-       [](div_atom, double x, double y) -> result<double> {
-         if (y == 0.0)
-           return math_error::division_by_zero;
-         return x / y;
-       }
-     };
-   }
-
 When sending requests to the divider, we use a custom error handlers to report errors to the user.
-
-.. code-block:: C++
-
-     scoped_actor self{system};
-     self->request(div, std::chrono::seconds(10), div_atom::value, x, y).receive(
-       [&](double z) {
-         aout(self) << x << " / " << y << " = " << z << endl;
-       },
-       [&](const error& err) {
-         aout(self) << "*** cannot compute " << x << " / " << y << " => "
-                    << system.render(err) << endl;
-       }
-     );
 
 .. _delay-message:
 
@@ -247,29 +146,6 @@ Delaying Messages
 -----------------
 
 Messages can be delayed by using the function ``delayed_send``, as illustrated in the following time-based loop example.
-
-.. code-block:: C++
-
-   // uses a message-based loop to iterate over all animation steps
-   void dancing_kirby(event_based_actor* self) {
-     // let's get it started
-     self->send(self, step_atom::value, size_t{0});
-     self->become (
-       [=](step_atom, size_t step) {
-         if (step == sizeof(animation_step)) {
-           // we've printed all animation steps (done)
-           cout << endl;
-           self->quit();
-           return;
-         }
-         // print given step
-         draw_kirby(animation_steps[step]);
-         // animate next step in 150ms
-         self->delayed_send(self, std::chrono::milliseconds(150),
-                            step_atom::value, step + 1);
-       }
-     );
-   }
 
 .. _delegate:
 
@@ -299,72 +175,12 @@ Actors can transfer responsibility for a request by using ``delegate``. This ena
 
 Returning the result of ``delegate(...)`` from a message handler, as shown in the example below, suppresses the implicit response message and allows the compiler to check the result type when using statically typed actors.
 
-.. code-block:: C++
-
-   void actor_a(event_based_actor* self, const calc& worker) {
-     self->request(worker, std::chrono::seconds(10), add_atom::value, 1, 2).then(
-       [=](int result) {
-         aout(self) << "1 + 2 = " << result << endl;
-       }
-     );
-   }
-   
-   calc::behavior_type actor_b(calc::pointer self, const calc& worker) {
-     return {
-       [=](add_atom add, int x, int y) {
-         return self->delegate(worker, add, x, y);
-       }
-     };
-   }
-   
-   calc::behavior_type actor_c() {
-     return {
-       [](add_atom, int x, int y) {
-         return x + y;
-       }
-     };
-   }
-   
-   void caf_main(actor_system& system) {
-     system.spawn(actor_a, system.spawn(actor_b, system.spawn(actor_c)));
-   }
-   
-
 .. _promise:
 
 Response Promises
 -----------------
 
 Response promises allow an actor to send and receive other messages prior to replying to a particular request. Actors create a response promise using ``self->make_response_promise<Ts...>()``, where ``Ts`` is a template parameter pack describing the promised return type. Dynamically typed actors simply call ``self->make_response_promise()``. After retrieving a promise, an actor can fulfill it by calling the member function ``deliver(...)``, as shown in the following example.
-
-.. code-block:: C++
-
-   // using add_atom = atom_constant<atom("add")>; (defined in atom.hpp)
-   
-   using adder = typed_actor<replies_to<add_atom, int, int>::with<int>>;
-   
-   // function-based, statically typed, event-based API
-   adder::behavior_type worker() {
-     return {
-       [](add_atom, int a, int b) {
-         return a + b;
-       }
-     };
-   }
-   
-   // function-based, statically typed, event-based API
-   adder::behavior_type calculator_master(adder::pointer self) {
-     auto w = self->spawn(worker);
-     return {
-       [=](add_atom x, int y, int z) -> result<int> {
-         auto rp = self->make_response_promise<int>();
-         self->request(w, infinite, x, y, z).then([=](int result) mutable {
-           rp.deliver(result);
-         });
-         return rp;
-       }
-     };
-   }
 
 .. _message-priorities:
 

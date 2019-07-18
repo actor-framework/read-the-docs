@@ -10,25 +10,18 @@ The middleman is the main component of the I/O module and enables distribution. 
 Class ``middleman``
 -------------------
 
-+----------------------------------------------------------------+-------+
-| **Remoting**                                                   |       |
-+================================================================+=======+
-| ``expected<uint16> open(uint16, const char*, bool)``           | See . |
-+----------------------------------------------------------------+-------+
-| ``expected<uint16> publish(T, uint16, const char*, bool)``     | See . |
-+----------------------------------------------------------------+-------+
-| ``expected<void> unpublish(T x, uint16)``                      | See . |
-+----------------------------------------------------------------+-------+
-| ``expected<node_id> connect(std::string host, uint16_t port)`` | See . |
-+----------------------------------------------------------------+-------+
-| ``expected<T> remote_actor<T = actor>(string, uint16)``        | See . |
-+----------------------------------------------------------------+-------+
-| ``expected<T> spawn_broker(F fun, ...)``                       | See . |
-+----------------------------------------------------------------+-------+
-| ``expected<T> spawn_client(F, string, uint16, ...)``           | See . |
-+----------------------------------------------------------------+-------+
-| ``expected<T> spawn_server(F, uint16, ...)``                   | See . |
-+----------------------------------------------------------------+-------+
+============================================================== =====
+**Remoting**                                                    
+============================================================== =====
+``expected<uint16> open(uint16, const char*, bool)``           See .
+``expected<uint16> publish(T, uint16, const char*, bool)``     See .
+``expected<void> unpublish(T x, uint16)``                      See .
+``expected<node_id> connect(std::string host, uint16_t port)`` See .
+``expected<T> remote_actor<T = actor>(string, uint16)``        See .
+``expected<T> spawn_broker(F fun, ...)``                       See .
+``expected<T> spawn_client(F, string, uint16, ...)``           See .
+``expected<T> spawn_server(F, uint16, ...)``                   See .
+============================================================== =====
 
 .. _remoting:
 
