@@ -29,7 +29,7 @@ A downstream manager is responsible for dispatching data to downstream actors. T
 Defining Sources
 ----------------
 
-The simplest way to defining a source is to use the ``make_source`` function and pass it three arguments: *initializer* for the state, *generator* for producing values, and *predicate* for signaling the end of the stream.
+The simplest way to defining a source is to use the ``attach_stream_source`` function and pass it four arguments: a pointer to *self*, *initializer* for the state, *generator* for producing values, and *predicate* for signaling the end of the stream.
 
 .. _defining-stages:
 
