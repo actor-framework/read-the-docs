@@ -1,11 +1,13 @@
-.. _opencl-based-actors:
-
 OpenCL-based Actors
 ===================
 
+
+
 CAF supports transparent integration of OpenCL functions.
 
-::
+
+
+.. code-block:: C++
 
    // opencl kernel for matrix multiplication;
    // last parameter is, by convention, the output parameter
@@ -23,3 +25,7 @@ CAF supports transparent integration of OpenCL functions.
        output[x + y * size] = result;
      }
    )__";
+
+
+
+
