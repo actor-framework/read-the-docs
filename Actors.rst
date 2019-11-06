@@ -69,8 +69,8 @@ following sections.
 
 
 
-Class \lstinline^local_actor^
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Class ``local_actor``
+~~~~~~~~~~~~~~~~~~~~~
 
 
 
@@ -140,8 +140,8 @@ inherited from ``monitorable_actor`` and ``abstract_actor``.
 +-------------------------------------+--------------------------------------------------------+
 
 
-Class \lstinline^scheduled_actor^
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Class ``scheduled_actor``
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 
@@ -196,8 +196,8 @@ broker_.
 +-------------------------------+--------------------------------------------------------------------------+
 
 
-Class \lstinline^blocking_actor^
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Class ``blocking_actor``
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 
@@ -584,8 +584,8 @@ function-based_.
 
 .. _composable-behavior:
 
-Actors from Composable Behaviors \experimental
-----------------------------------------------
+Actors from Composable Behaviors \ :sup:`experimental`\ 
+--------------------------------------------------------
 
 
 

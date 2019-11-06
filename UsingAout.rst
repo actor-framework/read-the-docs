@@ -1,5 +1,5 @@
-Using \texttt{aout
-==================
+Using 
+======
 
  -- A Concurrency-safe Wrapper for ``cout``}
 

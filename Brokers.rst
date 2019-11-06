@@ -52,8 +52,8 @@ server.
 
 .. _broker-class:
 
-Class \lstinline^broker^
-------------------------
+Class ``broker``
+----------------
 
 
 
@@ -329,8 +329,8 @@ handles entered passive mode and no longer accepts new data trigger_.
 
 .. _trigger:
 
-Manually Triggering Events \experimental
-----------------------------------------
+Manually Triggering Events \ :sup:`experimental`\ 
+--------------------------------------------------
 
 
 

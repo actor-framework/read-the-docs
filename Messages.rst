@@ -42,8 +42,8 @@ CAF generates 32 bit *type tokens*. These tokens are *type hints*
 that summarizes all types in a type-erased tuple. Two type-erased tuples are of
 different type if they have different type tokens (the reverse is not true).
 
-Class \lstinline^type_erased_tuple^
------------------------------------
+Class ``type_erased_tuple``
+---------------------------
 
 **Note**: Calling modifiers on a shared type-erased tuple is undefined
 behavior.
@@ -91,8 +91,8 @@ behavior.
 +----------------------------------------+------------------------------------------------------------+
 
 
-Class \lstinline^message^
--------------------------
+Class ``message``
+-----------------
 
 
 
@@ -139,8 +139,8 @@ references as arguments.
 +-----------------------------------------------+------------------------------------------------------------+
 
 
-Class \texttt{message\_builder
-------------------------------
+Class 
+------
 
 }
 

@@ -1,7 +1,7 @@
 .. _remote-spawn:
 
-Remote Spawning of Actors \experimental
-=======================================
+Remote Spawning of Actors \ :sup:`experimental`\ 
+=================================================
 
 
 

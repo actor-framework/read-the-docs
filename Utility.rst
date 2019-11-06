@@ -12,8 +12,8 @@ unfortunately have to maintain our own implementations.
 
 .. _optional:
 
-Class \lstinline^optional^
---------------------------
+Class ``optional``
+------------------
 
 
 
@@ -40,8 +40,8 @@ Represents a value that may or may not exist.
 +-----------------------------+---------------------------------------------+
 
 
-Class \lstinline^expected^
---------------------------
+Class ``expected``
+------------------
 
 
 
@@ -72,8 +72,8 @@ value could be produced, the ``expected<T>`` contains an
 +-----------------------------+---------------------------------------------+
 
 
-Constant \lstinline^unit^
--------------------------
+Constant ``unit``
+-----------------
 
 
 
@@ -81,8 +81,8 @@ The constant ``unit`` of type ``unit_t`` is the equivalent of
 ``void`` and can be used to initialize ``optional<void>`` and
 ``expected<void>``.
 
-Constant \lstinline^none^
--------------------------
+Constant ``none``
+-----------------
 
 
 
