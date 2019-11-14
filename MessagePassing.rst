@@ -299,6 +299,44 @@ Both event-based approaches send all requests, install a series of one-shot
 handlers, and then return from the implementing function. In contrast, the
 blocking function waits for a response before sending another request.
 
+Sending Multiple Requests
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+Sending the same message to a group of workers is a common work flow in actor
+applications. Usually, a manager maintains a set of workers. On request, the
+manager fans-out the request to all of its workers and then collects the
+results. The function ``fan_out_request`` combined with the merge policy
+``fan_in_responses`` streamlines this exact use case.
+
+In the following snippet, we have a matrix actor (``self``) that stores
+worker actors for each cell (each simply storing an integer). For computing the
+average over a row, we use ``fan_out_request``. The result handler
+passed to ``then`` now gets called only once with a ``vector``
+holding all collected results. Using a response promise promise_ further
+allows us to delay responding to the client until we have collected all worker
+results.
+
+
+.. code-block:: c++
+
+       [=](get_atom get, average_atom, row_atom, int row) {
+         assert(row < rows);
+         auto rp = self->make_response_promise<double>();
+         auto& row_vec = self->state.rows[row];
+         self->fan_out_request<policy::fan_in_responses>(row_vec, infinite, get)
+           .then(
+             [=](std::vector<int> xs) mutable {
+               assert(xs.size() == static_cast<size_t>(columns));
+               rp.deliver(std::accumulate(xs.begin(), xs.end(), 0.0) / columns);
+             },
+             [=](error& err) mutable { rp.deliver(std::move(err)); });
+         return rp;
+
+
+
+
 .. _error-response:
 
 Error Handling in Requests
