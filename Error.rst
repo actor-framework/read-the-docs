@@ -120,6 +120,7 @@ follows.
 
 .. code-block:: c++
 
+   /// ::actor_system and its modules.
    enum class sec : uint8_t {
      /// No error.
      none = 0,
@@ -204,7 +205,6 @@ follows.
      /// A function view was called without assigning an actor first.
      bad_function_call = 40,
      /// Feature is disabled in the actor system config.
-     feature_disabled,
 
 
 
