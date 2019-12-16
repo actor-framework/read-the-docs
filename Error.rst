@@ -120,6 +120,7 @@ follows.
 
 .. code-block:: c++
 
+   /// SEC stands for "System Error Code". This enum contains error codes for
    /// ::actor_system and its modules.
    enum class sec : uint8_t {
      /// No error.
@@ -204,7 +205,6 @@ follows.
      unhandled_stream_error,
      /// A function view was called without assigning an actor first.
      bad_function_call = 40,
-     /// Feature is disabled in the actor system config.
 
 
 
@@ -227,6 +227,7 @@ even if the default handler for exit messages exit-message_ is overridden.
 
 .. code-block:: c++
 
+   
    namespace caf {
    
    /// This error category represents fail conditions for actors.
@@ -246,7 +247,6 @@ even if the default handler for exit messages exit-message_ is overridden.
      kill,
      /// Indicates that an actor finishied execution because a connection
      /// to a remote link was closed unexpectedly.
-     remote_link_unreachable,
 
 
 
