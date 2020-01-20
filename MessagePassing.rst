@@ -308,7 +308,7 @@ Sending the same message to a group of workers is a common work flow in actor
 applications. Usually, a manager maintains a set of workers. On request, the
 manager fans-out the request to all of its workers and then collects the
 results. The function ``fan_out_request`` combined with the merge policy
-``fan_in_responses`` streamlines this exact use case.
+``select_all`` streamlines this exact use case.
 
 In the following snippet, we have a matrix actor (``self``) that stores
 worker actors for each cell (each simply storing an integer). For computing the
@@ -325,7 +325,7 @@ results.
          assert(row < rows);
          auto rp = self->make_response_promise<double>();
          auto& row_vec = self->state.rows[row];
-         self->fan_out_request<policy::fan_in_responses>(row_vec, infinite, get)
+         self->fan_out_request<policy::select_all>(row_vec, infinite, get)
            .then(
              [=](std::vector<int> xs) mutable {
                assert(xs.size() == static_cast<size_t>(columns));
@@ -336,6 +336,9 @@ results.
 
 
 
+
+The policy ``select_any`` models a second common use case: sending a
+request to multiple receivers but only caring for the first arriving response.
 
 .. _error-response:
 
