@@ -1,7 +1,7 @@
-Using 
-======
+Using ``aout`` -- A Concurrency-safe Wrapper for ``cout``
+=========================================================
 
- -- A Concurrency-safe Wrapper for ``cout``}
+
 
 When using ``cout`` from multiple actors, output often appears
 interleaved. Moreover, using ``cout`` from multiple actors -- and thus

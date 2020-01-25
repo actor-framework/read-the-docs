@@ -58,10 +58,10 @@ The API for typed actors is now similar to the API for untyped actors
 The APIs of typed and untyped actors have been harmonized. Typed actors can now
 be published in the network and also use all operations untyped actors can.
 
-0.9 to 0.10 (
--------------
+0.9 to 0.10 (``libcppa`` to CAF)
+--------------------------------
 
- to CAF)}
+
 
 The first release under the new name CAF is an overhaul of the entire library.
 Some classes have been renamed or relocated, others have been removed. The
@@ -148,16 +148,10 @@ it to define a custom exit handler, but you must not use ``override``.
 
 Version 0.12 removed two features:
 
-``announce````announce<my_class>(...)````announce<my_class>("my_class", ...)````continue_with``
 
-*  Type names are no longer demangled automatically. Hence, users must
-  explicitly pass the type name as first argument when using
- , i.e.,  becomes
- .
 
-*  Synchronous send blocks no longer support . This
-  feature has been removed without substitution.
-
+* Type names are no longer demangled automatically. Hence, users must  explicitly pass the type name as first argument when using  ``announce``, i.e., ``announce<my_class>(...)`` becomes  ``announce<my_class>("my_class", ...)``.
+* Synchronous send blocks no longer support ``continue_with``. This  feature has been removed without substitution.
 
 
 

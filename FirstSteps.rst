@@ -35,18 +35,12 @@ Features
 
 
 
-*  Lightweight, fast and efficient actor implementations
- 
-*  Network transparent messaging
- 
-*  Error handling based on Erlang's failure model
- 
-*  Pattern matching for messages as internal DSL to ease development
- 
-*  Thread-mapped actors for soft migration of existing applications
- 
-*  Publish/subscribe group communication
-
+* Lightweight, fast and efficient actor implementations
+* Network transparent messaging
+* Error handling based on Erlang's failure model
+* Pattern matching for messages as internal DSL to ease development
+* Thread-mapped actors for soft migration of existing applications
+* Publish/subscribe group communication
 
 
 
@@ -56,12 +50,9 @@ Minimal Compiler Versions
 
 
 
-*  GCC 4.8
- 
-*  Clang 3.4
- 
-*  Visual Studio 2015, Update 3
-
+* GCC 4.8
+* Clang 3.4
+* Visual Studio 2015, Update 3
 
 
 
@@ -70,12 +61,9 @@ Supported Operating Systems
 
 
 
-*  Linux
-
-*  Mac OS X
-
-*  Windows (static library only)
-
+* Linux
+* Mac OS X
+* Windows (static library only)
 
 
 

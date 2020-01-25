@@ -32,7 +32,7 @@ and processing paths.
 .. _mailbox_element:
 
 .. image:: mailbox_element.png
-   :alt: UML class diagram for \lstinline^mailbox_element^
+   :alt: UML class diagram for ``mailbox_element``
 
 
 
@@ -75,14 +75,11 @@ Requirements for Message Types
 
 Message types in CAF must meet the following requirements:
 
-type-inspection_
 
-1.  Serializable or inspectable 
 
-2.  Default constructible
-
-3.  Copy constructible
-
+1. Serializable or inspectable type-inspection_
+2. Default constructible
+3. Copy constructible
 
 
 

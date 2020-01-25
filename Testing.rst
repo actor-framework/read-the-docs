@@ -12,16 +12,12 @@ actors.
 
 Our design leverages four main concepts:
 
-**Checks****Tests****Fixtures****Suites**
 
-*   represent single boolean expressions.
- 
-*   contain one or more checks.
- 
-*   equip tests with a fixed data environment.
- 
-*   group tests together.
 
+* **Checks** represent single boolean expressions.
+* **Tests** contain one or more checks.
+* **Fixtures** equip tests with a fixed data environment.
+* **Suites** group tests together.
 
 
 
@@ -127,24 +123,9 @@ The example above works, but suffers from several issues:
 
 
 
-* 
-
- Significant amount of boilerplate code.
-
- 
-* 
-
- Using a scoped actor as illustrated above can only test one actor at a
-    time. However, messages between other actors are invisible to us.
-
- 
-* 
-
- CAF runs actors in a thread pool by default. The resulting nondeterminism
-    makes triggering reliable ordering of messages near impossible. Further,
-    forcing timeouts to test error handling code is even harder.
-
-
+* Significant amount of boilerplate code.
+* Using a scoped actor as illustrated above can only test one actor at a  time. However, messages between other actors are invisible to us.
+* CAF runs actors in a thread pool by default. The resulting nondeterminism  makes triggering reliable ordering of messages near impossible. Further,  forcing timeouts to test error handling code is even harder.
 
 
 
@@ -166,31 +147,11 @@ configuration classes.
 
 Using this fixture unlocks three additional macros:
 
-``expect````allow````expect````true````false````disallow``
-
-* 
-
-  checks for a single message. The macro verifies the
-    content types of the message and invokes the necessary member functions on
-    the test coordinator. Optionally, the macro checks the receiver of the
-    message and its content. If the expected message does not exist, the test
-    aborts.
-
- 
-* 
-
-  is similar to , but it does not abort
-    the test if the expected message is missing. This macro returns
-  if the allowed message was delivered, 
- otherwise.
-
- 
-* 
-
-  aborts the test if a particular message was delivered
-    to an actor.
 
 
+* ``expect`` checks for a single message. The macro verifies the  content types of the message and invokes the necessary member functions on  the test coordinator. Optionally, the macro checks the receiver of the  message and its content. If the expected message does not exist, the test  aborts.
+* ``allow`` is similar to ``expect``, but it does not abort  the test if the expected message is missing. This macro returns  ``true`` if the allowed message was delivered, ``false``  otherwise.
+* ``disallow`` aborts the test if a particular message was delivered  to an actor.
 
 
 

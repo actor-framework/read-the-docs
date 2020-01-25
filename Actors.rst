@@ -387,15 +387,15 @@ Blocking actors simply implement their behavior in the function body. The actor
 is done once it returns from that function.
 
 Event-based actors can either return a ``behavior``
-message-handler_ that is used to initialize the actor or explicitly set
-the initial behavior by calling ``self->become(...)``. Due to the
+message-handler_ that is used to initialize the actor or explicitly set the
+initial behavior by calling ``self->become(...)``. Due to the
 asynchronous, event-based nature of this kind of actor, the function usually
 returns immediately after setting a behavior (message handler) for the
-*next* incoming message. Hence, variables on the stack will be out of
-scope once a message arrives. Managing state in function-based actors can be
-done either via rebinding state with ``become``, using heap-located
-data referenced via ``std::shared_ptr`` or by using the ``stateful
-actor'' abstraction stateful-actor_.
+*next* incoming message. Hence, variables on the stack will be out of scope
+once a message arrives. Managing state in function-based actors can be done
+either via rebinding state with ``become``, using heap-located data
+referenced via ``std::shared_ptr`` or by using the *stateful
+actor* abstraction stateful-actor_.
 
 The following three functions implement the prototypes shown in spawn_
 and illustrate one blocking actor and two event-based actors (statically and
@@ -457,17 +457,10 @@ Class-based Actors
 
 
 Implementing an actor using a class requires the following:
-``actor_config&````spawn````make_behavior````act``
 
-*  Provide a constructor taking a reference of type
-  as first argument, which is forwarded to the base
-    class. The config is passed implicitly to the constructor when calling
- , which also forwards any number of additional arguments
-    to the constructor.
 
-*  Override  for event-based actors and
-  for blocking actors.
-
+* Provide a constructor taking a reference of type  ``actor_config&`` as first argument, which is forwarded to the base  class. The config is passed implicitly to the constructor when calling  ``spawn``, which also forwards any number of additional arguments  to the constructor.
+* Override ``make_behavior`` for event-based actors and  ``act`` for blocking actors.
 
 
 
@@ -584,8 +577,8 @@ function-based_.
 
 .. _composable-behavior:
 
-Actors from Composable Behaviors \ :sup:`experimental`\ 
---------------------------------------------------------
+Actors from Composable Behaviors  :sup:`experimental`
+-----------------------------------------------------
 
 
 
@@ -618,8 +611,8 @@ A behavior that combines the behaviors ``X``, ``Y``, and
 inheriting from the three classes directly. The class
 ``composed_behavior`` ensures that the behaviors are concatenated
 correctly. In case one message handler is defined in multiple base types, the
-*first* type in declaration order ``wins''. For example, if ``X``
-and ``Y`` both implement the interface
+*first* type in declaration order wins. For example, if ``X`` and
+``Y`` both implement the interface
 ``replies_to<int,int>::with<int>``, only the handler implemented in
 ``X`` is active.
 

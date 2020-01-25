@@ -48,7 +48,7 @@ first.
 .. _make-shared:
 
 .. image:: make_shared.png
-   :alt: Memory layout when using \lstinline^std::make_shared^
+   :alt: Memory layout when using ``std::make_shared``
 
 
 
@@ -60,7 +60,7 @@ it is unaware where the data is allocated.
 .. _enable-shared-from-this:
 
 .. image:: enable_shared_from_this.png
-   :alt: Memory layout with \lstinline^std::enable_shared_from_this^
+   :alt: Memory layout with ``std::enable_shared_from_this``
 
 
 

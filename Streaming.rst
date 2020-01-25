@@ -1,7 +1,7 @@
 .. _streaming:
 
-Streaming\ :sup:`experimental`\ 
-================================
+Streaming :sup:`experimental`
+=============================
 
 
 

@@ -13,7 +13,7 @@ the middleman, implementations should be careful to consume as little time as
 possible in message handlers. Brokers should outsource any considerable amount
 of work by spawning new actors or maintaining worker actors.
 
-*Note that all UDP-related functionality is still \experimental.*
+*Note that all UDP-related functionality is still  :sup:`experimental`.*
 
 Spawning Brokers
 ----------------
@@ -329,8 +329,8 @@ handles entered passive mode and no longer accepts new data trigger_.
 
 .. _trigger:
 
-Manually Triggering Events \ :sup:`experimental`\ 
---------------------------------------------------
+Manually Triggering Events  :sup:`experimental`
+-----------------------------------------------
 
 
 

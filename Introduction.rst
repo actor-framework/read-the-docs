@@ -33,8 +33,8 @@ and from one node to many nodes. However, the actor model has not yet been
 widely adopted in the native programming domain. With CAF, we contribute a
 library for actor programming in C++ as open-source software to ease native
 development of concurrent as well as distributed systems. In this regard, CAF
-follows the C++ philosophy ``building the highest abstraction possible without
-sacrificing performance''.
+follows the C++ philosophy *building the highest abstraction possible
+without sacrificing performance*.
 
 Terminology
 -----------
@@ -53,10 +53,10 @@ Dynamically Typed Actor
 
 
 A dynamically typed actor accepts any kind of message and dispatches on its
-content dynamically at the receiver. This is the ``traditional'' messaging
-style found in implementations like Erlang or Akka. The upside of this approach
-is (usually) faster prototyping and less code. This comes at the cost of
-requiring excessive testing.
+content dynamically at the receiver. This is the traditional messaging style
+found in implementations like Erlang or Akka. The upside of this approach is
+(usually) faster prototyping and less code. This comes at the cost of requiring
+excessive testing.
 
 Statically Typed Actor
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -164,7 +164,7 @@ Experimental Features
 
 
 
-Sections that discuss experimental features are highlighted with \ :sup:`experimental`\ .
+Sections that discuss experimental features are highlighted with  :sup:`experimental`.
 The API of such features is not stable. This means even minor updates to CAF
 can come with breaking changes to the API or even remove a feature completely.
 However, we encourage developers to extensively test such features and to start

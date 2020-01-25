@@ -139,10 +139,8 @@ references as arguments.
 +-----------------------------------------------+------------------------------------------------------------+
 
 
-Class 
-------
-
-}
+Class ``message_builder``
+-------------------------
 
 
 
@@ -212,22 +210,15 @@ For example:
 
 Step-by-step explanation:
 
-``(1, 2.f, 3.f, 4)````(1, 2.f, 3.f)````(1, 2.f)````(1)````(2.f, 3.f, 4)````(2.f, 3.f)``*match*``(1, 4)````(4)``
 
-*  Slice 1: , no match
- 
-*  Slice 2: , no match
- 
-*  Slice 3: , no match
- 
-*  Slice 4: , no match
- 
-*  Slice 5: , no match
- 
-*  Slice 6: , ; new message is 
- 
-*  Slice 7: , no match
 
+* Slice 1: ``(1, 2.f, 3.f, 4)``, no match
+* Slice 2: ``(1, 2.f, 3.f)``, no match
+* Slice 3: ``(1, 2.f)``, no match
+* Slice 4: ``(1)``, no match
+* Slice 5: ``(2.f, 3.f, 4)``, no match
+* Slice 6: ``(2.f, 3.f)``, *match*; new message is ``(1, 4)``
+* Slice 7: ``(4)``, no match
 
 
 

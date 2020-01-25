@@ -13,10 +13,8 @@ messages. Applications install a middleman by loading
 ``"caf/io/all.hpp"`` to get access to all public classes of the I/O
 module.
 
-Class 
-------
-
-}
+Class ``middleman``
+-------------------
 
 
 
@@ -161,8 +159,8 @@ encrypted and unencrypted communication.
 
 .. _transport-protocols:
 
-Transport Protocols \ :sup:`experimental`\ 
--------------------------------------------
+Transport Protocols  :sup:`experimental`
+----------------------------------------
 
 
 

@@ -99,29 +99,15 @@ inspector can query whether a type ``T`` is an annotation with
 call operator of the inspector along with data fields. The following list shows
 all annotations supported by CAF:
 
-``type_name(n)````n````hex_formatted()````omittable()````omittable_if_empty()````omittable_if_none()````none````save_callback(f)````f````load_callback(f)````f``
 
-*  : Display type name as  in
-  human-friendly output (position before data fields).
 
-*  : Format the following data field in hex
-  format.
-
-*  : Omit the following data field in human-friendly
-  output.
-
-*  : Omit the following data field if it is
-  empty in human-friendly output.
-
-*  : Omit the following data field if it
-  equals  in human-friendly output.
-
-*  : Call  when serializing
-  (position after data fields).
-
-*  : Call  after deserializing all
-  data fields (position after data fields).
-
+* ``type_name(n)``: Display type name as ``n`` in  human-friendly output (position before data fields).
+* ``hex_formatted()``: Format the following data field in hex  format.
+* ``omittable()``: Omit the following data field in human-friendly  output.
+* ``omittable_if_empty()``: Omit the following data field if it is  empty in human-friendly output.
+* ``omittable_if_none()``: Omit the following data field if it  equals ``none`` in human-friendly output.
+* ``save_callback(f)``: Call ``f`` when serializing  (position after data fields).
+* ``load_callback(f)``: Call ``f`` after deserializing all  data fields (position after data fields).
 
 
 

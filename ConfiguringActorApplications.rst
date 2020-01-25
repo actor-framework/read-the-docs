@@ -134,11 +134,11 @@ Command Line Options and INI Configuration Files
 
 
 
-CAF organizes program options in categories and parses CLI arguments as well
-as INI files. CLI arguments override values in the INI file which override
+CAF organizes program options in categories and parses CLI arguments as well as
+INI files. CLI arguments override values in the INI file which override
 hard-coded defaults. Users can add any number of custom program options by
 implementing a subtype of ``actor_system_config``. The example below
-adds three options to the ``global'' category.
+adds three options to the ``global`` category.
 
 
 .. code-block:: c++
@@ -159,8 +159,8 @@ adds three options to the ``global'' category.
 
 
 
-We create a new ``global'' category in ``custom_options_}``. Each
-following call to ``add`` then appends individual options to the
+We create a new ``global`` category in ``custom_options_}``.
+Each following call to ``add`` then appends individual options to the
 category. The first argument to ``add`` is the associated variable. The
 second argument is the name for the parameter, optionally suffixed with a
 comma-separated single-character short name. The short name is only considered
@@ -168,10 +168,10 @@ for CLI parsing and allows users to abbreviate commonly used option names. The
 third and final argument to ``add`` is a help text.
 
 The custom ``config`` class allows end users to set the port for the
-application to 42 with either ``--port=42`` (long name) or
-``-p 42`` (short name). The long option name is prefixed by the
+application to 42 with either ``-p 42`` (short name) or
+``--port=42`` (long name). The long option name is prefixed by the
 category when using a different category than ``global''. For example, adding
-the port option to the category ``foo'' means end users have to type
+the port option to the category ``foo`` means end users have to type
 ``--foo.port=42`` when using the long name. Short names are unaffected
 by the category, but have to be unique.
 
@@ -185,22 +185,21 @@ simplicity. However, this is not required. For example,
 values of the configuration are accessible with ``get_or``. Note that
 all global options can omit the ``"global."`` prefix.
 
-CAF adds the program options ``help'' (with short names ``-h`` and
-``-?``) as well as ``long-help'' to the ``global'' category.
+CAF adds the program options ``help`` (with short names ``-h``
+and ``-?``) as well as ``long-help`` to the ``global``
+category.
 
 The default name for the INI file is ``caf-application.ini``. Users can
-change the file name and path by passing ``--config-file=<path>`` on
-the command line.
+change the file name and path by passing ``--config-file=<path>`` on the
+command line.
 
-INI files are organized in categories. No value is allowed outside of a
-category (no implicit ``global'' category). The parses uses the following
-syntax:
+INI files are organized in categories. No value is allowed outside of a category
+(no implicit ``global`` category). The parses uses the following syntax:
 
 
 
 +------------------------+-----------------------------+
-| p{0.65}}
- ``key=true`` | is a boolean                |
+| ``key=true``           | is a boolean                |
 +------------------------+-----------------------------+
 | ``key=1``              | is an integer               |
 +------------------------+-----------------------------+
@@ -382,8 +381,8 @@ in custom-error_.
 
 .. _add-custom-actor-type:
 
-Adding Custom Actor Types \ :sup:`experimental`\ 
--------------------------------------------------
+Adding Custom Actor Types  :sup:`experimental`
+----------------------------------------------
 
 
 
@@ -475,9 +474,10 @@ Log Output
 
 Logging is disabled in CAF per default. It can be enabled by setting the
 ``--with-log-level=`` option of the ``configure`` script to one
-of ``error'', ``warning'', ``info'', ``debug'', or ``trace'' (from least output
-to most). Alternatively, setting the CMake variable ``CAF_LOG_LEVEL``
-to 0, 1, 2, 3, or 4 (from least output to most) has the same effect.
+of ``error``, ``warning``, ``info``, ``debug``,
+or ``trace`` (from least output to most). Alternatively, setting the
+CMake variable ``CAF_LOG_LEVEL`` to one of these values has the same
+effect.
 
 All logger-related configuration options listed here and in
 system-config-options_ are silently ignored if logging is disabled.
@@ -494,17 +494,15 @@ The output file is generated from the template configured by
 
 
 
-+---------------------------+--------------------------------+
-| |p{0.75}|}
- 
- **Variable**| **Output**                     |
-+---------------------------+--------------------------------+
-| ``[PID]``                 | The OS-specific process ID.    |
-+---------------------------+--------------------------------+
-| ``[TIMESTAMP]``           | The UNIX timestamp on startup. |
-+---------------------------+--------------------------------+
-| ``[NODE]``                | The node ID of the CAF system. |
-+---------------------------+--------------------------------+
++----------------+--------------------------------+
+| **Variable**   | **Output**                     |
++----------------+--------------------------------+
+| ``[PID]``      | The OS-specific process ID.    |
++----------------+--------------------------------+
+| ``[TIMESTAMP]``| The UNIX timestamp on startup. |
++----------------+--------------------------------+
+| ``[NODE]``     | The node ID of the CAF system. |
++----------------+--------------------------------+
 
 
 
@@ -532,3 +530,49 @@ events via ``logger-file-format`` and
 ``logger-console-format``. Note that format modifiers are not supported
 at the moment. The recognized field identifiers are:
 
+
+
++--------------+-----------------------------------------------------------------------------------------------------------------------------+
+| **Character**| **Output**                                                                                                                  |
++--------------+-----------------------------------------------------------------------------------------------------------------------------+
+| ``c``        | The category/component.                                                                                                     |
++--------------+-----------------------------------------------------------------------------------------------------------------------------+
+| ``C``        | The full qualifier of the current function. For example, the qualifier of ``void ns::foo::bar()`` is printed as ``ns.foo``. |
++--------------+-----------------------------------------------------------------------------------------------------------------------------+
+| ``d``        | The date in ISO 8601 format, i.e., ``"YYYY-MM-DDThh:mm:ss"``.                                                               |
++--------------+-----------------------------------------------------------------------------------------------------------------------------+
+| ``F``        | The file name.                                                                                                              |
++--------------+-----------------------------------------------------------------------------------------------------------------------------+
+| ``L``        | The line number.                                                                                                            |
++--------------+-----------------------------------------------------------------------------------------------------------------------------+
+| ``m``        | The user-defined log message.                                                                                               |
++--------------+-----------------------------------------------------------------------------------------------------------------------------+
+| ``M``        | The name of the current function. For example, the name of ``void ns::foo::bar()`` is printed as ``bar``.                   |
++--------------+-----------------------------------------------------------------------------------------------------------------------------+
+| ``n``        | A newline.                                                                                                                  |
++--------------+-----------------------------------------------------------------------------------------------------------------------------+
+| ``p``        | The priority (severity level).                                                                                              |
++--------------+-----------------------------------------------------------------------------------------------------------------------------+
+| ``r``        | Elapsed time since starting the application in milliseconds.                                                                |
++--------------+-----------------------------------------------------------------------------------------------------------------------------+
+| ``t``        | ID of the current thread.                                                                                                   |
++--------------+-----------------------------------------------------------------------------------------------------------------------------+
+| ``a``        | ID of the current actor (or ``actor0`` when not logging inside an actor).                                                   |
++--------------+-----------------------------------------------------------------------------------------------------------------------------+
+| ``%``        | A single percent sign.                                                                                                      |
++--------------+-----------------------------------------------------------------------------------------------------------------------------+
+
+
+
+.. _log-output-filtering:
+
+Filtering
+~~~~~~~~~
+
+
+
+The two configuration options ``logger-component-filter`` and
+``logger-verbosity`` reduce the amount of generated log events. The
+former is a list of excluded component names and the latter can increase the
+reported severity level (but not decrease it beyond the level defined at
+compile time).
