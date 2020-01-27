@@ -48,25 +48,17 @@ Add Custom Error Categories
 
 
 Adding custom error categories requires three steps: (1) declare an enum class
-of type ``uint8_t`` with the first value starting at 1, (2) implement a
-free function ``make_error`` that converts the enum to an
-``error`` object, (3) add the custom category to the actor system with
-a render function. The last step is optional to allow users to retrieve a
-better string representation from ``system.render(x)`` than
-``to_string(x)`` can offer. Note that any error code with value 0 is
-interpreted as *not-an-error*. The following example adds a custom error
-category by performing the first two steps.
+of type ``uint8_t`` with the first value starting at 1, (2) specialize
+``error_category`` to give your type a custom ID (value 0-99 are
+reserved by CAF), and (3) add your error category to the actor system config.
+The following example adds custom error codes for math errors.
 
 
 .. code-block:: c++
 
    enum class math_error : uint8_t {
-     division_by_zero = 1
+     division_by_zero = 1,
    };
-   
-   error make_error(math_error x) {
-     return {static_cast<uint8_t>(x), atom("math")};
-   }
    
    std::string to_string(math_error x) {
      switch (x) {
@@ -75,36 +67,28 @@ category by performing the first two steps.
        default:
          return "-unknown-error-";
      }
-
-
-
-
-The implementation of ``to_string(error)`` is unable to call string
-conversions for custom error categories. Hence,
-``to_string(make_error(math_error::division_by_zero))`` returns
-``"error(1, math)"``.
-
-The following code adds a rendering function to the actor system to provide a
-more satisfactory string conversion.
-
-
-.. code-block:: c++
-
+   }
+   
+   namespace caf {
+   
+   template <>
+   struct error_category<math_error> {
+     static constexpr uint8_t value = 101;
+   };
+   
+   } // namespace caf
+   
    class config : public actor_system_config {
    public:
      config() {
-       auto renderer = [](uint8_t x, atom_value, const message&) {
-         return "math_error" + deep_to_string_as_tuple(static_cast<math_error>(x));
+       auto renderer = [](uint8_t x, const message&) {
+         return to_string(static_cast<math_error>(x));
        };
-       add_error_category(atom("math"), renderer);
+       add_error_category(caf::error_category<math_error>::value, renderer);
      }
 
 
 
-
-With the custom rendering function,
-``system.render(make_error(math_error::division_by_zero))`` returns
-``"math_error(division_by_zero)"``.
 
 .. _sec:
 
@@ -120,6 +104,8 @@ follows.
 
 .. code-block:: c++
 
+   namespace caf {
+   
    /// SEC stands for "System Error Code". This enum contains error codes for
    /// ::actor_system and its modules.
    enum class sec : uint8_t {
@@ -203,8 +189,6 @@ follows.
      invalid_stream_state,
      /// Stream aborted due to unexpected error.
      unhandled_stream_error,
-     /// A function view was called without assigning an actor first.
-     bad_function_call = 40,
 
 
 
@@ -227,6 +211,7 @@ even if the default handler for exit messages exit-message_ is overridden.
 
 .. code-block:: c++
 
+   #include "caf/error_category.hpp"
    
    namespace caf {
    
@@ -246,7 +231,6 @@ even if the default handler for exit messages exit-message_ is overridden.
      /// Indicates that an actor was killed unconditionally.
      kill,
      /// Indicates that an actor finishied execution because a connection
-     /// to a remote link was closed unexpectedly.
 
 
 

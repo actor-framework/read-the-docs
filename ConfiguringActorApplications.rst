@@ -143,6 +143,7 @@ adds three options to the ``global`` category.
 
 .. code-block:: c++
 
+   class config : public actor_system_config {
    public:
      uint16_t port = 0;
      std::string host = "localhost";
@@ -150,11 +151,10 @@ adds three options to the ``global`` category.
    
      config() {
        opt_group{custom_options_, "global"}
-       .add(port, "port,p", "set port")
-       .add(host, "host,H", "set host (ignored in server mode)")
-       .add(server_mode, "server-mode,s", "enable server mode");
+         .add(port, "port,p", "set port")
+         .add(host, "host,H", "set host (ignored in server mode)")
+         .add(server_mode, "server-mode,s", "enable server mode");
      }
-   };
 
 
 
@@ -394,12 +394,7 @@ simple ``calculator`` actor.
 
 .. code-block:: c++
 
-   using add_atom = atom_constant<atom("add")>;
-   using sub_atom = atom_constant<atom("sub")>;
-   
    using calculator = typed_actor<replies_to<add_atom, int, int>::with<int>,
-                                  replies_to<sub_atom, int, int>::with<int>>;
-   
 
 
 
@@ -416,16 +411,15 @@ distributed actor system (assuming all nodes use the same config).
 
    struct config : actor_system_config {
      config() {
-
-
-
-.. code-block:: c++
-
-
-
-
-.. code-block:: c++
-
+       add_actor_type("calculator", calculator_fun);
+       opt_group{custom_options_, "global"}
+         .add(port, "port,p", "set port")
+         .add(host, "host,H", "set node (ignored in server mode)")
+         .add(server_mode, "server-mode,s", "enable server mode");
+     }
+     uint16_t port = 0;
+     string host = "localhost";
+     bool server_mode = false;
 
 
 

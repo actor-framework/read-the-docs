@@ -211,14 +211,14 @@ The first part of the example illustrates how event-based actors can use either
 
    void waiting_testee(event_based_actor* self, vector<cell> cells) {
      for (auto& x : cells)
-       self->request(x, seconds(1), get_atom::value).await([=](int y) {
+       self->request(x, seconds(1), get_atom_v).await([=](int y) {
          aout(self) << "cell #" << x.id() << " -> " << y << endl;
        });
    }
    
    void multiplexed_testee(event_based_actor* self, vector<cell> cells) {
      for (auto& x : cells)
-       self->request(x, seconds(1), get_atom::value).then([=](int y) {
+       self->request(x, seconds(1), get_atom_v).then([=](int y) {
          aout(self) << "cell #" << x.id() << " -> " << y << endl;
        });
 
@@ -235,15 +235,15 @@ messages when handling response messages.
 
    void blocking_testee(blocking_actor* self, vector<cell> cells) {
      for (auto& x : cells)
-       self->request(x, seconds(1), get_atom::value).receive(
-         [&](int y) {
-           aout(self) << "cell #" << x.id() << " -> " << y << endl;
-         },
-         [&](error& err) {
-           aout(self) << "cell #" << x.id()
-                      << " -> " << self->system().render(err) << endl;
-         }
-       );
+       self->request(x, seconds(1), get_atom_v)
+         .receive(
+           [&](int y) { aout(self) << "cell #" << x.id() << " -> " << y << endl; },
+           [&](error& err) {
+             aout(self) << "cell #" << x.id() << " -> "
+                        << self->system().render(err) << endl;
+           });
+   }
+   
 
 
 
@@ -253,8 +253,8 @@ We spawn five cells and assign the values 0, 1, 4, 9, and 16.
 
 .. code-block:: c++
 
-     vector<cell> cells;
-     for (auto i = 0; i < 5; ++i)
+       cells.emplace_back(system.spawn(cell_impl, i * i));
+     scoped_actor self{system};
 
 
 
@@ -358,19 +358,12 @@ by zero. This examples uses a custom error category error_.
 .. code-block:: c++
 
    enum class math_error : uint8_t {
-     division_by_zero = 1
-   };
-   
-   error make_error(math_error x) {
-     return {static_cast<uint8_t>(x), atom("math")};
+     division_by_zero = 1,
 
 
 
 .. code-block:: c++
 
-   
-   using div_atom = atom_constant<atom("div")>;
-   
    using divider = typed_actor<replies_to<div_atom, double, double>::with<double>>;
    
    divider::behavior_type divider_impl() {
@@ -379,7 +372,7 @@ by zero. This examples uses a custom error category error_.
          if (y == 0.0)
            return math_error::division_by_zero;
          return x / y;
-       }
+       },
      };
 
 
@@ -391,15 +384,12 @@ errors to the user.
 
 .. code-block:: c++
 
-     scoped_actor self{system};
-     self->request(div, std::chrono::seconds(10), div_atom::value, x, y).receive(
-       [&](double z) {
-         aout(self) << x << " / " << y << " = " << z << endl;
-       },
-       [&](const error& err) {
-         aout(self) << "*** cannot compute " << x << " / " << y << " => "
-                    << system.render(err) << endl;
-       }
+     self->request(div, std::chrono::seconds(10), div_atom_v, x, y)
+       .receive(
+         [&](double z) { aout(self) << x << " / " << y << " = " << z << endl; },
+         [&](const error& err) {
+           aout(self) << "*** cannot compute " << x << " / " << y << " => "
+                      << system.render(err) << endl;
 
 
 
@@ -420,22 +410,20 @@ illustrated in the following time-based loop example.
    // uses a message-based loop to iterate over all animation steps
    void dancing_kirby(event_based_actor* self) {
      // let's get it started
-     self->send(self, step_atom::value, size_t{0});
-     self->become (
-       [=](step_atom, size_t step) {
-         if (step == sizeof(animation_step)) {
-           // we've printed all animation steps (done)
-           cout << endl;
-           self->quit();
-           return;
-         }
-         // print given step
-         draw_kirby(animation_steps[step]);
-         // animate next step in 150ms
-         self->delayed_send(self, std::chrono::milliseconds(150),
-                            step_atom::value, step + 1);
+     self->send(self, update_atom_v, size_t{0});
+     self->become([=](update_atom, size_t step) {
+       if (step == sizeof(animation_step)) {
+         // we've printed all animation steps (done)
+         cout << endl;
+         self->quit();
+         return;
        }
-     );
+       // print given step
+       draw_kirby(animation_steps[step]);
+       // animate next step in 150ms
+       self->delayed_send(self, std::chrono::milliseconds(150), update_atom_v,
+                          step + 1);
+     });
 
 
 
@@ -482,32 +470,26 @@ the compiler to check the result type when using statically typed actors.
 .. code-block:: c++
 
    void actor_a(event_based_actor* self, const calc& worker) {
-     self->request(worker, std::chrono::seconds(10), add_atom::value, 1, 2).then(
-       [=](int result) {
-         aout(self) << "1 + 2 = " << result << endl;
-       }
-     );
+     self->request(worker, std::chrono::seconds(10), add_atom_v, 1, 2)
+       .then([=](int result) { aout(self) << "1 + 2 = " << result << std::endl; });
    }
    
    calc::behavior_type actor_b(calc::pointer self, const calc& worker) {
      return {
        [=](add_atom add, int x, int y) {
          return self->delegate(worker, add, x, y);
-       }
+       },
      };
    }
    
    calc::behavior_type actor_c() {
      return {
-       [](add_atom, int x, int y) {
-         return x + y;
-       }
+       [](add_atom, int x, int y) { return x + y; },
      };
    }
    
    void caf_main(actor_system& system) {
      system.spawn(actor_a, system.spawn(actor_b, system.spawn(actor_c)));
-   }
 
 
 
