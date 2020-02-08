@@ -13,8 +13,8 @@ messages. Applications install a middleman by loading
 ``"caf/io/all.hpp"`` to get access to all public classes of the I/O
 module.
 
-Class \texttt{middleman
------------------------
+Class 
+------
 
 }
 
@@ -161,8 +161,8 @@ encrypted and unencrypted communication.
 
 .. _transport-protocols:
 
-Transport Protocols \experimental
----------------------------------
+Transport Protocols \ :sup:`experimental`\ 
+-------------------------------------------
 
 
 

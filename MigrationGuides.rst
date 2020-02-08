@@ -14,8 +14,8 @@ library for that last versions of CAF.
 Version 0.9 included a lot of changes and improvements in its implementation,
 but it also made breaking changes to the API.
 
-\lstinline^self^ has been removed
-+++++++++++++++++++++++++++++++++
+``self`` has been removed
++++++++++++++++++++++++++
 
 
 
@@ -29,8 +29,8 @@ to perform type erasure at some point, rendering it ultimately useless. Instead
 of a thread-local pointer, you can now use the first argument in functor-based
 actors to "catch" the self pointer with proper type information.
 
-\lstinline^actor_ptr^ has been replaced
-+++++++++++++++++++++++++++++++++++++++
+``actor_ptr`` has been replaced
++++++++++++++++++++++++++++++++
 
 
 
@@ -58,8 +58,8 @@ The API for typed actors is now similar to the API for untyped actors
 The APIs of typed and untyped actors have been harmonized. Typed actors can now
 be published in the network and also use all operations untyped actors can.
 
-0.9 to 0.10 (\texttt{libcppa
-----------------------------
+0.9 to 0.10 (
+-------------
 
  to CAF)}
 

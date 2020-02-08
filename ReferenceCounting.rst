@@ -138,8 +138,8 @@ actor-address_.
 
 .. _actor-cast:
 
-Converting Actor References with \lstinline^actor_cast^
--------------------------------------------------------
+Converting Actor References with ``actor_cast``
+-----------------------------------------------
 
 
 

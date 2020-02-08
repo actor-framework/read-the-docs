@@ -1,7 +1,7 @@
 .. _worker-groups:
 
-Managing Groups of Workers \experimental
-========================================
+Managing Groups of Workers \ :sup:`experimental`\ 
+==================================================
 
 
 

@@ -382,8 +382,8 @@ in custom-error_.
 
 .. _add-custom-actor-type:
 
-Adding Custom Actor Types \experimental
----------------------------------------
+Adding Custom Actor Types \ :sup:`experimental`\ 
+-------------------------------------------------
 
 
 
